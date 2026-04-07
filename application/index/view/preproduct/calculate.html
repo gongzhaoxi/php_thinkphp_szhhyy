@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+        <title>微元生产工序报工管理系统,建材行业生产管理系统,门窗生产管理系统,微元科技,佛山市微元科技有限公司</title>
+		{include file="public/header" /}
+        <script src="__STATIC__index/js/erp.js"></script>
+    </head>
+    <style>
+    	.item-top{margin: 12px 0px;}
+    	.item-title{float: left;font-size: 16px;font-weight: bold;line-height: 34px;margin: 0 12px;}
+		.item-btn{float: right;margin-right: 12px;width: 88px;line-height: 30px;color: #fff;background: cadetblue;border: 0;}
+		.item-data{clear: both;margin: 0 12px;padding-top: 16px;font-size: 14px;font-weight: bold;}
+		.item-li{display: flex;line-height: 32px;margin-top: 16px;background: blueviolet;}
+		.item-li :nth-child(1){text-align:center;width:22%;}
+		.item-li :nth-child(2){text-align:center;width:30%;}
+		.item-li :nth-child(3){text-align:center;width:16%;}
+		.item-li :nth-child(4){text-align:center;width:16%;}
+		.item-li :nth-child(5){text-align:center;width:16%;}
+		.item-msg{background:	#483D8B;margin-top:0;border-bottom:1px solid;color:#fff}
+    </style>
+<body class="glassplan_modal noschedule_modal">
+    <div class="modal-body">
+        <div class="layui-item item-top">
+            		<div class="item-title">产值汇总分析：</div>
+            		<button type="button" id="item-btn" class="item-btn">计算排产值</button>
+            	</div>
+            	<div class="layui-item item-data">
+            		<label class="item-label">汇总数量：</label>
+            		<span class="total_data"></span>
+            		<span>{$title.count} | {$title.area} | {$title.bs_num} | {$title.ss_num}（套 | ㎡ | 玻扇 | 纱扇）</span>
+            	</div>
+            	<div class="layui-item item-li">
+            		<p>预生产日期</p>
+            		<p>工序</p>
+            		<p>固定产值</p>
+            		<p>已占用</p>
+            		<p>排产值</p>
+            	</div>
+            	<div class="layui-item add-content">
+            	{volist name="list" id="vl"}
+         			<div class="item-li item-msg">
+         				<p>{$vl.starttime}</p>
+         				<p>{$vl.name}</p>
+         				<p>{$vl.unit}</p>
+         				<p>{$vl.other_val}</p>
+         				<p>{$vl.val}</p>
+         			</div>
+         			{/volist}
+            	</div>
+    </div>	
+</body>
+<script>
+	
+</script>
+</html>

@@ -1,0 +1,50 @@
+<div class="body-nav">
+	<ul class="body-nav-list">
+		<li <?php if($current_position=='Setting/setting'){echo 'class="li-active"' ;}?>><a href="{:Url('Setting/setting')}">用户管理</a></li>
+		<li <?php if($current_position=='Setting/team'){echo 'class="li-active"' ;}?>><a href="{:Url('Setting/team')}">班组管理</a></li>
+		<li <?php if($current_position=='Setting/teambind'){echo 'class="li-active"' ;}?>><a href="{:Url('Setting/teambind')}">班组工序绑定</a></li>
+
+		{if condition="$pro_setting['newgx'] eq '2'"}
+		<li <?php if($current_position=='Setting/workpro'){echo 'class="li-active"' ;}?>><a href="{:Url('Setting/workpro')}">工序管理</a></li>
+		<!-- <li <?php if($current_position=='Setting/series'){echo 'class="li-active"' ;}?>><a href="{:Url('Setting/series')}">物料管理</a></li> -->
+		{/if}
+		{if condition="$pro_setting['newgx'] neq '3'"}
+		<li <?php if($current_position=='Setting/gx_list'){echo 'class="li-active"' ;}?>><a href="{:Url('Setting/gx_list')}">工序管理</a></li>
+		<li <?php if($current_position=='Setting/series_new'){echo 'class="li-active"' ;}?>><a href="{:Url('Setting/series_new')}">物料管理</a></li>
+		{/if}
+		{if condition="$pro_setting['newgx'] eq '3'"}
+		<li <?php if($current_position=='Setting/workpro'){echo 'class="li-active"' ;}?>><a href="{:Url('Setting/gx_list')}">工序管理</a></li>
+		<!-- <li <?php if($current_position=='Setting/series'){echo 'class="li-active"' ;}?>><a href="{:Url('Setting/series')}">物料管理</a></li> -->
+		{/if}
+
+		<li <?php if($current_position=='Setting/team_monitor'){echo 'class="li-active"' ;}?>><a href="{:Url('Setting/team_monitor')}">屏幕管理</a></li>
+		<li <?php if($current_position=='Setting/role_set'){echo 'class="li-active"' ;}?>><a href="{:Url('Setting/role_set')}">权限设置</a></li>
+		<li <?php if($current_position=='Setting/qrcode_field'){echo 'class="li-active"' ;}?>><a href="{:Url('Setting/qrcode_field')}">字段设置</a></li>
+
+		<li <?php if($current_position=='Setting/field_bind_rule'){echo 'class="li-active"' ;}?>><a href="{:Url('Setting/field_bind_rule')}">字段绑定工艺线</a></li>
+		{if condition="PRODUCT_PRINT eq 1"}
+		<li <?php if($current_position=='Setting/team_bind_print'){echo 'class="li-active"' ;}?>><a href="{:Url('Setting/team_bind_print')}">打印机设置</a></li>
+		{/if}
+		{if condition="CUT_PRINT eq 1"}
+		<li <?php if($current_position=='Setting/import_list'){echo 'class="li-active"' ;}?>><a href="{:Url('Setting/import_list')}">上传切割方案</a></li>
+		{/if}
+	</ul>
+</div>
+<ul class="body-top-nav">
+	<li id="setWaringTime">
+		<img src="__STATIC__/theme/index/img/icon_time.png">
+		<span>预警时间设置</span>
+	</li>
+	<li class="clearcache">
+		<img src="__STATIC__/theme/index/img/icon_refresh.png">
+		<span>更新缓存</span>
+	</li>
+	<li id="orderBatchEditBtn">
+		<img src="__STATIC__/theme/index/img/icon_batch.png">
+		<span>批量刷新订单</span>
+	</li>
+	<li id="delOrderBatchBtn">
+		<img src="__STATIC__/theme/index/img/icon_batch.png">
+		<span>批量删除订单</span>
+	</li>
+</ul>

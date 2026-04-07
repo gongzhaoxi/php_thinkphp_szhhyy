@@ -1,0 +1,121 @@
+{include file="public/header"/}
+<style>
+    body{background-color: #fff;}
+    .center{ text-align: center;margin: 10px 0; font-size: 28px; color: #000; font-weight: bold;}
+    .title{ display: inline-block;width: 32%; margin: 5px 0;}
+    .all{ display: inline-block;width: 10%;}
+    td{text-align: center;}
+    .layui-table td{ color: #000;border-color:#000; padding:10px 0px;}
+    .layui-col-md12{ padding-top: 0px; padding-bottom: 0px; }
+
+
+</style>   
+<body>
+    <div class="layui-fluid">
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-md12">
+                <h3 class="center">深圳市恒辉窗花饰制品有限公式(订购清单)</h3>
+                <div class="title">客户名称:{$order.dealer}</div>
+                <div class="title">客户电话:{$order.phone}</div>
+                <div class="title">订单日期:{$order.addtime|date='Y-m-d',###}</div>
+                <div class="title">送货地址:{$order.send_address}</div>
+                <div class="title">订单编号:{$order.number}</div>
+            </div>
+            <div class="layui-col-md12">
+                <table class="layui-table layui-form" style='margin-bottom:0px'>
+                        <tr>                                       
+                            <!--<td>栏号</td>-->
+                            <td width="3%">编号</td>
+                            <td width="5%">名称</td>
+                            <td width="18%">材质 - 花类</td>
+                            <td width="12%">铝型/花件颜色</td>
+                            <td width="3%">单位</td>
+                            <td width="5%">宽</td>
+                            <td width="5%">高</td>
+                            <td width="3%">个数</td>
+                            <td width="5%">面积</td>
+                            <td width="7%">单价</td>
+                            <td width="7%">折后价</td>
+                            <td width="10%">总金额</td>
+                            <td width="9%">备注</td>
+                        </tr>
+                        {volist name='product' id='v'}
+                        <tr>
+                            <td>{$i}</td>
+                            <td>{$v.name}</td>
+                            <td>{$v.material} - {$v.flower_type}</td>
+                            <td>{$v.color_name}</td>
+                            <td>㎡</td>
+                            <td>{$v.all_width}</td>
+                            <td>{$v.all_height}</td>
+                            <td>{$v.count}</td>
+                            <td>{$v.area}</td>
+                            <td>{$v.price}</td>
+                            <td>{$v.rebate_price}</td>
+                            <td>{$v.all_price}</td>
+                            <td>{$v.note}</td>
+                        </tr>
+                        {/volist}
+                        {volist name='material' id='v'}
+                        <tr>
+                            <td>{$i}</td>
+                            <td>{$v.name}</td>
+                            <td>{$v.type}</td>
+                            <td>{$v.color}</td>
+                            <td>{$v.unit}</td>
+                            <td>{$v.width}</td>
+                            <td>{$v.height}</td>
+                            <td>{$v.count}</td>
+                            <td>{$v.area}</td>
+                            <td>{$v.price}</td>
+                            <td>{$v.rebate_price}</td>
+                            <td>{$v.all_price}</td>
+                            <td></td>
+                        </tr>
+                        {/volist}
+                        <tr>
+                            <td>备注</td>
+                            <td colspan="12">{$order.note}</td>
+                        </tr>
+                </table>
+               <table class="layui-table layui-form" style='margin:0'>
+                        
+                        <tr>
+                            <td>总金额</td>
+                            <td>{$order.total_price}</td>
+                            <td>总面积</td>
+                            <td>{$order.area}</td>
+                            <td>总数量</td>
+                            <td>{$order.count}</td>
+                            <td>已付</td>
+                            <td>{$order.have_pay}</td>
+                            <td>未付</td>
+                            <td>{$order.no_pay}</td>
+                            <td></td>
+                        </tr>
+                </table>
+            </div>
+            <div style="width: 80%;float: left">
+                <h4>特别说明</h4>
+                <p>1.敬请核对价格表中各种型号及结算方式，此单一旦签字认可及作为欠条凭证，汇款账户如下：户名：唐萍，中国农业银行深圳罗岗支行银行卡号：6228 4301 2001
+                4745 811；中国建设银行深圳罗岗支行卡号：6227007200240598021
+                </p>
+                <p>2.客户核对顶订单后，给予50%订金，订货生效，订单核对并确认3小时后不可修改，如需修改，费用另计。</p>
+                <p>咨询电话：4007776388 25735065 传真：0755-25736017 业务代表：人员</p>
+            </div>    
+            <div style="width: 15%;float: left">
+                <h3>客户已收货未付款签字</h3>
+            </div>
+            
+        </div>
+    </div>
+
+    <div class="layui-col-md12">
+    <button class="layui-btn" id="print" type='button' onClick="window.print()" style="margin-left: 40%;">立即打印</button>              
+    </div>
+</body>
+<script src="__STATIC__/js/jquery.min.js" charset="utf-8"></script>
+<script>
+  
+</script>
+</html>

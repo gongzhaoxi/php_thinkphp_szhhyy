@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<title>登录</title>
+<link type="text/css" rel="stylesheet"
+	href="__STATIC__/index/css/login.css">
+<script type="text/javascript"
+	src="__STATIC__/index/js/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="__STATIC__/index/js/login.js"></script>
+
+</head>
+<body style="overflow: hidden">
+	<div class="pagewrap" style="background:url(__STATIC__/index/img/bgg.jpg) top left;">
+		<div class="main">
+			<div class="header"></div>
+			<div class="content">
+				<div class="con_left">
+				</div>
+				<div class="con_right" style="opacity:0.8">
+					<div class="con_r_top" style="border-top:8px solid #d11c11;">
+						<a href="javascript:;" class="right"
+							style="margin-left: 90px; color: rgb(51, 51, 51); border-bottom-width: 2px; border-bottom-style: solid; border-bottom-color: #d11c11;">订单跟踪系统</a>
+					</div>
+					<ul>
+					    
+						<li class="con_r_right" style="display: block;">
+							<form name="form1" method="post" action="{:Url('Login/dologin')}"
+								autocomplete="off">
+								<div class="user">
+									<div>
+										<span class="mima-icon"></span> <input type="password"
+											id="password" name="password" placeholder="输入秘钥" value="">
+									</div>
+								</div>
+								<br>
+								<button id="btn_Login" type="submit" style="background: #d11c11;">登 录</button>
+							</form>
+						</li>
+
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</body>
+</html>

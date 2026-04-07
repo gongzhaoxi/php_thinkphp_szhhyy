@@ -1,0 +1,236 @@
+<?php $current='6'; ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>微元生产工序报工管理系统,建材行业生产管理系统,门窗生产管理系统,微元科技,佛山市微元科技有限公司</title>
+{include file="public/header" /}
+
+</head>
+<body>
+	<div class="baogong_parameterSetting popup-box">
+		<div class="popup-header">
+			<div>参数设置</div>
+		</div>
+		<div class="popup-body">
+			{include file="setting/menu" /}
+			<div class="body-center">
+				<!-- 字段设置 -->
+				<div class="body-content-box body-nav-active">
+					<div class="content-header">
+						<div class="content-header-left">
+							<span class="header-left-item" id="addFieldBtn">
+								<img src="__STATIC__/theme/index/img/icon_tv.png">
+								<span>添加字段</span>
+							</span>
+						</div>
+					</div>
+					<div class="content-center">
+						<div class="content-center-inner">
+							{if condition="$host eq 'meijia.ecloudm.com'"}
+							<a class="layui-btn layui-btn-sm" style="margin-bottom:10px;margin-left:10px;" href="{:url('downloadPostData')}">下载第三方字段数据</a>
+							{/if}
+							<table class="layui-table" border="1" cellpadding="0" cellspacing="0">
+								<thead>
+									<tr>
+										<th width="100">ID</th>
+										<th>字段名称</th>
+										<th>第三方字段名称</th>
+										<th>字段含义</th>
+										<th>字段类型</th>
+										<th>二维码字段</th>
+										<th>二维码排序</th>
+										<th>列表字段</th>
+										<th>员工报表</th>
+										<th>列表排序</th>
+										<th>高级搜索</th>
+										{if condition="$paichan eq 1"}
+										<th >排产字段</th>
+										<th>排产排序</th>
+										{/if}
+										<th>系统必须</th>
+										<th>启用</th>
+										<th width="150">操作</th>
+									</tr>
+								</thead>
+								<tbody>
+									{volist name="list" id="e"}
+										<tr>
+											<td>{$e.id}</td>
+											<td>{$e.fieldname}</td>
+											<td >{$e.third_fieldname}</td>
+											<td>{$e.explains}</td>
+											<td>{$field_type[$e['type']]}</td>
+											<td>
+											{php} if($e['isqrcode'] == 1){ {/php}
+											<span style="color:#390;">✔</span>
+											{php} }else{ {/php}
+											<span style="color:#c00">✘</span>
+											{php} } {/php}
+											</td>
+											<td>{$e.orderby}</td>
+											<td>
+											{php} if($e['onlist'] == 1){ {/php}
+											<span style="color:#390;">✔</span>
+											{php} }else{ {/php}
+											<span style="color:#c00">✘</span>
+											{php} } {/php}
+											</td>
+											<td>
+											{php} if($e['salary_field'] == 1){ {/php}
+											<span style="color:#390;">✔</span>
+											{php} }else{ {/php}
+											<span style="color:#c00">✘</span>
+											{php} } {/php}
+											</td>
+											<td>{$e.listorder}</td>
+
+											<td >
+											{php} if($e['search'] == 1){ {/php}
+											<span style="color:#390;">✔</span>
+											{php} }else{ {/php}
+											<span style="color:#c00">✘</span>
+											{php} } {/php}
+											</td>
+
+											{if condition="$paichan eq 1"}
+											<td>
+											{php} if($e['scheduallist'] == 1){ {/php}
+											<span style="color:#390;">✔</span>
+											{php} }else{ {/php}
+											<span style="color:#c00">✘</span>
+											{php} } {/php}
+											</td>
+											<td>{$e.scheduleorder}</td>
+											{/if}
+											<td >
+											{php} if($e['is_system'] == 1){ {/php}
+											<span style="color:#390;">✔</span>
+											{php} }else{ {/php}
+											<span style="color:#c00">✘</span>
+											{php} } {/php}
+											</td>
+
+											<td >
+											{php} if($e['status'] == 0){ {/php}
+											<span style="color:#390;">✔</span>
+											{php} }else{ {/php}
+											<span style="color:#c00">✘</span>
+											{php} } {/php}
+											</td>
+											<td class="operate-box">
+												<span class="btn-normal editFieldBtn edit" data-id="{$e.id}">修改</span>
+												{if condition="$lockfield neq 1 && $e['is_system'] == 0"}/
+												<span class="btn-normal btn-danger del" data-id="{$e.id}">删除</span>
+												{/if}
+											</td>
+										</tr>
+									{/volist}
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- 添加字段 -->
+	<div class="modal-box" id="addFieldModal">
+		<div class="modal-content">
+			<div class="modal-header">
+				<div class="modal-header-left">
+					<div class="modal-header-title">
+						<img src="__STATIC__/theme/index/img/icon_user_add.png">
+						<span>添加字段</span>
+					</div>
+				</div>
+				<div class="modal-header-right">
+					<span class="close-modal-btn"></span>
+				</div>
+			</div>
+			<div class="modal-body">
+				<div class="iframe-box">
+					<iframe class="myIframe" id="addFieldIframe" frameborder="0"></iframe>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- 修改字段 -->
+	<div class="modal-box" id="editFieldModal">
+		<div class="modal-content">
+			<div class="modal-header">
+				<div class="modal-header-left">
+					<div class="modal-header-title">
+						<span>修改字段</span>
+					</div>
+				</div>
+				<div class="modal-header-right">
+					<span class="close-modal-btn layui-icon layui-icon-close"></span>
+				</div>
+			</div>
+			<div class="modal-body">
+				<div class="iframe-box">
+					<iframe class="myIframe" id="editFieldIframe" frameborder="0"></iframe>
+				</div>
+			</div>
+		</div>
+	</div>
+	{include file="setting/timeset" /}
+</body>
+<script type="text/javascript">
+	// 添加
+	$('#addFieldBtn').click(function(e){
+		e.preventDefault();
+		e.stopPropagation();
+		$('#addFieldModal').fadeIn();
+		$('#addFieldIframe').attr('src','show_field');
+	});
+	// 修改
+	$('.edit').click(function(e){
+		e.preventDefault();
+		e.stopPropagation();
+		var id = $(this).data('id');
+		$('#editFieldModal').fadeIn();
+		$('#editFieldIframe').attr('src','show_field?id='+id);
+
+	});
+	//删除
+	$('.del').click(function(){
+		var id = $(this).data('id');
+		layer.confirm('是否删除',{icon:3,title:'提示'},function(index){
+			$.ajax({
+				url: "{:Url('Setting/del_field')}",
+				data: {"id":id},
+				dataType:"json",
+				success:function(obj){
+					if(obj.code==2){
+						layer.alert('删除失败',{icon:1});
+					}else if(obj.code==1){
+						layer.msg('删除成功');	
+					}
+					setTimeout(function(){
+						window.location.reload();	
+					},1500);
+				}
+			})
+			layer.close(index);
+		})
+	});
+	$(window).click(function(){
+		var elem = event.srcElement ? event.srcElement : event.target;
+		while (elem) { //循环判断至跟节点，防止点击的是div子元素 
+			if (elem.id && elem.id == 'orderScreenBox') {
+				return;
+			}
+			if($(elem).hasClass('modal-content')){
+				return;
+			}
+			elem = elem.parentNode;
+		}
+		$('.modal-box').fadeOut();
+	});
+	$('.close-modal-btn').click(function(){
+		$('.modal-box').fadeOut();
+	})
+</script>
+</html>

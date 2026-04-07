@@ -1,0 +1,331 @@
+<?php $current='6'; ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>微元生产工序报工管理系统,建材行业生产管理系统,门窗生产管理系统,微元科技,佛山市微元科技有限公司</title>
+{include file="public/header" /}
+
+</head>
+<style>
+	#seriesGenreModal .modal-content{width:80%;height:80%}
+	#seriesimportModal .modal-content{width:50%;height:68%}
+</style>
+<body>
+	<div class="baogong_parameterSetting popup-box">
+		<div class="popup-header">
+			<div>参数设置</div>
+		</div>
+		<div class="popup-body">
+			{php}$index = 5;{/php}
+			{include file="setting/menu" /}
+			<div class="body-center">
+				<!-- 物料管理 -->
+				<div class="body-content-box body-nav-active">
+					<div class="content-header">
+						<div class="content-header-left">
+							<span class="header-left-item" id="addMatter">
+                                <img src="__STATIC__/theme/index/img/icon_wuliao.png">
+                                <span>添加物料</span>
+                            </span>
+                            <span class="header-left-item" id="seriesGenre">
+                                <img src="__STATIC__/theme/index/img/icon_export_wuliao.png">
+                                <span>物料类别</span>
+                            </span>
+							<span class="header-left-item" id="exportMatter">
+                                <img src="__STATIC__/theme/index/img/icon_export_wuliao.png">
+                                <span>导入物料</span>
+                            </span>
+                        </div>
+                        <form id="searchForm" action="{:url('Setting/series_new')}" method="get" class="content-header-right">
+							<div class="search-box">
+								<input autocomplete="off" type="text" name="keyword" value="{$get['keyword']}" placeholder="请输入系列名称">
+								<span id="searchBtn" class="search-btn">搜索</span>
+								<div class="show-all-user"><a href="{:url('Setting/series_new')}">全部</a></div>
+							</div>
+						</form>
+					</div>
+					<div class="content-center">
+						<div class="content-center-inner">
+							<table class="layui-table matteriel-table">
+                                <thead>
+                                    <tr>
+                                        <th width="5%">ID</th>
+                                        <th width="10%">系列名称</th>
+                                        <th width="65%">所属类别</th>
+                                        <th width="10%">操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {volist name="list" id="la"}
+                                    <tr>
+                                        <td>{$la.id}</td>
+                                        <td class="td-class-group">{$la.xname}</td>
+                                        <td class="td-technogoly">{$la.name}</td>
+                                        <td class="operate-box">
+                                            <span class="btn-normal btn-edit-materiel edit" data-id="{$la.id}" >修改</span>/
+                                            {if condition="$la.isorder neq 1"}
+                                            / <span class="btn-normal btn-danger del" data-id="{$la.id}" >删除</span>
+                                            {/if}
+                                        </td>
+                                    </tr>
+                                    {/volist}
+                                </tbody>
+                            </table>
+                            <div class="page-box">
+                                <div class="pages">
+                                    {$page|raw}
+                                </div>
+                            </div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- 修改物料 -->
+	<div class="modal-box" id="matterEditModal">
+		<div class="modal-content">
+			<div class="modal-header">
+				<div class="modal-header-title">
+					<span>修改物料</span>
+				</div>
+				<div class="modal-header-right">
+					<img src="__STATIC__/theme/index/img/icon_close_3.png" class="close-modal-btn">
+				</div>
+			</div>
+			<div class="modal-body">
+				<div class="iframe-box">
+                    <iframe class="myIframe" id="matterEditIframe" frameborder="0"></iframe>
+                </div>
+			</div>
+		</div>
+	</div>
+	<!-- 添加物料 -->
+	<div class="modal-box" id="matterAddModal">
+		<div class="modal-content">
+			<div class="modal-header">
+				<div class="modal-header-left">
+					<div class="modal-header-title">
+						<img src="__STATIC__/theme/index/img/icon_wuliao.png">
+						<span>添加物料</span>
+					</div>
+				</div>
+				<div class="modal-header-right">
+					<span class="close-modal-btn"></span>
+				</div>
+			</div>
+			<div class="modal-body">
+				<div class="iframe-box">
+                    <iframe class="myIframe" id="matterAddIframe" frameborder="0"></iframe>
+                </div>
+			</div>
+		</div>
+	</div>
+	<!-- 物料类别 -->
+	<div class="modal-box" id="seriesGenreModal">
+		<div class="modal-content">
+			<div class="modal-header">
+				<div class="modal-header-left">
+					<div class="modal-header-title">
+						<img src="__STATIC__/theme/index/img/icon_wuliao.png">
+						<span>物料类别</span>
+					</div>
+				</div>
+				<div class="modal-header-right">
+					<span class="close-modal-btn"></span>
+				</div>
+			</div>
+			<div class="modal-body">
+				<div class="iframe-box">
+                    <iframe class="myIframe" id="seriesGenreIframe" frameborder="0"></iframe>
+                </div>
+			</div>
+		</div>
+	</div>
+	<!-- 物料导入 -->
+	<div class="modal-box" id="seriesimportModal">
+		<div class="modal-content">
+			<div class="modal-header">
+				<div class="modal-header-left">
+					<div class="modal-header-title">
+						<img src="__STATIC__/theme/index/img/icon_wuliao.png">
+						<span>物料类别</span>
+					</div>
+				</div>
+				<div class="modal-header-right">
+					<span class="close-modal-btn"></span>
+				</div>
+			</div>
+			<div class="modal-body">
+				<div class="iframe-box">
+                    <iframe class="myIframe" id="seriesimportIframe" frameborder="0"></iframe>
+                </div>
+			</div>
+		</div>
+	</div>
+	{include file="setting/timeset" /}
+</body>
+<script type="text/javascript">
+	// 添加物料
+    $('#addMatter').click(function(e){
+		e.preventDefault();
+		e.stopPropagation();
+        $('#matterAddModal').fadeIn();
+        $('#matterAddIframe').attr('src','series_edit_new');
+    });
+	$('#seriesGenre').click(function(e){
+		e.preventDefault();
+		e.stopPropagation();
+        $('#seriesGenreModal').fadeIn();
+        $('#seriesGenreIframe').attr('src','series_genre');
+	})
+    // 导出物料
+    $('#exportMatter').click(function(e){
+    	e.preventDefault();
+		e.stopPropagation();
+        $('#seriesimportModal').fadeIn();
+        $('#seriesimportIframe').attr('src','import_series');
+    });
+    
+    //编辑
+    $('.edit').click(function(e){
+		e.preventDefault();
+		e.stopPropagation();
+        var id = $(this).data('id');
+		$('#matterEditModal').fadeIn();
+        $('#matterEditIframe').attr('src','series_edit_new?id=' + id);
+    });
+    //复制
+    $('.copy').click(function(){
+        var id = $(this).data('id');
+        var data={};
+        data['id']=id;
+        layer.confirm("确认要复制系列及其子系列吗?",{icon:3,title:'提示'},function(index){
+            $.ajax({
+                url:"{:Url('Setting/copy_series_new')}",
+                data:data,
+                dataType: "JSON",
+                success:function(obj){
+                    if(obj.status==1){
+                        layer.msg('复制成功');
+                        setTimeout(function(){
+                            window.location.reload();	
+                        },1500);
+                    }else{
+                        layer.msg(obj.msg);
+                    }
+                }
+                
+            });
+        });
+    });
+    //删除
+    $('.del').click(function(){
+        var id = $(this).data('id');
+        layer.confirm('是否删除',{icon:3,title:'提示'},function(index){
+            $.ajax({
+                url: "{:Url('Setting/series_del')}",
+                data: {"id":id},
+                dataType:"json",
+                success:function(obj){
+                    if(obj.status==1){
+                        layer.msg('删除成功');	
+                    }
+                    setTimeout(function(){
+                        window.location.reload();	
+                    },1500);
+                }
+            })
+            layer.close(index);
+        })
+    });
+
+	// 顶部搜索
+    $('#searchBtn').click(function(e){
+		e.preventDefault();
+		e.stopPropagation();
+        $('#searchForm').submit();
+    })
+</script>
+<script type="text/javascript">
+	$('.close-modal-btn').click(function () {
+		$('.modal-box').fadeOut();
+	});
+	
+	$('#addUserBtn').click(function (e) {
+		e.preventDefault();
+		e.stopPropagation();
+		$('#addUserModal').fadeIn();
+	});
+	// 下拉列表
+	$('.imitate-select').click(function(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		var _this = $(this);
+		var clickSign = _this.attr('data-sign');
+		$('.imitate-select').removeAttr('data-sign').children('ul').hide();
+		if (clickSign == 'true') {
+			_this.children('ul').hide();
+			_this.removeAttr('data-sign');
+		} else {
+			_this.children('ul').show();
+			_this.attr('data-sign', 'true');
+		}
+	});
+	$(window).click(function(){
+		var elem = event.srcElement ? event.srcElement : event.target;
+		while (elem) { //循环判断至跟节点，防止点击的是div子元素 
+			if (elem.id && elem.id == 'orderScreenBox') {
+				return;
+			}
+			if($(elem).hasClass('modal-content')){
+				return;
+			}
+			elem = elem.parentNode;
+		}
+		$('.modal-box').fadeOut();
+		$('.imitate-select').removeAttr('data-sign').children('ul').hide();
+		$('.content-header-left').removeAttr('data-click').css({
+			top: '0',
+		}).children('.filter-orders').removeClass('filter-orders-active');
+		$('.content-header-left').siblings('.order-screen-box').css({
+			height: '0',
+			overflow: 'hidden'
+		})
+	});
+	$('.imitate-select ul').delegate('li','click',function(e){
+		e.preventDefault();
+		e.stopPropagation();
+		var _this = $(this);
+		var tempTxt = _this.html();
+		var _thisValue = _this.attr('data-value');
+		_this.parent().parent().children('.select-txt').attr('data-value',_thisValue).html(tempTxt);
+		_this.parent().hide();
+		_this.parent().parent().removeAttr('data-sign');
+		var _clickTarget = _this.parent().attr('data-sign');
+		_this.parent().siblings('input[type=hidden]').val(_thisValue);
+		switch (_clickTarget) {
+			case 'user_role':
+				changerole();
+				break;
+			default:
+				break;
+		}
+	});
+	// 多选框
+	$('.imitate-checkbox-small').click(function(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		let _this = $(this);
+		let clickSign = _this.attr('data-sign');
+		if (clickSign == 'true') {
+			_this.removeAttr('data-sign');
+			_this.children('span').hide();
+		} else {
+			_this.children('span').show();
+			_this.attr('data-sign', 'true');
+		}
+	});
+</script>
+</html>

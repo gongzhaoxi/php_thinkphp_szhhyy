@@ -1,0 +1,246 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>微元生产工序报工管理系统,建材行业生产管理系统,门窗生产管理系统,微元科技,佛山市微元科技有限公司</title>
+<script src="__STATIC__/theme/index/js/jquery-1.10.2.js"></script>
+<link href="__STATIC__/theme/index/css/index.css" rel="stylesheet" />
+<link href="__STATIC__/theme/index/css/bootstrap.css" rel="stylesheet">
+<link href="__STATIC__/theme/index/css/font-awesome.min.css" rel="stylesheet">
+<link href="__STATIC__/theme/index/js/selectjs/select.css" rel="stylesheet">
+<script src="__STATIC__/theme/index/js/selectjs/select.js"></script>
+</head>
+
+<body>
+{include file="public/header" /}
+<style type="text/css">
+img[Attributes Style] {width:auto;}
+</style>
+
+<div class="menu">
+{include file="schedule/menu" /}
+</div>
+
+<style type="text/css">
+.rdut_iauk{width: 98%; padding: 15px 1%; height: 35px;}
+.rdut_iauk span{ float: left; padding: 0 15px; color: #fff; line-height: 35px; background-color: rgb(41, 85, 182); margin-right: 15px;}
+.rdut_iauk span#rdut_id{ background-color: #1ea531; }
+.rdut_iauk span a{ color: #fff; }
+.list{ width: auto; }
+.rdut_iauk span{ line-height: 30px;border-radius:8px;border:0; }
+.rdut_iauk { height: 30px; }
+</style>
+<div class="rdut_iauk" style="padding-top:5px; padding-bottom: 5px; ">
+<span><a href="{:url('Schedule/seturgent')}">设置加急单</a></span>
+<span id="rdut_id" ><a href="{:url('Schedule/print_fixed')}">打印排产单</a></span>
+</div>
+
+
+<style type="text/css">
+table#rdut_new_tab tr td{text-align: center;border-right:1px solid #fff; line-height: 30px; background-color: #e9e9e9;border-top:1px solid #fff;}
+table#rdut_new_tab tr#rdut_title2 td{ background-color: #000; color: #fff; }
+table#rdut_new_tab tr td#tgutysujkgn{ line-height: 20px; padding: 10px; }
+table#rdut_new_tab tr td#tgutysujkgn span{ float: left; padding: 0px 10px; background-color: #1ea531; color: #fff; line-height: 20px; margin:0 10px 5px 10px; }
+table#rdut_new_tab tr td#tgutysujkgn span input{ float: left; margin-right: 5px; width: 13px; height: 13px; }
+</style>
+<div id="orderlist">
+
+
+</div>
+
+
+<script src="__STATIC__index/js/layer/layer.js"></script>
+<script src="__STATIC__index/js/laydate/laydate.js"></script>
+
+<script type="text/javascript">
+var page=1;//分页页数
+var list_loading = false;
+
+function ResearchData(){
+	page=1;
+	searchData();
+}
+
+function load_more() {
+    var listform = $(window);
+    var _height=listform.height() + listform.scrollTop();
+	var _scrollHeight=document.body.scrollHeight;
+    if (listform.height() + listform.scrollTop() >= _scrollHeight-500) {
+		//console.log("加载第二页");
+		//console.log(_scrollHeight);
+    	list_loading = true; 
+    	searchData();
+    }
+}  
+
+$(document).ready(function(){
+	$("#allselect").change(function(){
+		var ischecked = $(this).prop("checked");
+		
+		$("input.orderid").each(function(){
+			$(this).prop("checked",ischecked);
+		})
+	});
+	
+	 $("#select1").mySelect();
+	 $("#select2").mySelect();
+	
+	//显示默认未排产订单
+	searchData();
+
+	//日历插件
+	laydate.render({
+		elem: '#s_date'
+	  });
+
+	laydate.render({
+		elem: '#e_date'
+	  });
+	  
+	laydate.render({
+		elem: '#xs_date'
+	  });
+
+	laydate.render({
+		elem: '#xe_date'
+	  });
+})
+
+  
+var isLock=false;
+//查询未排除订单
+function searchData(){
+	if(isLock){
+		//防止重复点击
+		return false;
+	}
+	isLock=true;
+	
+	var _data={ };
+	
+	layer.load(0, {
+		  shade: [0.1,'#fff']
+	});
+	
+	$.ajax({
+		  url: "{:Url('Schedule/ajax_listgx')}",
+		  data:_data,
+		  dataType:"json",
+		  type:'POST',
+		  success:function(obj){
+			  
+			  layer.closeAll();
+			  list_loading = false; 
+			  isLock=false;
+			  //console.log(obj);
+			  if(obj.status==2){
+				if(page==1){
+					$("#orderlist").empty();
+					layer.msg("无搜索结果");
+				}
+				 return;
+			  }
+			  
+			  //显示结果HTML
+			  show_result(obj.list);
+		  },error:function(){
+			  layer.closeAll();
+		  }
+	  })
+}
+
+var all_gx_order=new Object();
+//显示查询结果
+function show_result(result){
+	var _html='<table width="100%" id="rdut_new_tab">'
+		+'<tr id="rdut_title2">'
+		+'<td width="5%">工序名称</td>'
+		+'<td width="75%">生产单号</td>'
+		+'<td width="5%">订单数</td>'
+		+'<td width="5%">汇总面积</td>'
+		+'<td width="5%">汇总扇数</td>'
+		+'<td width="5%">操作</td>'
+		+'</tr>';
+	var classindex=0;
+	var bg='';
+	for(var i in result){
+		classindex++;
+		var dname=i;
+		var one=result[i];
+		var orders=one['orders'];
+		if(orders.length<=0){
+			continue;
+		}
+		var all_order_id=[];
+		_html+='<tr>'
+			+'<td>'+dname+'</td>'
+			+'<td id="tgutysujkgn">';
+			for(var k in orders){
+				all_order_id.push(orders[k]['id']);
+				bg='';
+				if(orders[k]['isurgent']==1){
+					bg="style='background:#990000'";
+				}
+				_html+='<span '+bg+'>'+orders[k]['unique_sn']+'['+orders[k]['day']+']</span>';
+			}
+			all_gx_order[dname]=all_order_id;
+		_html+='</td>'
+			+'<td>'+one['num']+'</td>'
+			+'<td>'+one['area']+'</td>'
+			+'<td>'+one['snum']+'</td>'
+			+'<td onClick="make_schedule('+'\''+dname+'\')" style="cursor: pointer;">打印排产单</td>'
+			+'</tr>';
+	}
+	
+	_html+='</table>';
+	
+
+	$("#orderlist").empty().html(_html);
+
+}
+
+//data 是 '工序名'=>array(订单id1,订单id2..)
+function make_schedule(dname){
+	
+	layer.load(0, {
+		  shade: [0.1,'#fff']
+	});
+	
+	var _id=all_gx_order[dname];
+	var _data={"ids":_id,"gxname":dname};
+
+	$.ajax({
+		  url: "{:url('Schedule/save_fixed_schedule')}",
+		  data:_data,
+		  dataType:"json",
+		  type:'POST',
+		  success:function(obj){
+			  layer.closeAll();
+			  if(Number(obj.status)==1){
+				  open_schedule(obj.sid);
+			  }else{
+				  layer.msg("无搜索结果");
+			  }
+			  
+		  }
+	  });
+	
+}
+
+function open_schedule(sid){
+	
+	layer.open({
+		  type: 2,
+		  title: '打印排产单',
+		  shadeClose: true,
+		  shade: 0.8,
+		  area: ['1050px', '600px'],
+		  content: "{:url('Schedule/fixed_schedule_print')}?id="+sid
+		}); 
+}
+
+</script>
+
+{include file="public/footer" /}
+</body>
+</html>

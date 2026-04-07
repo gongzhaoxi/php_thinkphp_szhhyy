@@ -1,0 +1,248 @@
+<?php $current='6'; ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>微元生产工序报工管理系统,建材行业生产管理系统,门窗生产管理系统,微元科技,佛山市微元科技有限公司</title>
+{include file="public/header" /}
+</head>
+<body>
+	<div class="baogong_piecework popup-box">
+		<div class="popup-header">
+			<div>计件管理</div>
+		</div>
+		<div class="popup-body" style="padding-top: 40px;">
+			<div class="body-nav">
+				<ul class="body-nav-list">
+					<li class="li-active"><a href="{:url('Salary/salary')}">已对账提成</a></li>
+					<li><a href="{:url('Salary/formula')}">计件公式</a></li>
+					<li><a href="{:url('Salary/handSalary')}">员工提成<br>（手输）</a></li>
+					<li><a href="{:url('Salary/paysalary')}">日对账</a></li>
+				</ul>
+			</div>
+			<div class="body-center">
+				<!-- 员工提成 -->
+				<div class="body-content-box  body-nav-active">
+					<div class="content-header">
+						<div class="content-header-left">
+							<span class="header-left-item unset-margin-top" id="exportWareHousing" onclick="outExcel()"> <img src="__STATIC__/theme/index/img/icon_export_data.png"><span>导出数据</span></span>
+						</div>
+						<form class="content-header-right" id="formd" action="{:url('Salary/salary')}" method="get">
+							<div class="search-box">
+                                <div class="imitate-select warehousing-option">
+                                    <span class="select-txt">是否全部入库</span>
+									<div class="triangle-down"></div>
+									<input type="hidden" name="entry" id="entry">
+                                    <ul data-sign="entry">
+                                        <li data-value="1" {if condition="$get['entry'] eq 1"} data-selected="true" {/if}>是</li>
+                                        <li data-value="0" {if $get['entry']=='0'} data-selected="true" {/if}>否</li>
+                                    </ul>
+                                </div>
+								<input type="text" name="uname" id="uname" autocomplete="off" placeholder="员工账号">
+								<input type="text" name="pdn" id="pdn" autocomplete="off" placeholder="生产流水号">
+								<input type="text" name="salenum" id="salenum" autocomplete="off" placeholder="销售单号">
+								<input type="text" name="year" id="year" autocomplete="off" placeholder="报工日期">
+								<input type="text" name="inyear" id="inyear" autocomplete="off" placeholder="入库日期">
+								<span class="search-btn" id="searchSalary">搜索</span>
+								<div class="show-all-user" id="searchSalaryAll">全显示</div>
+                            </div>
+                            <div class="commission-total-num">
+                                <span>总提成：</span>
+                                <span class="commission-price">{$totalprice}</span>
+                            </div>
+						</form>
+					</div>
+					<div class="content-center unset-padding-top">
+						<div class="content-center-inner">
+							<table class="layui-table parameter-table" border="1" cellpadding="0" cellspacing="0">
+								<thead>
+									<tr>
+										<th>ID</th>
+										<th>员工账号</th>
+										<th>工序</th>
+										<th>生产单号</th>
+										<th>计件数量</th>
+										<th>计件单位</th>
+										<th>总提成（元）</th>
+									</tr>
+								</thead>
+								<tbody>
+									{volist name="list" id="la"}
+									<tr>
+										<td>{$key+1}</td>
+										<td>{$la.uname}</td>
+										<td>{$la.dname}</td>
+										<td data-uname="{$la.uname}" data-sid="{$la.sid}" data-price="{$la.price}" data-jnum="{$la.jnum}"  data-gx="{$la.dname}" data-dw="{$la.unitname}" data-uid="{$la.id}" data-did="{$la.orstatus}" onclick="detail(this)" style="line-height:30px">
+											<div style="padding:5px;cursor: pointer;max-height: 80px; width: 100%; overflow:auto;" title="点击查看详细内容">{$la.ordersn}</div>
+										</td>
+										<td>{$la.jnum}</td>
+										<td>{$la.unitname}</td>
+										<td>{$la.total}</td>
+									</tr>
+									{/volist}
+								</tbody>
+							</table>
+							<div class="page-box">
+								<div class="pages">
+									{$page|raw}
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+    </div>
+	<!-- 查看内容详情 -->
+	<div class="modal-box" id="salaryDetailModal">
+		<div class="modal-content">
+			<div class="modal-header">
+				<div class="modal-header-left">
+					<div class="modal-header-title">
+						<span>&nbsp;</span>
+					</div>
+				</div>
+				<div class="modal-header-right">
+					<img src="__STATIC__/theme/index/img/icon_close_3.png" class="close-modal-btn">
+				</div>
+			</div>
+			<div class="modal-body">
+				<div class="modal-body-middle">
+					<div class="iframe-box">
+						<iframe class="myIframe" id="salaryDetailIframe"  frameborder="0"></iframe>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+<script type="text/javascript">
+	var  layre , laydate;
+	layui.use(['laydate','layer'],function(){
+		layre = layui.layre;
+		laydate = layui.laydate;
+		laydate.render({
+			elem: '#year' //指定元素
+			,range: true
+		});
+		laydate.render({
+			elem: '#inyear' //指定元素
+			,range: true
+		});
+	})
+	// 内容详情
+	function detail(e){
+		var _vent = window.event;
+		_vent.preventDefault();
+		_vent.stopPropagation();
+		var uid = $(e).attr('data-uid');
+		var did = $(e).attr('data-did');
+		var uname = $(e).attr('data-uname');
+		var dw = $(e).attr('data-dw');
+		var gx = $(e).attr('data-gx');
+		/* var allid = $(e).attr('data-id'); */
+		var price = $(e).attr('data-price');
+		var jnum = $(e).attr('data-jnum');
+		var sid = $(e).attr('data-sid');
+		//搜素条件
+		var status = $('#entry').val();
+		var pdn = $('#pdn').val();
+		var salenum = $('#salenum').val();
+		var b_date = $('#year').val();
+		var in_date = $('#inyear').val();
+
+		var title = '员工：' + uname + '【' + gx + '】' + '| 计件单位：' + dw + ' | 计件数量：' + jnum + ' | 单价：' + price;
+		var url = "salarydetail?uid=" + uid + "&did=" + did + "&status=" + status + "&pdn=" + pdn + "&salenum=" + salenum + "&b_date=" + b_date + "&in_date=" + in_date + "&sid=" + sid + "&uname=" + uname +"&gxname="+gx;
+
+		$('#salaryDetailModal').fadeIn();
+		$('#salaryDetailModal').find('.modal-header-title span').html(title);
+		$('#salaryDetailIframe').attr('src',url);
+	}
+	// 数据导出
+	function outExcel(){
+		$('#formd').attr('action',"{:Url('Salary/staffSalary')}");
+		$('#formd').submit();
+		$('#formd').attr('action',"{:Url('Salary/salary')}");
+	}
+	// 搜索
+	$('#searchSalary').click(function(e){
+		e.preventDefault();
+		e.stopPropagation();
+		$('#formd').submit();
+	});
+	// 全部显示
+	$('#searchSalaryAll').click(function(e){
+		e.preventDefault();
+		e.stopPropagation();
+		$('#formd').find('input').val('');
+		$('#formd').submit();
+	});
+</script>
+
+<script type="text/javascript">
+	// 显示当前选中的筛选条件
+	$('#formd').find('.imitate-select').each(function(){
+		var _this = $(this);
+		if(_this.children('ul').children('li[data-selected=true]').html() != null){
+			var tempTxt = _this.children('ul').children('li[data-selected=true]').html();
+			var tempVal = _this.children('ul').children('li[data-selected=true]').attr('data-value');
+			_this.children('.select-txt').attr('data-value',tempVal).html(tempTxt);
+			_this.children('input[type=hidden]').val(tempVal);
+		}
+	})
+	// 关闭弹窗
+	$('.close-modal-btn').click(function () {
+		$('.modal-box').fadeOut();
+	});
+    // 选择搜索条件
+	$('.imitate-select').click(function(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		var _this = $(this);
+		var clickSign = _this.attr('data-sign');
+		$('.imitate-select').removeAttr('data-sign').children('ul').hide();
+		if (clickSign == 'true') {
+			_this.children('ul').hide();
+			_this.removeAttr('data-sign');
+		} else {
+			_this.children('ul').show();
+			_this.attr('data-sign', 'true');
+		}
+	});
+	$(window).click(function(){
+		
+		var elem = event.srcElement ? event.srcElement : event.target;
+		while (elem) { //循环判断至跟节点，防止点击的是div子元素 
+			if (elem.id && elem.id == 'orderScreenBox') {
+				return;
+			}
+			if($(elem).hasClass('modal-content')){
+				return;
+			}
+			elem = elem.parentNode;
+		}
+		$('.modal-box').fadeOut();
+		$('.imitate-select').removeAttr('data-sign').children('ul').hide();
+		$('.content-header-left').removeAttr('data-click').css({
+			top: '0',
+		}).children('.filter-orders').removeClass('filter-orders-active');
+		$('.content-header-left').siblings('.order-screen-box').css({
+			height: '0',
+			overflow: 'hidden'
+		})
+	});
+	$('.imitate-select ul').delegate('li','click',function(e){
+		e.preventDefault();
+		e.stopPropagation();
+		var _this = $(this);
+		var tempTxt = _this.html();
+		var _thisValue = _this.attr('data-value');
+		_this.parent().parent().children('.select-txt').attr('data-value',_thisValue).html(tempTxt);
+		_this.parent().hide();
+		_this.parent().parent().removeAttr('data-sign');
+		var _clickTarget = _this.parent().attr('data-sign');
+		_this.parent().siblings('input[type=hidden]').val(_thisValue);
+	});
+	
+</script>
+</html>

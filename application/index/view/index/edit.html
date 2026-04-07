@@ -1,0 +1,372 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD HTML 4.01 Strict//EN' 'http://www.w3.org/TR/html4/strict.dtd'>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>编辑</title>
+{include file="public/header" /}
+<style>
+	#gyline,#hidegy,#reloadgy{
+		display: none;
+	}
+	.hidegy-text{
+		width: 400px;
+		line-height: 30px;
+		text-align: center;
+	}
+	#technologyModal{
+		background-color: rgba(0,0,0,0.2);
+	}
+	#technologyModal .modal-content{
+		width: 90%;
+		height: 500px;
+	}
+	#technologyModal .modal-content .modal-header{
+		border-bottom: 1px solid #2b62ae;
+	}
+	#technologyModal .modal-content .modal-header .modal-header-title{
+		height: 40px;
+		line-height: 40px;
+		font-size: 14px;
+	}
+	#technologyModal .modal-content .modal-body{
+		height: 90%;
+	}
+	#technologyModal .modal-content .modal-body .modal-body-middle{
+		padding: 0 15px;
+		width: 100%;
+		height: 100%;
+		margin: 0 auto;
+		overflow-y: auto;
+	}
+	.technology-list{
+		display: flex;
+		flex-wrap: wrap;
+	}
+	.technology-list>li{
+		width: 33.33%;
+		display: flex;
+		justify-content: start;
+		align-items: center;
+		line-height: 30px;
+		font-size: 14px;
+	}
+	.technology-list li .imitate-checkbox-small{
+		margin-right: 5px;
+	}
+</style>
+</head>
+<body class="add_order_modal">
+	<div class="modal-body">
+		<div class="modal-body-middle">
+			<div class="add-order-box">
+				<form action="" method="post">
+					<input type="hidden" value="{$list.id}" name="id" id="orderid"/>
+					<ul class="add-order-list">
+						<li>
+							<div class="group-left"><span>物料工序：</span></div>
+							<div class="group-right">
+								<div class="imitate-select">
+									<span class="select-txt" data-value="0">默认工序</span>
+									<span class="triangle-down"></span>
+									<input type="hidden" id="gxs">
+									<ul data-sign="gxs">
+										<li data-value="0">请选择物料工序</li>
+										{volist name="gox" id="sl"}
+										<li data-name="rl" data-value="{$sl.id}">{$sl.xname}</li>
+										{/volist}
+									</ul>
+								</div>
+								<div class="hidegy-text" id="hidegy"></div>
+								{if $new_gy eq 1}
+								<div class="customize-btn" id="showgy" onclick="showgy();">自定义</div>
+								<div class="customize-btn" id="reloadgy" onclick="reloadgy();">取消重选</div>
+								{/if}
+							</div>
+						</li>
+						{if $list['id']>0}
+						<li style="line-height:25px;text-align:left;">
+							<div class="group-left"><span></span></div>
+							<div class="group-right">
+								<input id="update_same" value="0" type="hidden"/>
+								<div class="imitate-checkbox-all">
+									<span></span>
+								</div>
+								<span style="margin-left: 5px;">更新同一销售单编码的交货日期</span>
+							</div>
+						</li>
+						{/if}
+						{php}
+							$time_field=array();
+							foreach($qrcodeList as $value){
+								if($value['type']=='date'){
+									$time_field[]=$value['fieldname'];
+								}
+							}
+						{/php}
+						{volist name="qrcodeList" id="vo"}
+						<li>
+							<div class="group-left"><span>{$vo['explains']}：</span></div>
+							<div class="group-right">
+								<input type="text" autocomplete="off" name="{$key}" id="{$key}" value="{$list[$key]}" class="unaminput" />
+							</div>
+						</li>
+							{php}
+									if(in_array($key,$time_field)){
+							{/php}
+								<script type="text/javascript">
+									var layer, laydate;
+									layui.use(['layer','laydate'],function(){
+										laydate = layui.laydate;
+										layer = layui.layer;
+										laydate.render({
+											elem: '#{$key}'
+										});
+									})
+								</script>
+							{php}
+									}
+							{/php}
+						{/volist}
+						{if $list['id']>0}
+						<li>
+							<div class="group-left"><span>创单日期：</span></div>
+							<div class="group-right">
+								<?php echo (date("Y-m-d H:i:s",$list['addtime'])); ?>
+							</div>
+						</li>
+						{/if}
+					</ul>
+				</form>
+			</div>
+		</div>
+		<div class="modal-body-bottom">
+			<div form-type="submit" data-id="{$list.id}" id="saveform" >确认添加</div>
+		</div>
+	</div>
+	<div class="modal-box" id="technologyModal">
+		<div class="modal-content">
+			<div class="modal-header">
+				<div class="modal-header-left">
+					<div class="modal-header-title">
+						<span>自定义工艺路线</span>
+					</div>
+				</div>
+				<div class="modal-header-right">
+					<img src="__STATIC__/theme/index/img/icon_close_3.png" class="close-modal-btn">
+				</div>
+			</div>
+			<div class="modal-body">
+				<div class="modal-body-middle">
+					<div class="technology-box">
+						<ul class="technology-list">
+							{volist name="gx_line" id="vo"}
+							<li>
+								<div class="imitate-checkbox-small" data-value="{$vo['id']}" {if $vo['checked']=='checked'}data-sign="true"{/if}>
+									<span style="{if $vo['checked']=='checked'}display:block{else}display:none{/if}"></span>
+								</div>
+								<div class="order-txt">{$vo['title']}</div>
+							</li>
+							{/volist}
+						</ul>
+						<div style="margin: 10px 0;font-size: 14px;">
+							周期:<input class="d_line_day" style="width: 30px;height: 20px;text-align: center;margin: 0 10px;padding: 0;" id="day" name="day" value=""> (可不填,自动计算)
+						</div>
+						<div onclick="receiver();" style="cursor: pointer;width: 120px;line-height: 40px;text-align: center;background-color: #133ac6;font-size:14px;margin: 0 auto;color: #fff;">
+							确定工艺路线
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+<script type="text/javascript">
+	$('.close-modal-btn').click(function(){
+		$('#technologyModal').fadeOut();
+	})
+	// 下拉列表选择
+	$('.imitate-select').click(function(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		var _this = $(this);
+		var clickSign = _this.attr('data-sign');
+		$('.imitate-select').removeAttr('data-sign').children('ul').hide();
+		if (clickSign == 'true') {
+			_this.children('ul').hide();
+			_this.removeAttr('data-sign');
+		} else {
+			_this.children('ul').show();
+			_this.attr('data-sign', 'true');
+		}
+	});
+	$(window).click(function(){
+		$('.imitate-select').removeAttr('data-sign').children('ul').hide();
+	})
+	$('.imitate-select ul').delegate('li','click',function(e){
+		e.preventDefault();
+		e.stopPropagation();
+		var _this = $(this);
+		var tempTxt = _this.html();
+		var _thisValue = _this.attr('data-value');
+		_this.parent().parent().children('.select-txt').attr('data-value',_thisValue).html(tempTxt);
+		_this.parent().hide();
+		_this.parent().parent().removeAttr('data-sign');
+		var _clickTarget = _this.parent().attr('data-sign');
+		switch (_clickTarget) {
+			case 'gxs':	// 物料工序
+				_this.parent().siblings('input[type=hidden]').val(_thisValue);
+				break;
+			default:
+				break;
+		}
+	});
+
+	// 工艺路线选择
+	$('.technology-list').delegate('li .imitate-checkbox-small', 'click', function(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		let _this = $(this);
+		let clickSign = _this.attr('data-sign');
+		if (clickSign == 'true') {
+			_this.removeAttr('data-sign');
+			_this.children('span').hide();
+		} else {
+			_this.children('span').show();
+			_this.attr('data-sign', 'true');
+		}
+	});
+	//  更新同一销售单编码的交货日期				
+	$('.imitate-checkbox-all').click(function(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		let _this = $(this);
+		let clickSign = _this.attr('data-sign');
+		if (clickSign == 'true') {
+			_this.removeAttr('data-sign');
+			_this.children('span').hide();
+			_this.siblings('#update_same').val(0);
+		} else {
+			_this.children('span').show();
+			_this.attr('data-sign', 'true');
+			_this.siblings('#update_same').val(1);
+		}
+	});
+
+	
+	var lines=new Array();
+	var doclass_day="";
+	// 清空自定义内容
+	function reloadgy(){
+		$("#hidegy").empty().hide();
+		$("#gxs").show();
+		$("#showgy").show().siblings('.imitate-select').css('display','flex');
+		$("#reloadgy").hide();
+	}
+	// 显示自定义内容
+	function showgy(){
+		$('#technologyModal').fadeIn();
+	}
+	// 确定选择的工艺路线
+	function receiver(){
+		lines=new Array();
+		var line_title=new Array();
+		var str='';
+		$('.technology-list').find('.imitate-checkbox-small').each(function(){
+			if($(this).attr("data-sign")=='true'){
+				lines.push($(this).attr('data-value'));
+				line_title.push($(this).siblings('.order-txt').html());
+			}
+		})
+		var set_day=$(".technology-box").find("input#day").val();
+			doclass_day=set_day;//保存用户设置的当前工艺线的周期
+		
+		if(line_title.length<=0){
+			layer.msg("请选择工艺路线");
+			return;
+		}
+		str = line_title.join("+");
+		$("#hidegy").html(str).show();
+		$("#gxs").hide();
+		$("#showgy").hide().siblings('.imitate-select').hide();
+		$("#reloadgy").css('display','flex');
+		layer.closeAll();
+		// 关闭内容
+		$('#technologyModal').hide();
+		// 重置数据
+		$('.technology-list').find('.imitate-checkbox-small').removeAttr('data-sign').children('span').hide();
+	}
+  
+	//防止重复提交
+	var isLock=false;
+
+	$('#saveform').click(function(){
+		if(isLock){
+			return;
+		}
+		var id = $("#orderid").val();
+		var ordernum = $('#ordernum').val();
+		var uname = $('#uname').val();
+		var ordertime = $('#ordertime').val();
+		var endtime = $('#endtime').val();
+		var gid = $('#gxs').val();//物料系列
+	
+		var pname = $('#pname').val();
+		if(ordertime==''){
+			layer.msg('请选择下单时间');
+			return false;
+		}
+		if(endtime==''){
+			layer.msg('请选择交货时间');
+			return false;
+		}
+		if(uname==''){
+		layer.msg('请输入客户名');
+		return false;
+		}
+	
+		var update_same = $("#update_same").val();
+		var data = new Object();
+
+		data['id']=id;
+		data['ordernum']= ordernum;
+		data['uname']=uname;
+		data['ordertime']=ordertime;
+		data['endtime']=endtime;
+		data['gid']=gid;
+		data['update_same']=update_same;
+		data['gy_lines']=lines.join(",");
+		data['doclass_day']=doclass_day;
+		
+		$(".unaminput").each(function(){
+			var _name=$(this).attr("name");
+			var _val=$(this).val();
+			data[_name]=_val;
+		})
+		 
+ 		isLock=true;
+		layer.load(0, {
+			  shade: [0.1,'#fff']
+		});
+		$.ajax({
+			url: "{:Url('Index/editorder')}",
+			data: data,
+			dataType: 'json',
+			type:'post',
+			success:function(res){
+				layer.closeAll();
+				if(res.code==0){
+					layer.msg('操作成功');
+					var index=parent.layer.getFrameIndex(window.name);
+					setTimeout(function(){
+						parent.layer.close(index);
+						window.parent.location.reload();
+					},2000)
+				}else{
+					layer.msg(res.msg);
+				}
+				isLock=false;
+			}
+		})
+	})
+</script>
+</body>
+</html>

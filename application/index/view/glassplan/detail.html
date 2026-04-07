@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+        <title>微元生产工序报工管理系统,建材行业生产管理系统,门窗生产管理系统,微元科技,佛山市微元科技有限公司</title>
+		{include file="public/header" /}
+    </head>
+    <body class="glassplan_modal">
+        <div class="modal-body">
+            <form class="layui-form" id='form1'>
+            <div class="title">
+                <span>批次号:  {$title->batch}</span>
+                <span>订购数量:  {$title.bcount}</span>
+                <span>已回厂:  {$title.back_count}</span>
+                <span>包含生产单数: {$title.count}</span>
+                <span>提交时间:  {$title.addtime}</span>
+            </div>
+            <div class="title-button">
+                {volist name='button' id='v'}
+                <span class="{if condition="$v['back_count'] neq 0"}part{else/}dange{/if}">{$v.product_no}: 订{$v.book_count} | 回{$v.back_count}</span>
+                {/volist}
+            </div>
+            <div class="select-box">
+                <div class="imitate-select">
+                    <span class="select-txt">选择销售单号</span>
+                    <span class="triangle-down"></span>
+                    <input type="hidden" name="sales_number">
+                    <ul data-sign="sales_number">
+                        <li data-value="">默认</li>
+                        {volist name='filter_sales' id='v'}
+                        <li data-value='{$v}' {if condition="$search['sales_number'] eq $v"}data-selected="true"{/if}>{$v}</li>
+                        {/volist}
+                    </ul>
+                </div>
+                <div class="imitate-select">
+                    <span class="select-txt">选择生产单号</span>
+                    <span class="triangle-down"></span>
+                    <input type="hidden" name="product_no">
+                    <ul data-sign="product_no">
+                        <li data-value="">默认</li>
+                        {volist name='filter_product' id='v'}
+                        <li data-value='{$v}' {if condition="$search['product_no'] eq $v"}data-selected="true"{/if}>{$v}</li>
+                        {/volist}
+                    </ul>
+                </div>
+                <div class="imitate-select">
+                    <span class="select-txt">选择状态</span>
+                    <span class="triangle-down"></span>
+                    <input type="hidden" name="status">
+                    <ul data-sign="status">
+                        <li data-value="">默认</li>
+                        <li data-value='1' {if condition="$search['status'] eq 1"}data-selected="true"{/if}>未回</li>
+                        <li data-value='2' {if condition="$search['status'] eq 2"}data-selected="true"{/if}>已回部分</li>
+                        <li data-value='3' {if condition="$search['status'] eq 3"}data-selected="true"{/if}>已回</li>
+                    </ul>
+                </div>
+            </div>
+                <table class="layui-table">
+                    <thead>
+                        <tr>
+                            {volist name="field_name" id='v'}
+                            <th>{$v}</th>
+                            {/volist}
+                        </tr> 
+                    </thead>
+                    <tbody>
+                        {php}for($z=0;$z<count($data);$z++){{/php}
+                        <tr class="{if condition="$data[$z]['status_text'] eq '已回'"}all{elseif condition="$data[$z]['status_text'] eq '已回部分'"}part{else/}no{/if}">
+                            {volist name="field" id='v'}
+                            <td>{$data[$z][$v]}</td>
+                            {/volist}
+                        </tr> 
+                        {php}}{/php}
+                    </tbody>
+                </table>
+            </form>
+        </div>	
+    </body>
+    <script>
+        // 显示当前选中的筛选条件
+		$('#form1').find('.imitate-select').each(function(){
+			var _this = $(this);
+			if(_this.children('ul').children('li[data-selected=true]')){
+				var tempTxt = _this.children('ul').children('li[data-selected=true]').html();
+				var tempVal = _this.children('ul').children('li[data-selected=true]').attr('data-value');
+				_this.children('.select-txt').attr('data-value',tempVal).html(tempTxt);
+				_this.children('input[type=hidden]').val(tempVal);
+			}
+		})
+        // 选择订单排序
+		$('.imitate-select').click(function(e) {
+			e.preventDefault();
+			e.stopPropagation();
+			var _this = $(this);
+			var clickSign = _this.attr('data-sign');
+			$('.imitate-select').removeAttr('data-sign').children('ul').hide();
+			if (clickSign == 'true') {
+				_this.children('ul').hide();
+				_this.removeAttr('data-sign');
+			} else {
+				_this.children('ul').show();
+				_this.attr('data-sign', 'true');
+			}
+		});
+		$(window).click(function(){
+			var elem = event.srcElement ? event.srcElement : event.target;
+			while (elem) { //循环判断至跟节点，防止点击的是div子元素 
+				if (elem.id && elem.id == 'orderScreenBox') {
+					return;
+				}
+                if($(elem).hasClass('modal-content')){
+                    return;
+                }
+				elem = elem.parentNode;
+			}
+            $('.modal-box').fadeOut();
+			$('.imitate-select').removeAttr('data-sign').children('ul').hide();
+			$('.content-header-left').removeAttr('data-click').css({
+				top: '0',
+			}).children('.filter-orders').removeClass('filter-orders-active');
+			$('.content-header-left').siblings('.order-screen-box').css({
+				height: '0',
+				overflow: 'hidden'
+			})
+		});
+		$('.imitate-select ul').delegate('li','click',function(e){
+			e.preventDefault();
+			e.stopPropagation();
+			var _this = $(this);
+			var tempTxt = _this.html();
+			var _thisValue = _this.attr('data-value');
+			_this.parent().parent().children('.select-txt').attr('data-value',_thisValue).html(tempTxt);
+			_this.parent().hide();
+			_this.parent().parent().removeAttr('data-sign');
+			_this.parent().siblings('input[type=hidden]').val(_thisValue);
+            var _clickTarget = _this.parent().attr('data-sign');
+            if(_clickTarget == 'sales_number' || _clickTarget == 'product_no' || _clickTarget == 'status' ){
+                $('#form1').submit();
+            }
+		});
+    </script>
+</html>

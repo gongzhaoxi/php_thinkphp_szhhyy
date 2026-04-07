@@ -1,0 +1,60 @@
+{include file="public/header"/}
+<link rel="stylesheet" href="__STATIC__/css/select.css">
+<div class="layui-fluid">
+	<div class="layui-row">
+		<form class="layui-form">
+			<div class="layui-form-item" >
+				<label class="layui-form-label">异常工序</label>
+				<div class="layui-input-block" >
+					<select name="order_process_id" required  lay-verify="required" >
+						<option value="">请选择</option>
+						{volist name="process" id="vo"}
+						<option {if condition="$vo['id'] == $model['order_process_id']"}selected{/if} value="{$vo['id']}">{$vo['process_name']}</option>
+						{/volist}
+					</select>
+				</div>
+			</div>	
+			<div class="layui-form-item" >
+				<label class="layui-form-label">异常分类</label>
+				<div class="layui-input-block" >
+					<select name="type" required  lay-verify="required">
+						<option value="">请选择</option>
+						{volist name="feedback_type" id="vo"}
+						<option {if condition="$vo['name'] == $model['type']"}selected{/if} value="{$vo['name']}">{$vo['name']}</option>
+						{/volist}
+					</select>
+				</div>
+			</div>	
+			<div class="layui-form-item">
+				<label for="name" class="layui-form-label">
+					备注
+				</label>
+				<div class="layui-input-block">
+					<input type="text" id="remark" name="remark" value="{$model.remark}" required="" lay-verify="required" class="layui-input" >
+				</div>
+			</div>
+			
+			<div class="layui-form-item">
+				<label for="L_repass" class="layui-form-label"></label>
+				<input name="id" type="hidden" value="{$model.id}"/>
+				<button class="layui-btn" lay-filter="save" lay-submit="">保存</button>
+			</div>
+		</form>
+	</div>
+</div>
+<script>
+layui.config({
+	base: "/static/js/",
+}).extend({
+	select: "select",
+}).use(['form','select'],function() {
+	$ = layui.jquery;
+	form = layui.form,select = layui.select;
+	form.on('submit(save)',function(data) {
+		ajaxform("{:url('edit')}",data.field);
+		return false;
+	});  
+});
+</script>
+</body>
+</html>

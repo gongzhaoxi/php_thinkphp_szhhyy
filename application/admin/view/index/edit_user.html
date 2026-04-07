@@ -1,0 +1,193 @@
+{include file="public/header"/}
+<style>
+    .layui-form-label{ width: 90px;}
+</style>
+        <div class="layui-fluid">
+            <div class="layui-row">
+                <form class="layui-form">
+                    <div class="layui-form-item">
+                        <label for="username" class="layui-form-label">
+                            用户登录名
+                        </label>
+                        <div class="layui-input-inline">
+                            <input type="text" id="login_name" name="login_name" required="" lay-verify="required" class="layui-input" value="{$res.login_name}" readonly="readonly" style="background: #d6d6d6;">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label for="username" class="layui-form-label">
+                            密码
+                        </label>
+                        <div class="layui-input-inline">
+                            <input type="text" id="login_password" name="login_password" class="layui-input" placeholder="不修改则留空">
+                        </div>
+                        <div class="layui-form-mid layui-word-aux">
+                            <span class="x-red">*</span>不能为空
+                        </div>
+                    </div>
+                    <div style="display: none;">
+                    <div class="layui-form-item">
+                        <label for="phone" class="layui-form-label">
+                            姓名
+                        </label>
+                        <div class="layui-input-inline">
+                            <input type="text" id="uname" name="uname" required="" lay-verify="required" class="layui-input" value="{$res.uname}">
+                        </div>
+                        <div class="layui-form-mid layui-word-aux">
+                            <span class="x-red">*</span>不能为空
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label for="username" class="layui-form-label">
+                            电话
+                        </label>
+                        <div class="layui-input-inline">
+                            <input type="text" id="phone" name="phone" class="layui-input" required="" lay-verify="phone" value="{$res.phone}">
+                        </div>
+                        <div class="layui-form-mid layui-word-aux">
+                            <span class="x-red">*</span>不能为空
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label for="username" class="layui-form-label">
+                            所属角色
+                        </label>
+                        <div class="layui-input-inline">
+                            <select name='depart' required="" lay-verify="required" lay-filter="departd">
+                                <option value=''>请选择所属角色</option>
+                               {volist name='role' id='v'}
+                                <option value='{$v.id}' {if condition="$v['id'] eq $res['depart']"}selected{/if}>{$v.name}</option>
+                                {/volist}
+                            </select>
+                        </div>
+                        <div class="layui-form-mid layui-word-aux">
+                            <span class="x-red">*</span>不能为空
+                        </div>
+                    </div>
+                    <div class="layui-form-item" id="bind-dealer-box" style="{if condition="$res['depart'] neq 2"}display: none;{else/}display:block{/if}" id="bind-dealer-box">
+                        <label class="layui-form-label">
+                            绑定经销商
+                        </label>
+                        <div class="layui-input-inline">
+                            <select name='bind_dealer' lay-filter="select_dealer" lay-search="">
+                                <option value=''>请选择绑定的经销商</option>
+                                {volist name='dealer' id='v'}
+                                <option value='{$v.id}' {if condition="$res['bind_dealer'] eq $v['id']"}selected{/if}>{$v.name}</option>
+                                {/volist}
+                            </select>
+                        </div>
+                    </div>
+                     <div class="layui-form-item">
+                        <label for="phone" class="layui-form-label">
+                            职位
+                        </label>
+                        <div class="layui-input-inline">
+                            <input type="text" id="job" name="job" class="layui-input" value="{$res.job}">
+                        </div>
+                        <div class="layui-form-mid layui-word-aux">
+<!--                            <span class="x-red">*</span>不能为空-->
+                        </div>
+                    </div>
+                     
+                    <div class="layui-form-item">
+                        <label for="username" class="layui-form-label">
+                            是否禁用
+                        </label>
+                        <div class="layui-input-inline">
+                            <select name='is_disable'>
+                                <option value='0' {if condition="$res['is_disable'] eq '0'"}selected{/if}>否</option>
+                                <option value='1' {if condition="$res['is_disable'] eq '1'"}selected{/if}>是</option>
+                            </select>
+                        </div>
+                        <div class="layui-form-mid layui-word-aux">
+                            
+                        </div>
+                    </div>
+                   
+                    <div class="layui-form-item">
+                        <label for="username" class="layui-form-label">
+                            学历
+                        </label>
+                        <div class="layui-input-inline">
+                            <select name='teach'>
+                                <option value=''>请选择学历</option>
+                                <option value='本科'>本科</option>
+                                <option value='大专'>大专</option>
+                            </select>
+                        </div>
+                        
+                    </div>
+                    <div class="layui-form-item">
+                        <label for="phone" class="layui-form-label">
+                            入职时间
+                        </label>
+                        <div class="layui-input-inline">
+                            <input type="text" id="test" name="join_time" class="layui-input" value="{$res.join_time}">
+                        </div>
+                        
+                    </div>
+                    <div class="layui-form-item">
+                        <label for="phone" class="layui-form-label">
+                            紧急联系人姓名
+                        </label>
+                        <div class="layui-input-inline">
+                            <input type="text" id="warm_name" name="warm_name" class="layui-input" value="{$res.warm_name}">
+                        </div>
+                        
+                    </div>
+                    <div class="layui-form-item">
+                        <label for="phone" class="layui-form-label">
+                            紧急联系人电话
+                        </label>
+                        <div class="layui-input-inline">
+                            <input type="text" id="warm_phone" name="warm_phone" class="layui-input" value="{$res.warm_phone}">
+                        </div>
+                        
+                    </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label for="L_repass" class="layui-form-label"></label>
+                        <input name="id" type="hidden" value="{$res.id}"/>
+                        <button class="layui-btn" lay-filter="add" lay-submit="">保存</button>
+                    </div>
+        </form>
+        </div>
+        </div>
+        <script>layui.use(['laydate','form'],
+            function() {
+                $ = layui.jquery;
+                var form = layui.form;
+                var laydate = layui.laydate;
+                
+                //执行一个laydate实例
+                laydate.render({
+                    elem: '#test' //指定元素
+                });
+
+                form.on('select(departd)',function(data){
+                    if(data.value == 2){
+                        $('#bind-dealer-box').css('display','block');
+                    }else{
+                        $('#bind-dealer-box').css('display','none');
+                    }
+                });
+
+                form.on('select(select_dealer)',function(data){
+                    $.post("{:url('findDealer')}",{id:data.value},function (data) {
+                        var obj = data.data;
+                        $('#uname').val(obj.name);
+                        $('#phone').val(obj.contact);
+                    },'json');
+                });
+
+                //监听提交
+                form.on('submit(add)',
+                function(data) {
+                    ajaxform("{:url('user/editUser')}",data.field);
+                    return false;
+                });
+                
+            });</script>
+
+    </body>
+
+</html>

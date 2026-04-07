@@ -1,0 +1,197 @@
+<?php if (!defined('THINK_PATH')) exit(); /*a:2:{s:105:"/mnt/datadisk0/www/wwwroot/wchuanghua2.ecloudm.com/public/../application/admin/view/production/index.html";i:1769441963;s:92:"/mnt/datadisk0/www/wwwroot/wchuanghua2.ecloudm.com/application/admin/view/public/header.html";i:1635496794;}*/ ?>
+<!DOCTYPE html>
+<html class="x-admin-sm">
+    <head>
+        <meta charset="UTF-8">
+        <title>深圳恒辉</title>
+        <meta name="renderer" content="webkit|ie-comp|ie-stand">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<!--        <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />-->
+        <meta http-equiv="Cache-Control" content="no-siteapp" />
+        <link rel="stylesheet" href="/static/css/font.css">
+        <link rel="stylesheet" href="/static/css/xadmin.css">
+        <!-- <link rel="stylesheet" href="/static/css/theme5.css"> -->
+        <script src="/static/lib/layui/layui.js" charset="utf-8"></script>
+        <script type="text/javascript" src="/static/js/xadmin.js"></script> 
+        <script type="text/javascript" src="/static/js/erp.js"></script>       
+        <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+        <!--[if lt IE 9]>
+          <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+          <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+        <script>
+            // 是否开启刷新记忆tab功能
+             var is_remember = false;
+        </script>
+    </head>
+<body>
+	<div class="layui-card">
+		<div class="layui-card-body">
+			<div class="layui-tab">
+				<ul class="layui-tab-title">
+					<a href="<?php echo url('index'); ?>?production_status=0"><li class="<?php if($production_status == 0): ?>layui-this<?php endif; ?>">未排产订单</li></a>
+					<a href="<?php echo url('index'); ?>?production_status=1"><li class="<?php if($production_status == 1): ?>layui-this<?php endif; ?>">已排产订单</li></a>
+				</ul>
+			</div>
+		</div>
+	
+		<div class="layui-card-body">
+			<form class="layui-form" action="">
+				<div class=" layui-inline">
+					<input type="text" id="number" name="number" autocomplete="off" placeholder="订单编号" value="" required=""  class="layui-input" >
+				</div>
+				<?php if($production_status == 1): ?>
+				<div class=" layui-inline">
+					<input type="text" id="production_date" name="production_date" autocomplete="off" placeholder="排产日期" value="" required=""  class="layui-input" >
+				</div>
+				<?php endif; ?>
+				<div class="layui-inline">
+					<button class="layui-btn" lay-submit lay-filter="query"><i class="layui-icon layui-icon-search"></i>查询</button>
+				</div>
+				<div class="layui-inline">
+					<button type="button" onclick="location.reload()"  class="layui-btn  layui-btn-primary"><i class="layui-icon">&#xe9aa;</i>刷新</button>
+				</div>
+			</form>
+			<table id="dataTable" lay-filter="dataTable"></table>
+		</div>
+	</div>
+	<script type="text/html" id="toolbar">
+		<?php if($production_status == 0): ?><button class="layui-btn layui-btn-normal layui-btn-sm" lay-event="add"><i class="layui-icon layui-icon-add-1"></i>下达生产-智能推荐流程</button><?php endif; if($production_status == 1): ?>
+			<button class="layui-btn layui-btn-danger layui-btn-sm" lay-event="batchRemove"><i class="layui-icon layui-icon-delete"></i>撤消排产</button>
+			<button class="layui-btn layui-btn-normal layui-btn-sm" lay-event="process"><i class="layui-icon layui-icon-add-1"></i>快速报工</button>
+			<button class="layui-btn layui-btn-normal layui-btn-sm" lay-event="edit"><i class="layui-icon layui-icon-add-1"></i>修改工序</button>
+		<?php endif; ?>
+		
+	</script>
+	<script type="text/html" id="options">
+		<button class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit"><i class="layui-icon layui-icon-edit"></i></button>
+		<button class="layui-btn layui-btn-danger layui-btn-xs" lay-event="remove"><i class="layui-icon layui-icon-delete"></i></button>
+	</script>	
+    </body>
+    <script>
+	layui.use(['table', 'form', 'element', 'jquery','laydate'], function() {
+		let table = layui.table;
+		let form = layui.form;
+		let $ = layui.jquery;	
+		let laydate = layui.laydate;
+		
+		laydate.render({
+			elem: '#production_date',
+			type: 'date',
+			trigger: 'click',
+			range: '至',
+			zIndex: 99999999
+		});
+
+	
+		table.render({
+			elem: '#dataTable',
+			url: '<?php echo url('index'); ?>?production_status=<?php echo $production_status; ?>',
+			page: true,
+			limit: 20,
+			limits:[20,40,60,80,100],
+			height:'full-140',	
+			cols: [[
+				{type: 'checkbox'},
+				{field: 'number',title: '订单编号',align: 'center'},
+				{field: 'end_time',title: '交货时间',align: 'center'},
+				<?php if($production_status == 1): ?>{field: 'production_date',title: '排产日期',align: 'center'},<?php endif; ?>
+				{field: 'dealer',title: '经销商',align: 'center'},
+				{field: 'send_address',title: '送货地址',align: 'center'},
+				{field: 'area',title: '面积',align: 'center'},
+				{field: 'count',title: '数量',align: 'center'},
+				//{title: '操作',toolbar: '#options',align: 'center',width: 130,unresize:true}
+			]],
+			cellMinWidth: 100,
+			//skin: 'line',
+			toolbar: '#toolbar',
+			defaultToolbar: false
+		});
+
+		table.on('sort(dataTable)', function(obj){
+			table.reload('dataTable', {
+				initSort: obj,
+				where: {
+					sort: obj.field,
+					order: obj.type
+				}
+			},true);
+		});
+
+		table.on('tool(dataTable)', function(obj) {
+			if (obj.event === 'remove') {
+				layer.confirm('确定要删除这些工序？',
+					function(index) {
+						ajaxform("<?php echo url('del'); ?>",{ids:[obj.data['id']]},1);
+					}
+				);				
+				
+			} else if (obj.event === 'edit') {
+				xadmin.open('下达生产-智能推荐流程','<?php echo url('edit'); ?>?id='+obj.data['id'],$(window).width()*0.8, 650);
+			}
+		});
+
+		table.on('toolbar(dataTable)', function(obj) {
+			if (obj.event === 'refresh') {
+				table.reload('dataTable');
+			}else if (obj.event === 'batchRemove') {
+				var checkStatus = table.checkStatus('dataTable');
+				if(checkStatus.data.length == 0){
+					layer.msg('请选择要操作的内容');
+					return false;
+				}
+				var ids = [];
+				for(var i in checkStatus.data) {
+					ids.push(checkStatus.data[i].id);
+				}
+				layer.confirm('确定要撤消排产？',
+					function(index) {
+						ajaxform("<?php echo url('del'); ?>",{ids:ids},1);
+					}
+				);
+			}else if (obj.event === 'add') {
+				var checkStatus = table.checkStatus('dataTable');
+				if(checkStatus.data.length == 0){
+					layer.msg('请选择要操作的内容');
+					return false;
+				}
+				if(checkStatus.data.length > 1){
+					layer.msg('只能选择单个数据编辑');
+					return false;
+				}
+				xadmin.open('下达生产-智能推荐流程','<?php echo url('add'); ?>?id='+checkStatus.data[0].id,$(window).width()*0.95, $(window).height()*0.95);
+			}else if (obj.event === 'edit') {
+				var checkStatus = table.checkStatus('dataTable');
+				if(checkStatus.data.length == 0){
+					layer.msg('请选择要操作的内容');
+					return false;
+				}
+				if(checkStatus.data.length > 1){
+					layer.msg('只能选择单个数据编辑');
+					return false;
+				}
+				xadmin.open('修改工序','<?php echo url('edit'); ?>?id='+checkStatus.data[0].id,$(window).width()*0.95, $(window).height()*0.95);
+			}else if (obj.event === 'process') {
+				var checkStatus = table.checkStatus('dataTable');
+				if(checkStatus.data.length == 0){
+					layer.msg('请选择要操作的内容');
+					return false;
+				}
+				if(checkStatus.data.length > 1){
+					layer.msg('只能选择单个数据编辑');
+					return false;
+				}
+				xadmin.open('快速报工','<?php echo url('process'); ?>?order_id='+checkStatus.data[0].id,$(window).width()*0.95, $(window).height()*0.95);
+			}
+		});
+
+		form.on('submit(query)', function(data) {
+			table.reload('dataTable', {
+				where: data.field,
+				page:{curr: 1}
+			})
+			return false;
+		});
+	})
+</script>
+</html>

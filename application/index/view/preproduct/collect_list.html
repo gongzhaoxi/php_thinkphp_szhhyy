@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+        <title>微元生产工序报工管理系统,建材行业生产管理系统,门窗生产管理系统,微元科技,佛山市微元科技有限公司</title>
+        {include file="public/header" /}
+        <script src="__STATIC__index/js/erp.js"></script>
+    </head>
+<body class="glassplan_modal noschedule_modal">
+    <div class="modal-body">
+        <form class="layui-form" id="form1">
+            <div class="select-box">
+                <div class="layui-input-inline layui-show-xs-block" style="width: 180px">
+                    <input name="addtime" id="addtime" type="text" placeholder="排产时间" class="layui-input" value="{$search.addtime}" autocomplete="off"/>
+                 </div>
+                 <div class="layui-input-inline layui-show-xs-block" style="width: 140px">
+                     <input name="ordernum" type="text" placeholder="销售单号" class="layui-input" value="{$search.ordernum}"/>
+                 </div>
+                 <div class="layui-input-inline layui-show-xs-block" style="width: 140px">
+                     <input name="unique_sn" type="text" placeholder="生产单号" class="layui-input" value="{$search.unique_sn}"/>
+                 </div>
+                 <div class="layui-input-inline layui-show-xs-block">
+                     <button class="layui-btn layui-btn-normal layui-btn-sm" lay-submit="" lay-filter="sreach" style="background-color: #284d9d">
+                         筛选
+                     </button>
+                 </div>
+                 <div class="layui-input-inline layui-show-xs-block">
+                     <button class="layui-btn layui-btn-normal layui-btn-sm" id="export_filter" type="button">
+                         导出所筛选的数据
+                     </button>
+                 </div>
+                 <div class="layui-input-inline layui-show-xs-block">
+                     <button class="layui-btn layui-btn-normal layui-btn-sm" id="review_filter" type="button">
+                         预览导出数据
+                     </button>
+                 </div>
+            </div>
+            <table class="layui-table">
+                <thead>
+                    <tr>
+                        <th>序号</th>
+                        <th>排产时间</th>
+                        <th>包含生产单数</th>
+                        <th>面积</th>
+                        <th>玻扇数</th>
+                        <th>纱扇数</th>
+                        <th>生产中</th>
+                        <th>整单入库</th>
+                        <th>异常单数</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {volist name='list' id='v'}
+                        <tr>
+                            <td>{$i}</td>
+                            <td>{$v.convert_time}</td>
+                            <td>{$v.count}</td>
+                            <td>{$v.area}</td>
+                            <td>{$v.doornum}</td>
+                            <td>{$v.screenwin}</td>
+                            <td>{$v.product}</td>
+                            <td>{$v.allcount}</td>
+                            <td>{$v.exception}</td>
+                            <td class="operate-box">
+                                <div class="operate-btn">
+                                    <a href="{:url('export_collect',array('convert_time'=>$v['convert_time']))}" class="btn-normal">导出进度</a>
+                                </div>
+                            </td>
+                        </tr>
+                    {/volist}
+                </tbody>
+            </table>
+            <div class="page-box">
+                <div class="pages">
+                    {$page|raw}
+                </div>
+            </div>
+        </form>
+    </div>	
+</body>
+<script>
+    $('.save-btn').on('click',function () {
+        var id=$(this).data('id');
+        var pre_note = $(this).parent().parent().prev().find('input').val();
+        console.log(pre_note);
+        ajaxform("{:url('savePrenote')}",{id:id,pre_note:pre_note},1);
+    });
+    var layer, laydate;
+    layui.use(['layer','laydate'],function(){
+        laydate = layui.laydate;
+        layer = layui.layer;
+        laydate.render({
+            elem: '#addtime' ,
+            range:'~'
+        });
+        $('#export_filter').click(function(){
+            $('#form1').attr('action',"{:url('export_plan_data')}");
+            $('#form1').submit();
+            $('#form1').attr('action','');
+        });
+        $('#review_filter').click(function(){
+        	var _addtime = $('input[name="addtime"]').val();
+        	var _ordernum = $('input[name="ordernum"]').val();
+        	var _unique_sn = $('input[name="unique_sn"]').val();
+        	layer.open({
+				type: 2,
+				  title: '预览导出数据',
+				  shadeClose: true,
+				  shade: 0.8,
+				  area: ['99%', '99%'],
+				  content: "{:url('preproduct/review_excel')}?addtime="+_addtime+"&ordernum="+_ordernum+"&unique_sn="+_unique_sn //iframe的url
+			})
+        });
+    })
+</script>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+	<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>微元生产工序报工管理系统,建材行业生产管理系统,门窗生产管理系统,微元科技,佛山市微元科技有限公司</title>
+		<link href="__STATIC__/theme/index/css/font-awesome.min.css" rel="stylesheet">
+		{include file="public/header" /}
+	</head>
+<body class="print_scheduling_modal">
+	<!-- 打印排产订单 -->
+	<div class="modal-body">
+		<div class="modal-body-middle">
+			<div class="scheduling-box" id="schedulingData"></div>
+			<div class="modal-body-bottom" id="printbutton">
+				<div onclick="doPrint();">立即打印</div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+	var ids=new Array();
+	{present name="ids"}
+		{volist name="ids" id="vo"}
+			ids.push({$vo});
+		{/volist}
+	{/present}
+
+	$(document).ready(function(){
+		if(ids.length<=0){
+			layer.msg("没有有效的排产单需要打印");
+			return;
+		}
+		layer.load(1);
+		for(var i in ids){
+			$.ajax({
+				url: "{:Url('Schedule/schedule_print')}",
+				data:{"multiple":1,'id':ids[i],'unfinish':1},
+				dataType:"html",
+				type:'POST',
+				success:function(obj){
+					$("#schedulingData").html(obj);
+					layer.closeAll();
+				},error:function(){
+					layer.closeAll();
+				}
+			})
+		}
+	})
+
+	function doPrint() {   
+	$("#printbutton").hide();
+		window.print();   
+		setTimeout(function(){
+			$("#printbutton").show();
+		},500)
+	}
+	</script>
+</body>
+</html>

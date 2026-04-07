@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<title>登录</title>
+<link type="text/css" rel="stylesheet"
+	href="__STATIC__/index/css/login.css">
+<script type="text/javascript"
+	src="__STATIC__/index/js/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="__STATIC__/index/js/login.js"></script>
+
+</head>
+<body style="overflow: hidden">
+	<div class="pagewrap" style="background:url(__STATIC__/index/img/bgg.jpg) top left;position:fixed;width:100%;height:100%;background-size:cover;">
+		<div class="main">
+			<div class="header"></div>
+			<div class="content">
+				<div class="con_left">
+				</div>
+				<div class="con_right">
+					<div class="con_r_top" style="border-top:8px solid #133ac6;">
+						<a href="javascript:;" class="right"
+							style="margin-left: 90px; color: rgb(51, 51, 51); border-bottom-width: 2px; border-bottom-style: solid; border-bottom-color: #133ac6;">订单跟踪系统</a>
+					</div>
+					<ul>
+					    
+						<li class="con_r_right" style="display: block;">
+							<form name="form1" method="post" action="{:Url('Login/log')}"
+								autocomplete="off">
+								<div class="user">
+									<div>
+										<span class="user-icon"></span> <input type="text" id="userid"
+											name="account" placeholder="　输入账号" value="">
+									</div>
+
+									<div>
+										<span class="mima-icon"></span> <input type="password"
+											id="pwd" name="pwd" placeholder="　输入密码" value="">
+									</div>
+
+									<div>
+										<span class="yzmz-icon"></span> <input id="vdcode" type="text"
+											name="code" placeholder="　验证码" value="" style="width: 150px;">
+
+										<img id="new_code" style="cursor: pointer;" alt="看不清？点击更换"
+											src="{:Url('Login/vertify')}"
+											onclick="javascript:document.getElementById('new_code').src='{:Url('Login/vertify')}?' + Math.random();return false;" />
+
+									</div>
+
+								</div>
+								<br>
+								<button id="btn_Login" type="submit" style="background: #133ac6;">登 录</button>
+							</form>
+						</li>
+
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</body>
+</html>

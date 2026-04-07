@@ -1,0 +1,59 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD HTML 4.01 Strict//EN' 'http://www.w3.org/TR/html4/strict.dtd'>
+<html>
+<head>
+<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>
+<link href="__STATIC__index/css/index.css" rel="stylesheet" type="text/css"/>
+<title>工序报工</title>
+</head>
+<style type="text/css">
+	.xiug{width: 100%;margin-left: 30px;margin-top: 40px;}
+	.xiug input{width: 110px;height: 40px;border-radius: 10px;text-align: center;}	
+.order{display:block;width:80%;margin-left:10%;height:auto;margin-bottom:50px;border-radius:8px;}
+.order div{width:100%;text-align:center;height:30px;line-height:30px;margin-top:10px;font-size:14px;}
+.order div span{display:inline-block;height: 30px;width:auto;float:left;}
+.order div input{padding-left:4px;width:70%;height:30px;line-height:30px;border-radius:4px;border:0;margin-top:4px; font-size:12px;}
+.order div .spa{letter-spacing:4px;}
+.order div textarea{padding: 8px;width: 76%;border-radius: 6px;}
+.order div select{padding-left:4px;width:70%;height:30px;line-height:30px;border-radius:4px;border:0;margin-top:4px; font-size:12px;}
+.btn{width: 70px;height: 30px;background: #7EC0EE;border: none;color: #fff;border-radius: 5px;display:inline-block;cursor:pointer;}
+.child1{margin-left:15px;background:#b52323}
+.child0{background:#458B00}
+</style>
+<body>
+<div class="order">
+	{volist name="list" id="vo"}
+	<div>
+		<span>{$vo['dname']}[{php} if($vo['endtime']>0){echo '已入库';}else{echo '未入库';} {/php}]： {php} echo $vo['endtime']>0?date('Y-m-d',$vo['endtime']):''; {/php} </span>
+		{if condition="$vo.issend neq '1' and $vo['endtime'] gt 0"}
+		<a class="btn child1" onclick="javascript:toReport({$vo['id']},{$vo['orderid']});" >出库</a>
+		{/if}
+	</div>
+	{/volist}
+	
+	
+</div>
+
+<script src="__STATIC__index/js/jquery.min.js"></script>
+<script src="__STATIC__index/js/layer/layer.js"></script>
+<script src="__STATIC__index/js/laydate/laydate.js"></script>
+<script type="text/javascript">
+function toReport(gxid,orderid){
+	
+	$.ajax({
+		  url: "{:Url('Index/batch_send')}",
+		  data:{"gxid":gxid,"orderid":orderid},
+		  dataType:"json",
+		  type:'POST',
+		  success:function(obj){
+			  //console.log(obj);
+			  if(obj.status==1){
+				  layer.msg('出库完成');
+			  }else{
+				  layer.msg(obj.msg);
+			  }
+		  }
+	  })
+}
+</script>
+</body>
+</html>

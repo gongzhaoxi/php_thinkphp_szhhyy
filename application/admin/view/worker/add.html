@@ -1,0 +1,63 @@
+{include file="public/header"/}
+<link rel="stylesheet" href="__STATIC__/css/select.css">
+<div class="layui-fluid">
+	<div class="layui-row">
+		<form class="layui-form">
+			<div class="layui-form-item">
+				<label for="username" class="layui-form-label">
+					用户名工号
+				</label>
+				<div class="layui-input-block">
+					<input type="text" id="username" name="username" value="" required="" lay-verify="required" class="layui-input" >
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label for="password" class="layui-form-label">
+					密码
+				</label>
+				<div class="layui-input-block">
+					<input type="text" id="password" name="password" value="" required="" lay-verify="required"  class="layui-input" >
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label for="name" class="layui-form-label">
+					真实姓名
+				</label>
+				<div class="layui-input-block">
+					<input type="text" id="name" name="name" value="" required="" lay-verify="required"  class="layui-input" >
+				</div>
+			</div>	
+			<div class="layui-form-item" >
+				<label class="layui-form-label">班组</label>
+				<div class="layui-input-block" >
+					<select name="group_id" xm-select="group_id"  xm-select-search  xm-select-search-type="dl" xm-select-radio>
+						<option value="">请选择</option>
+						{volist name="group" id="vo"}
+						<option value="{$vo['id']}">{$vo['name']}</option>
+						{/volist}
+					</select>
+				</div>
+			</div>			
+			<div class="layui-form-item">
+				<label for="L_repass" class="layui-form-label"></label>
+				<button class="layui-btn" lay-filter="save" lay-submit="">保存</button>
+			</div>
+		</form>
+	</div>
+</div>
+<script>
+layui.config({
+	base: "/static/js/",
+}).extend({
+	select: "select",
+}).use(['form','select'],function() {
+	$ = layui.jquery;
+	form = layui.form,select = layui.select;
+	form.on('submit(save)',function(data) {
+		ajaxform("{:url('add')}",data.field);
+		return false;
+	});  
+});
+</script>
+</body>
+</html>

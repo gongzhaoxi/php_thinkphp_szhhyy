@@ -1,0 +1,276 @@
+<?php $current='6'; ?>
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title>全部订单</title>
+    <link rel="stylesheet" href="__STATIC__/theme/index/js/selectjs/select.css"> <!--   默认主题CSS   -->
+    {include file="public/header" /}
+	<script src="__STATIC__/theme/index/js/selectjs/select.js"></script>
+    <style type="text/css">
+        html, body { font-size: 18px; }
+        .layui-btn{background-color:#a15d23;}
+        body .imitate-checkbox-small{border-color:#7c7c7c;}
+        .layui-table td, .layui-table th {font-size: 18px;}
+        .layui-btn-normal{background-color:#a15d23;}
+        .layui-btn-sm{padding:0px 20px;}
+        .layui-table td, .layui-table th{ line-height: 30px; }
+
+    </style>
+</head>
+<body class="cut_modal">
+    <div class="modal-body">
+        <div style="padding: 10px;">
+			<div class="layui-btn layui-btn-sm" onclick="window.location.href='/index/index/index.html'">返回首页</div>
+		</div>
+        <div class="parameter">
+            <form class="layui-form" action="{:url('cut')}" method="get">
+                <div class="layui-form-item" style="text-align: center;">
+                    <button type="button" id="saveform" class="layui-btn layui-btn-sm btn">点击此，打印以下勾选的“切割方案”！</button>
+                </div>
+                <div class="layui-input-inline">
+                    <div class="imitate-select">
+                        <span class="select-txt">选择种类</span>
+                        <span class="triangle-down"></span>
+                        <input type="hidden" name="name">
+                        <ul data-sign="name">
+                            {volist name='type' id='v'}
+                            <li data-value="{$v.name}" {if condition="$name_search eq $v['name']"}data-selected="true"{/if}>{$v.name}</li>
+                            {/volist}
+                        </ul>
+                    </div>
+                </div>
+                <div class="layui-input-inline">
+                    <div class="imitate-select">
+                        <span class="select-txt">选择角度</span>
+                        <span class="triangle-down"></span>
+                        <input type="hidden" name="angle">
+                        <ul data-sign="angle">
+                            {volist name='angle' id='v'}
+                            <li data-value="{$v.angle}" {if condition="$angle_search eq $v['name']"}data-selected="true"{/if}>{$v.angle}</li>
+                            {/volist}
+                        </ul>
+                    </div>
+                </div>
+                <div class="layui-input-inline">
+                    <div class="imitate-select">
+                        <span class="select-txt">选择用户</span>
+                        <span class="triangle-down"></span>
+                        <input type="hidden" name="gxs" id="gxs">
+                        <ul data-sign="gxs">
+                            {volist name='login' id='v'}
+                            <li data-value="{$v.id}">{$v.name}</li>
+                            {/volist}
+                        </ul>
+                    </div>
+                </div>
+                <div class="layui-input-inline">
+                    <div class="imitate-select">
+                        <span class="select-txt">选择打印机</span>
+                        <span class="triangle-down"></span>
+                        <input type="hidden" name="print" id="print">
+                        <ul data-sign="print">
+                            {volist name='printer' id='v'}
+                            <li data-value="{$v.angle}">{$v.name}</li>
+                            {/volist}
+                        </ul>
+                    </div>
+                </div>
+                <div class="layui-input-inline">
+                    <input type="text" name="date" id="date" placeholder="生产日期" value="{if condition="$date_search neq ''"}{$date_search}{/if}" autocomplete="off">
+                    <input type="text" name="import_date" id="import_date" placeholder="导入日期" value="{if condition="$import_search neq ''"}{$import_search}{/if}" autocomplete="off">
+                </div>
+                <div class="layui-input-inline">
+                    <button type="submit" class="layui-btn layui-btn-normal layui-btn-sm">搜索</button>
+                </div>
+            </form>
+            <div>
+                <table width="100%" border="1" id="cutTable" class="layui-table">
+                    <thead>
+                        <tr class="title">
+                            <th width="5%">
+                                <div class="imitate-checkbox-all" id="check_all" data-sign="true">
+                                    <span></span>
+                                </div>
+                            </th>
+                            <th width="5%">切割顺序</th>
+                            <th width="10%">尺寸</th>
+                            <th width="12%">角度</th>
+                            <th width="10%">生产单号</th>
+                            <th width="10%">名称</th>
+                            <th width="12%">生产日期</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {volist name='list' id='v'}
+                        <tr>
+                            <td>
+                                <div class="imitate-checkbox-small" data-sign="true">
+                                    <span></span>
+                                    <input name="check_print" type="hidden" value="{$v.id}" />
+                                </div>
+                            </td>
+                            <td>{$v.sort}</td>
+                            <td>{$v.size}</td>
+                            <td>{$v.angle}</td>
+                            <td>{$v.ordernum}</td>
+                            <td>{$v.name}</td>
+                            <td>{$v.date|date='Y/m/d'}</td>
+                        </tr>
+                        {/volist}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript">
+    var layer , laydate;
+	layui.use(['layer','laydate'],function(){
+        layer = layui.layer;
+		laydate = layui.laydate;
+		laydate.render({
+            elem: '#date'
+        });
+        laydate.render({
+            elem: '#import_date'
+        });
+	})
+
+    $('#saveform').click(function(){
+        var check_print = $('.imitate-checkbox-small[data-sign=true]').length;
+        if(check_print==0){
+            layer.msg('请先勾选要打印的切割工序');
+            return;
+        }
+        var print_id = [];
+        $('.imitate-checkbox-small[data-sign=true]').each(function(){
+            print_id.push($(this).children('input[name=check_print]').val());
+        })
+        var printer_id = $('#print').val();
+        if(printer_id == 0){
+            layer.msg('请选择打印机');
+            return false;
+        }
+        var index = layer.load();
+        var index2 = layer.msg('正在打印中,请稍等');
+        $.ajax({
+            url: "{:Url('print_cut')}",
+            type:'post',
+            data: {print_id:print_id,printer_id:printer_id},
+            dataType: 'json',
+            success:function(res){
+                layer.close(index);
+                layer.close(index2);
+                if(res.code==0){
+                    layer.msg(res.msg,{icon:1},function(){
+                        //  parent.location.reload();
+                    });
+                    return;
+                }
+                layer.msg(res.msg,{icon:2});
+            },
+            error:function(){
+                layer.msg('打印失败',{icon:2});
+            }
+        })
+    })
+    // 全选
+    $('#check_all').on('click',function(e){
+        e.preventDefault();
+		e.stopPropagation();
+		var _this = $(this);
+		var clickSign = _this.attr('data-sign');
+		if (clickSign == 'true') {
+			_this.children('span').hide();
+			_this.removeAttr('data-sign');
+            $('#cutTable').find('.imitate-checkbox-small').removeAttr('data-sign').children('span').hide();
+		} else {
+			_this.children('span').show();
+			_this.attr('data-sign', 'true');
+            $('#cutTable').find('.imitate-checkbox-small').attr('data-sign', 'true').children('span').show();
+		}
+    });
+    $('.imitate-checkbox-small').on('click',function(e){
+        e.preventDefault();
+		e.stopPropagation();
+		var _this = $(this);
+		var clickSign = _this.attr('data-sign');
+		if (clickSign == 'true') {
+			_this.children('span').hide();
+			_this.removeAttr('data-sign');
+		} else {
+			_this.children('span').show();
+			_this.attr('data-sign', 'true');
+		}
+        var sum = $('#cutTable').find('.imitate-checkbox-small').length;
+        var checked = $('#cutTable').find('.imitate-checkbox-small[data-sign=true]').length;
+        if(sum == checked){
+            $('#check_all').attr('data-sign','true').children('span').show();
+        } else{
+            $('#check_all').removeAttr('data-sign').children('span').hide();
+        }
+    });
+    // 下拉列表
+	$('.imitate-select').click(function(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		var _this = $(this);
+		var clickSign = _this.attr('data-sign');
+		$('.imitate-select').removeAttr('data-sign').children('ul').hide();
+		if (clickSign == 'true') {
+			_this.children('ul').hide();
+			_this.removeAttr('data-sign');
+		} else {
+			_this.children('ul').show();
+			_this.attr('data-sign', 'true');
+		}
+	});
+
+	$('.imitate-select ul').delegate('li','click',function(e){
+		e.preventDefault();
+		e.stopPropagation();
+		var _this = $(this);
+		var tempTxt = _this.html();
+		var _thisValue = _this.attr('data-value');
+		_this.parent().parent().children('.select-txt').attr('data-value',_thisValue).html(tempTxt);
+		_this.parent().hide();
+		_this.parent().parent().removeAttr('data-sign');
+		var _clickTarget = _this.parent().attr('data-sign');
+		_this.parent().siblings('input[type=hidden]').val(_thisValue);
+        switch (_clickTarget) {
+            case 'gxs':
+                // 选择用户异步加载它所关联的打印机
+                // var uid = $('#gxs').val();
+                // $.ajax({
+                //     url: "{:Url('selectPrint')}",
+                //     data: {uid:uid},
+                //     dataType: 'json',
+                //     success:function(res){
+                //         var html = ''
+                //         if(res!=''){
+                //             $.each(res,function(i,v){
+                //                 html += "<li data-value="+v.id+" >"+v.dname+"(样式:"+v.style_name+")</li>"
+                //             });
+                //             $('#print').parent().children('ul').html(html);
+                //         }else{
+                //             html = "<li data-value='0'>未找到此用户所关联的打印机</li>";
+                //             $('#print').val(0);
+                //             $('#print').siblings('.select-txt').html('未找到此用户所关联的打印机');
+                //         }
+                //         $('#print').parent().children('ul').html(html);
+                //     }
+                // })
+                break;
+        
+            default:
+                break;
+        }
+	});
+	$(window).click(function(){
+		$('.imitate-select').removeAttr('data-sign').children('ul').hide();
+	})
+
+</script>
+</html>

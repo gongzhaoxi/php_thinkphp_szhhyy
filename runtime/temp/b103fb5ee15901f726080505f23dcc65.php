@@ -1,0 +1,537 @@
+<?php if (!defined('THINK_PATH')) exit(); /*a:2:{s:106:"/mnt/datadisk0/www/wwwroot/wchuanghua.ecloudm.com/public/../application/admin/view/allorder/print_tag.html";i:1748243710;s:91:"/mnt/datadisk0/www/wwwroot/wchuanghua.ecloudm.com/application/admin/view/public/header.html";i:1635496794;}*/ ?>
+<!DOCTYPE html>
+<html class="x-admin-sm">
+    <head>
+        <meta charset="UTF-8">
+        <title>深圳恒辉</title>
+        <meta name="renderer" content="webkit|ie-comp|ie-stand">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<!--        <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />-->
+        <meta http-equiv="Cache-Control" content="no-siteapp" />
+        <link rel="stylesheet" href="/static/css/font.css">
+        <link rel="stylesheet" href="/static/css/xadmin.css">
+        <!-- <link rel="stylesheet" href="/static/css/theme5.css"> -->
+        <script src="/static/lib/layui/layui.js" charset="utf-8"></script>
+        <script type="text/javascript" src="/static/js/xadmin.js"></script> 
+        <script type="text/javascript" src="/static/js/erp.js"></script>       
+        <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+        <!--[if lt IE 9]>
+          <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+          <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+        <script>
+            // 是否开启刷新记忆tab功能
+             var is_remember = false;
+        </script>
+    </head>
+<style>
+    body{background-color: rgb(235, 235, 235);}
+	#myForm{margin: 20px auto;max-width:1200px;	}
+	#myForm ._layui-form-label{width:160px;font-size:16px;}
+	#myForm ._layui-input-inline{width:320px;}	
+	.x-admin-sm .layui-input, .x-admin-sm .layui-select, .x-admin-sm .layui-textarea{height: 38px;}
+	.layui-form-switch {margin-top: 8px;}
+	.x-admin-sm .layui-btn-lg {height: 50px;line-height: 50px;padding: 0 20px;font-size: 16px;background: rgb(255, 255, 255);}
+	.layui-form-item {margin-bottom:25px;}
+	.layui-btn-container {margin-bottom:15px;}
+</style>   
+<body>
+	<div id="myForm">
+		<form class="layui-form" action="">
+			<div class="layui-form-item">
+				<label class="layui-form-label _layui-form-label">销售订单号：</label>
+				<div class="layui-input-inline _layui-input-inline">
+					<input type="text" id="number" value="<?php echo $number; ?>" required  lay-verify="required" placeholder="请输入销售订单号" autocomplete="off" class="layui-input">
+				</div>
+				<label class="layui-form-label _layui-form-label">经销商名称：</label>
+				<div class="layui-input-inline _layui-input-inline">
+					<input type="text" id="dealer" readonly  lay-verify="required" placeholder="" autocomplete="off" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label _layui-form-label">送货地址：</label>
+				<div class="layui-input-inline _layui-input-inline">
+					<input type="text" id="send_address" readonly  lay-verify="required" placeholder="" autocomplete="off" class="layui-input">
+				</div>
+				<label class="layui-form-label _layui-form-label">地址：</label>
+				<div class="layui-input-inline _layui-input-inline">
+					<input type="text" id="address" readonly  lay-verify="required" placeholder="" autocomplete="off" class="layui-input">
+				</div>
+				<input type="hidden" id="building"  autocomplete="off" >
+			</div>
+			<!--
+			<div class="layui-form-item">
+				<label class="layui-form-label _layui-form-label">质检结果：</label>
+				<div class="layui-input-inline" style="width:50px;">
+					<input type="checkbox" name="xxx" lay-skin="switch" checked>
+				</div>
+				<div class="layui-input-inline" style="width: auto;">
+					<div class="layui-form-item">
+						<label class="layui-form-label _layui-form-label" style="width:100px;">不合格工序：</label>
+						<div class="layui-input-inline _layui-input-inline">
+							<select id="flow"  lay-filter="flow">
+								
+							</select>
+						</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label _layui-form-label" style="width:100px;">不合格原因：</label>
+						<div class="layui-input-inline _layui-input-inline">
+							<input type="text" name="title" required  lay-verify="required" placeholder="" autocomplete="off" class="layui-input">
+						</div>
+					</div>
+				</div>
+			</div>-->
+			<div class="layui-form-item" style="padding-left: 90px;">
+				<div class="layui-btn-container">
+					<button type="button" data-num="1" class="layui-btn layui-btn-primary layui-border-black layui-btn-lg pack">包装1张(带logo)</button> 
+					<button type="button" data-num="2" class="layui-btn layui-btn-primary layui-border-black layui-btn-lg pack">包装2张(带logo)</button> 
+					<button type="button" data-num="3" class="layui-btn layui-btn-primary layui-border-black layui-btn-lg pack">包装3张(带logo)</button> 
+					<button type="button" data-num="4" class="layui-btn layui-btn-primary layui-border-black layui-btn-lg pack">包装4张(带logo)</button>
+					<button type="button" data-num="5" class="layui-btn layui-btn-primary layui-border-black layui-btn-lg pack">包装5张(带logo)</button> 
+				</div>
+				<div class="layui-btn-container">
+					<button type="button" data-num="1" class="layui-btn layui-btn-primary layui-border-black layui-btn-lg pack2">包装1张(不带logo)</button>
+					<button type="button" data-num="2" class="layui-btn layui-btn-primary layui-border-black layui-btn-lg pack2">包装2张(不带logo)</button> 
+					<button type="button" data-num="3" class="layui-btn layui-btn-primary layui-border-black layui-btn-lg pack2">包装3张(不带logo)</button> 
+					<button type="button" data-num="4" class="layui-btn layui-btn-primary layui-border-black layui-btn-lg pack2">包装4张(不带logo)</button>
+					<button type="button" data-num="5" class="layui-btn layui-btn-primary layui-border-black layui-btn-lg pack2">包装5张(不带logo)</button> 
+				</div>
+				<div class="layui-btn-container">	
+					<button type="button" data-num="6" class="layui-btn layui-btn-primary layui-border-black layui-btn-lg product1">产品标签1</button> 
+					<button type="button" data-num="7" class="layui-btn layui-btn-primary layui-border-black layui-btn-lg product2">产品标签2</button> 
+				</div>				
+			</div>
+		</form>
+	</div>
+
+	<style media="print">
+	@page {size: auto; margin-top: 0mm;margin-bottom: 0mm;}
+	body{background:#fff;}
+	</style>
+	<style>
+	.print{width:389.29133858267716px;height:566.9291338582677px;padding:10px;max-width:100%; overflow:hidden;}
+	.print .logo{text-align:center;}
+	.print .logo img{width:55%;}	
+	.print .number{text-align:center;font-weight:900;font-size:35px;margin:5px 0;}	
+	.print .number span{border-bottom:2px solid #000;}
+	.print .title {font-size:20px;margin-top:10px;}		
+	.print .title span{border-bottom:1px solid #000;margin-left:10px;padding:0 5px;}	
+	.print .table1{width:100%;margin:20px 0 10px 0;font-size:20px;}	
+	.print .table1 div {font-size:20px;margin-top:10px;}		
+	.print .table1 span{border-bottom:1px solid #000;margin-left:10px;padding:0 22%;}	
+	.print .table2 td{font-size:16px;padding-bottom:5px;}
+	.print .table2 span{border:1px solid #000;width:15px;height:15px;display: inline-block;float:right;margin-right:15px;margin-top: 2px;}	
+	.print .title2 {font-size:22px;margin-top:10px;}		
+	.print .title2 span{border-bottom:1px solid #000;margin-left:10px;padding:0 20px;}
+	.print .title2 label{font-size:16px;}
+	.print .table3{margin-top:15px;width:100%;font-size:16px;}
+	.print .table3 td{padding-bottom:10px;}
+	.print .table3 p{padding-bottom:10px;font-weight:900;font-size:36px;}	
+
+	.print2 {width:113.4px;height:71.6px;padding:2px 3px;max-width:100%;}
+	.print2 .item{padding:5px 0 0 10px;height: 65px;overflow:hidden;}
+	.print2 .item p{font-size:14px;}
+	
+
+			.diva{height: 52.91px; width: 117.06px; overflow: hidden; padding-left: 86.92px; padding-right: 10.89px;}
+			.divb{ float: left;overflow: hidden;width: 108.06px; height: 15px; border-bottom: 1px solid #000; position: relative;}
+			.divb span{white-space: nowrap;-webkit-text-size-adjust:none;font-size: 8px; position: absolute; top:1.5px; left: 0px;width: 110px; }
+			/* 比 12px 小的文字方法  -webkit-text-size-adjust:none;font-size: 5px;  */
+			.divc{ float: left;overflow: hidden; width: 108.06px;height: 33.09px; padding: 0.91px 0px;position: relative;}
+			.divc .imga,.divc .imgb{ width: 30px; height: 30px; position: absolute; }
+			.divc .imga{ top: 0.91px; left: 0px;}
+			.divc .imgb{ top: 0.91px; left: 77.97px;}
+			.divc span{position: absolute;left: 9px;top: -2px;width: 108.06px; height: 30px;transform: scale(0.55);line-height: 12px;font-size: 12px;}
+			.divc span .divaa{ padding-top: 2px;}
+			.divc span .divbb{ float: left;border: 5px solid transparent;border-left: 10px solid #000;width: 0;height: 0px;}
+			.divc span .divcc{ float: left; height: 0px; width: 59.06px; margin-top: 3px;border: 2px solid #000;}
+	
+	
+	</style>
+	<div id="myPrint"></div>
+	<div id="print_tempt" style="display:none;">
+		<div class="print" >
+			<div class="logo"><img src="/static/images/logo2023.png" /></div>
+			<div class="number"><span></span></div>
+			<div class="title">客户名称:<span class="dealer"></span></div>
+			<div class="title">送货地址:<span class="send_address"></span></div>    
+			<table class="table1">
+				<tbody>
+					<tr>
+						<td><div>花形:<span></span></div></td>
+						<td><div>颜色:<span></span></div></td>
+					</tr>
+				</tbody>
+			</table>		
+			<table class="table2">
+				<tbody>
+					<tr>
+						<td style="width:33.3333%;">安装胶粒<span></span></td>
+						<td style="width:33.3333%;">堵头胶塞<span></span></td>
+						<td rowspan="5">
+							<img style="width:80%" src="/static/images/print_qrcode.jpg" />
+						</td>
+					</tr>
+					<tr>
+						<td>活动配件<span></span></td>
+						<td>螺丝<span></span></td>
+					</tr>	
+					<tr>
+						<td>油漆<span></span></td>
+						<td>护栏加固件<span></span></td>
+					</tr>
+					<tr>
+						<td>护栏配件<span></span></td>
+						<td>彩页图册<span></span></td>
+					</tr>
+					<tr>
+						<td>色卡<span></span></td>
+						<td>其他<span></span></td>
+					</tr>				
+				</tbody>
+			</table>
+			<div class="title2">包装数量:<span></span>件<label>【包含扶手轨道灯】</label></div>
+			<div class="title2">内装总数:<span></span>个，此件内装:<span></span>个</div>
+			<table class="table3">
+				<tbody>
+					<tr>
+						<td style="width:30%;">检验<span>QC001</span></td>
+						<td rowspan="2">
+							<p>请勿重压！</p>
+						</td>
+					</tr>
+					<tr>
+						<td>包装<span>QC001</span></td>	
+					</tr>	
+				</tbody>
+			</table>		
+		</div>
+	</div>
+	
+	<div id="print_tempt2" style="display:none;">
+		
+	</div>
+	
+	<div id="print_tempt3" style="display:none;">
+
+	</div>	
+	
+	<div id="print_tempt4" style="display:none;">
+		<div class="print" >
+			<div class="logo"></div>
+			<div class="number"><span></span></div>
+			<div class="title">客户名称:<span class="dealer"></span></div>
+			<div class="title">送货地址:<span class="send_address"></span></div>    
+			<table class="table1">
+				<tbody>
+					<tr>
+						<td><div>花形:<span></span></div></td>
+						<td><div>颜色:<span></span></div></td>
+					</tr>
+				</tbody>
+			</table>		
+			<table class="table2">
+				<tbody>
+					<tr>
+						<td style="width:33.3333%;">安装胶粒<span></span></td>
+						<td style="width:33.3333%;">堵头胶塞<span></span></td>
+						<td rowspan="5">
+
+						</td>
+					</tr>
+					<tr>
+						<td>活动配件<span></span></td>
+						<td>螺丝<span></span></td>
+					</tr>	
+					<tr>
+						<td>油漆<span></span></td>
+						<td>护栏加固件<span></span></td>
+					</tr>
+					<tr>
+						<td>护栏配件<span></span></td>
+						<td>彩页图册<span></span></td>
+					</tr>
+					<tr>
+						<td>色卡<span></span></td>
+						<td>其他<span></span></td>
+					</tr>				
+				</tbody>
+			</table>
+			<div class="title2">包装数量:<span></span>件<label>【包含扶手轨道灯】</label></div>
+			<div class="title2">内装总数:<span></span>个，此件内装:<span></span>个</div>
+			<table class="table3">
+				<tbody>
+					<tr>
+						<td style="width:30%;">检验<span>QC001</span></td>
+						<td rowspan="2">
+							<p>请勿重压！</p>
+						</td>
+					</tr>
+					<tr>
+						<td>包装<span>QC001</span></td>	
+					</tr>	
+				</tbody>
+			</table>		
+		</div>
+	</div>
+	
+	<div id="bcTargetDiv" style="display:none;">
+		<div id="bcTarget" class="barcodeImg"></div>
+	</div>
+
+	
+</body>
+<script src="/static/js/jquery.min.js" charset="utf-8"></script>
+<script src="/static/js/jQuery.print.min.js" charset="utf-8"></script>
+<script src="/static/js/jquery-barcode.js" charset="utf-8"></script>
+<script src="/static/js/jquery.qrcode.min.js" charset="utf-8"></script>
+<script src="/static/js/html2canvas.js"></script>
+
+<script>
+layui.use('form', function(){
+	var form = layui.form;
+	$('#number').focus()
+	
+	//getOrder($("#number").val());
+  
+  
+  	$("body").on("click",function(){
+		$('#number').focus();
+	});
+  
+	$(document).keydown(function(event) {
+		var keyCode = event.keyCode;
+		if(keyCode == "13"){
+			getOrder($("#number").val());
+		} 
+	});
+	
+	$('#number').blur(function(){
+		//getOrder($("#number").val());
+    });	
+	
+	function getOrder(number){
+		if(number){
+			//$("#bcTarget").empty().barcode(number, "code128",{barWidth:2, barHeight:36,bgColor:'none',showHRI:false,addQuietZone: false,output:'bmp'});
+			$("#bcTarget").empty().qrcode(number);
+			
+			$.ajax({
+				url: '<?php echo url('printTag'); ?>?number='+number,
+				type: "get",
+				dataType:'json',
+				success: function (info) {
+					$('#number').focus()
+					params = info;
+					if(info.data.order){
+						$('#dealer').val(info.data.order.dealer);
+						$('#send_address').val(info.data.order.send_address);
+						$('#address').val(info.data.order.address);
+							
+						$('.number span').html(info.data.order.number);
+						$('.send_address').html(info.data.order.send_address);
+						$('.dealer').html(info.data.order.dealer);
+						
+						/*
+						if(info.data.flow&&info.data.flow.length>0){
+							var html = '';
+							$.each(info.data.flow,function (index,value) {
+								html += '<option value="'+value.stext+'">'+value.dname+'</option>';
+							})
+							$('#flow').html(html);
+							form.render('select');
+						}*/
+						
+
+						var html = '';
+						var html2 = '';	
+						var _src = $("#bcTarget").find("canvas")[0].toDataURL('image/jpeg');
+						
+						if(info.data.price && info.data.price.length>0){							
+							var i = 0;							
+							$.each(info.data.price,function (index,value) {	
+								var count = value.count>0?value.count:1;
+						
+								for (var j = 0; j < count; j++) {
+									if(i>0){
+										html += '<div style="page-break-after:always;"></div>';
+										html2 += '<div style="page-break-after:always;"></div>';
+									}
+									html += '<div class="print2"><div class="item">';
+									html += '<p>'+(info.data.order.building?info.data.order.building:'无')+'</p>';
+									html += '<p>'+(value.position?value.position:'无')+'</p>';
+									html += '<p>'+value.all_width+'*'+value.all_height+'</p>';
+									html += '</div></div>';
+									
+									//
+									html2 += '<div class="diva">';
+									html2 += '	<div class="divb"><span>'+(value.position?value.position:'无')+'/'+value.all_width+'*'+value.all_height+'</span></div>';
+									html2 += '	<div class="divc">';
+									html2 += '		<img src="/static/images/wechatoa.jpg" class="imga">';
+									html2 += '		<span>先关注公众号<br/>再扫码查真伪';
+									html2 += '		<div class="divaa">';
+									html2 += '			<div class="divcc"></div>';
+									html2 += '			<div class="divbb"></div>';
+									html2 += '		</div>';
+									html2 += '		</span>';
+									html2 += '		<img src="'+_src+'" class="imgb">';
+									html2 += '	</div>';
+									html2 += '</div>';
+									
+									i++;
+								}
+							})	
+						}					
+						$('#print_tempt2').html(html);
+                        $('#print_tempt3').html(html2);
+						
+					}else{
+						alert($('#number').val()+'订单不存在');
+						$('#number').focus();
+						$('#myForm input').val('');
+						return ;
+					}
+
+				}
+			});
+		}
+	}
+	
+	$('.pack').click(function(){
+		if(!$('#number').val()){
+			alert('请先输入订单');
+			$('#number').focus()
+			return ;
+		}
+		var num = parseInt($(this).data('num'));
+		var html = '';
+		var tempt = $("#print_tempt").html()
+		
+		for (var i = 0; i < num; i++) {
+			if(i>0){
+				html += '<div style="page-break-after:always;height:0px;margin:0;padding:0;overflow: hidden"></div>';
+			}
+			html += tempt;
+		}
+		$("#myPrint").html(html);
+		$("#myPrint").show();
+			
+		$("#myPrint").print({
+			deferred: $.Deferred().done(function() { 
+				$('#number').focus();
+				$('#number').val('');
+			})
+		});
+		$('#myForm input').val('');
+		$('#number').focus();
+		$("#myPrint").hide();
+	})
+	$('.pack2').click(function(){
+		if(!$('#number').val()){
+			alert('请先输入订单');
+			$('#number').focus()
+			return ;
+		}
+		var num = parseInt($(this).data('num'));
+		var html = '';
+		var tempt = $("#print_tempt4").html()
+		
+		for (var i = 0; i < num; i++) {
+			if(i>0){
+				html += '<div style="page-break-after:always;height:0px;margin:0;padding:0;overflow: hidden"></div>';
+			}
+			html += tempt;
+		}
+		$("#myPrint").html(html);
+		$("#myPrint").show();
+			
+		$("#myPrint").print({
+			deferred: $.Deferred().done(function() { 
+				$('#number').focus();
+				$('#number').val('');
+			})
+		});
+		$('#myForm input').val('');
+		$('#number').focus();
+		$("#myPrint").hide();
+	})
+	
+
+	
+	$('.product1').click(function(){
+		if(!$('#number').val()){
+			alert('请先输入订单');
+			$('#number').focus()
+			return ;
+		}
+		var html = $('#print_tempt2').html();
+		$("#myPrint").html(html);
+		$("#myPrint").show();
+			
+		$("#myPrint").print({
+			//Use Global styles
+			//globalStyles : false,
+			//Add link with attrbute media=print
+			//mediaPrint : false,
+			//Custom stylesheet
+			//stylesheet : "http://fonts.googleapis.com/css?family=Inconsolata",
+			//Print in a hidden iframe
+			//iframe : false,
+			//Don't print this
+			//noPrintSelector : ".avoid-this",
+			//Add this at top
+			//prepend : "Hello World!!!<br/>",
+			//Add this on bottom
+			//append : "<span><br/>Buh Bye!</span>",
+			//Log to console when printing is done via a deffered callback
+			deferred: $.Deferred().done(function() { 
+				$('#number').focus();
+				$('#number').val('');
+			})
+		});
+		$('#myForm input').val('');
+		$('#number').focus();
+		$("#myPrint").hide();
+	})
+	
+	
+	$('.product2').click(function(){
+		if(!$('#number').val()){
+			alert('请先输入订单');
+			$('#number').focus()
+			return ;
+		}
+		var html = $('#print_tempt3').html();
+		$("#myPrint").html(html);
+		$("#myPrint").show();
+			
+		$("#myPrint").print({
+			//Use Global styles
+			//globalStyles : false,
+			//Add link with attrbute media=print
+			//mediaPrint : false,
+			//Custom stylesheet
+			//stylesheet : "http://fonts.googleapis.com/css?family=Inconsolata",
+			//Print in a hidden iframe
+			//iframe : false,
+			//Don't print this
+			//noPrintSelector : ".avoid-this",
+			//Add this at top
+			//prepend : "Hello World!!!<br/>",
+			//Add this on bottom
+			//append : "<span><br/>Buh Bye!</span>",
+			//Log to console when printing is done via a deffered callback
+			deferred: $.Deferred().done(function() { 
+				$('#number').focus();
+				$('#number').val('');
+			})
+		});
+		$('#myForm input').val('');
+		$('#number').focus();
+		$("#myPrint").hide();
+	})
+	
+	
+});
+</script>
+</html>

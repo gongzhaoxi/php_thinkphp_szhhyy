@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+<meta name="referrer" content="never">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>工序顺序设置</title>
+{include file="public/header" /}
+
+</head> 
+<body class="set_procedure_modal">
+<div class="modal-body">
+	<div class="modal-body-middle">
+		<div style="font-size: 16px; padding:10px 20px;">注：数值越小，越排前</div>
+		<ul>
+			{present name="gx"}
+				{volist name="gx" id="vo"}
+					<li>
+					<input type="text" value="{$vo['orderby']=='0'?'':$vo['orderby']}" name="{$vo['dname']}" class="input"> - {$vo['dname']}
+					</li>
+				{/volist}
+			{/present}
+		</ul>
+		<div class="modal-body-bottom">
+			<div onclick="javascript:save_order();">确认设置</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+	//防止重复提交
+	var isLock=false;
+	// 确认提交设置
+	function save_order(){
+		if(isLock){
+			return;
+		}
+		isLock=true;
+		layer.load(0, {
+			shade: [0.1,'#fff']
+		});
+		var data=new Object();
+		$(".input").each(function(){
+			var _name = $(this).attr("name");
+			var _val = $(this).val();
+			data[_name] = _val;
+		});
+		var _new_data = JSON.stringify(data);
+		$.post("{:Url('Setting/save_order')}",{'data':_new_data},function(obj){
+			layer.closeAll();
+	       if(obj.status==1){
+				layer.msg('修改工序顺序成功');
+			}else{
+				layer.msg('保存失败，请重试');
+			}
+	     },'json');
+	}
+	
+</script>
+</body>
+</html>

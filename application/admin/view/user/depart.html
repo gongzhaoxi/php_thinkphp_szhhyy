@@ -1,0 +1,100 @@
+{include file="public/header"/}
+<link href="__STATIC__/js/treeTable/treeTable.css" rel="stylesheet" type="text/css"/>     
+    <body>
+        <div class="x-nav">
+            <span class="layui-breadcrumb">
+               <a href="javascript:void(0)">角色组列表</a>
+            </span> 
+            
+            <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" onclick="location.reload()" title="刷新">
+                <i class="layui-icon layui-icon-refresh" style="line-height:30px"></i>
+            </a>
+        </div>
+        <div class="layui-fluid">
+            <div class="layui-row layui-col-space15">
+                <div class="layui-col-md12">
+                    <div class="layui-card">
+                        <div class="layui-card-body ">
+                            
+                        </div>
+                        <div class="layui-card-header">
+                            <form class="layui-form layui-col-space5" >
+                                
+                                
+                                <div class="layui-input-inline" style="float: right">
+                                    <a class="layui-btn" href="javascript:void(0)" onclick="xadmin.open('添加部门', '{:url('addDepart')}', 600, 400)">
+                                        <i class="layui-icon"></i>添加角色组
+                                    </a>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="layui-card-body ">
+                            <table class="layui-table layui-form treeTable" id="tablesd">
+                                <thead>
+                                    <tr>                                       
+                                        <!--<th>ID</th>-->
+                                        <th>部门名称</th>
+                                        <th>创建时间</th>
+                                        <th>状态</th>
+                                        <th>权限设置</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {$treeList}
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+    <script>layui.use(['laydate', 'form'],
+        function() {
+            var laydate = layui.laydate;
+            var  form = layui.form;
+            
+            //执行一个laydate实例
+            laydate.render({
+                elem: '#start' //指定元素
+            });
+
+            //执行一个laydate实例
+            laydate.render({
+                elem: '#end' //指定元素
+            });
+            
+            // 监听全选
+            form.on('checkbox(checkall)', function(data){
+
+              if(data.elem.checked){
+                $('tbody input').prop('checked',true);
+              }else{
+                $('tbody input').prop('checked',false);
+              }
+              form.render('checkbox');
+            });
+        });
+
+
+        /*删除*/
+        function member_del(obj, id) {
+            layer.confirm('确认要删除吗？',
+            function(index) {
+                //发异步删除数据
+                ajaxform("{:url('delDepart')}",{id:id},1);
+            });
+        }
+    
+        
+    </script>
+    <script src="__STATIC__/js/jquery.min.js" charset="utf-8"></script>
+    <script src="__STATIC__/js/treeTable/treeTable.js" charset="utf-8"></script>    
+    <script>
+        $(function(){
+           $("#tablesd").treeTable({expandable: true,initialState:'expanded'});
+        })
+    </script>
+</html>

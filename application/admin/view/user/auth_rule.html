@@ -1,0 +1,53 @@
+{include file="public/header"/}
+<link href="__STATIC__/js/treeTable/treeTable.css" rel="stylesheet" type="text/css"/>
+    <body>
+        <form class="layui-form">
+        <div class="layui-fluid">
+            <div class="layui-row layui-col-space15">
+                <div class="layui-col-md12">
+                    <div class="layui-card">
+                        <div class="layui-card-body ">
+                            <table class="layui-table layui-form treeTable" lay-even lay-skin="nob" id="tablesd">
+                                
+                                <tbody class="x-cate">
+                                    {$treeList}                              
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="layui-form-item" style="padding-bottom: 20px;">
+                            <input name="id" type="hidden" value="{$id}"/>
+                                <button class="layui-btn" lay-filter="add" lay-submit="" style="margin:10px 0 0 15%">
+                                   保存
+                                </button>
+                            </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </form>
+    </body>   
+    
+    <script>layui.use(['laydate', 'form'],
+        function() {
+            var laydate = layui.laydate;
+            var  form = layui.form;
+            
+             //监听提交
+            form.on('submit(add)',
+            function(data) {
+                ajaxform("{:url('user/saveRule')}",data.field);
+                return false;
+            });
+        });
+
+       
+
+    </script>
+    <script src="__STATIC__/js/jquery.min.js" charset="utf-8"></script>
+    <script src="__STATIC__/js/treeTable/treeTable.js" charset="utf-8"></script>    
+    <script>
+        $(function(){
+           $("#tablesd").treeTable({expandable: true,initialState:'expanded'});
+        })
+    </script>
+</html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<!-- <meta http-equiv="refresh" content="5"> -->
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<!-- 电视分辨率 抓取 -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, target-densitydpi=device-dpi" />
+<script src="__STATIC__/theme/index/databoard/jquery.min.js"></script>
+<title>车间作业看板</title>
+<style type="text/css">
+*{ margin:0; padding:0;}
+body{background:#0076f3; color: #adffff; overflow: hidden;}
+ul,li{ list-style:none;margin:0px;padding:0px;}
+img{ border:none; display:inline-block; }
+a{ text-decoration:none; color:#333; cursor:pointer;}
+a:hover{ color:#64ab25;}
+i{ font-style:normal;}
+input,textarea,select{ outline:none;}
+h1,h2,h3,h4,h5,h6{ font-style:normal; font-weight:bold; list-style:none;}
+.clear{ clear:both;}
+.classWidth100{ width:100%; padding: 0;}
+.classWidth50{ width:48%; padding: 0 1%;}
+.classWidth33{ width:31%; padding: 0 1%;}
+div{ float: left; }
+iframe{height: calc(100vh);}
+#di_no2{ display: none; }
+#di_no3{ display: none; }
+</style>
+</head>
+
+
+<body>
+    <div class="classWidth100" id="">
+        <iframe id='iframe1' src="" frameborder="0" width="100%" scrolling="no"></iframe>
+    </div>
+
+<input name="page" id="page" value="0" type="hidden"/>
+    <script>
+        $(function(){
+        	parent.no_padding();
+            refresh();
+            setInterval("refresh()",30000); 
+        })
+        function refresh(){
+            var no = "{$no}";
+            var link = "/index/Databoard/";
+            $.ajax({
+                url:"{:url('fixed_flow')}",
+                data: {page:$('#page').val(),no:no},
+                type: 'POST',
+                dataType: 'json',
+                success:function(res){
+                    
+                    $('#page').val(res.page);
+                    if(res.gx_id == 'exception'){
+                    	parent.has_padding();
+                        var src = link+"exceptionTemplate?no="+no;
+                    }else{
+                    	parent.no_padding();
+                        var src = link+"fixed_gx?id="+res.gx_id+"&no={$no}";
+                    }
+                    $('#iframe1').attr('src',src);
+                }
+            })
+        }
+    </script>
+
+
+</body>
+</html>

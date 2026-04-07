@@ -1,0 +1,184 @@
+{include file="public/header"/}
+<style>
+    .layui-col-xs12 .iconfont{ font-size: 20px;}
+    .check-box{ margin-top: 10px;}
+    .check { position: absolute;left:45%;bottom: 40px;}
+    .check-box img{margin: 0 auto;display: table-cell;}
+    .flower-list img{ margin: 0 auto;display: table-cell;}
+    .flower-list input {text-align: center;max-width: 80%;margin-left: 10%;}
+    .del-icon{ margin-left: 45%;}
+</style>
+<body>
+    <div class="layui-fluid">
+        <div class="layui-row">
+            <form class="layui-form" method="post">
+                <blockquote class="layui-elem-quote">
+                    <input name="id" type="hidden" value="{$id}"/>
+                    <div class="layui-inline">
+                        <select name="window_type" id="window_type" lay-filter="selectd">
+                            <option value="">窗型类型</option>
+                            <option value="常规">常规</option>
+                            <option value="飘窗">飘窗</option>
+                            <option value="圆弧窗">圆弧窗</option>
+                            <option value="内弧(拱)形窗">内弧(拱)形窗</option>
+                            <option value="外弧(拱)形窗">外弧(拱)形窗</option>
+                        </select>
+                    </div>
+                    <div class="layui-inline">
+                        <select name="hands" id="hands" lay-filter="selectd">
+                            <option value="">全部把手</option>
+                            <option value="左把手">左把手</option>
+                            <option value="右把手">右把手</option>
+                            <option value="无把手">无把手</option>
+                            <option value="双把手">双把手</option>                            
+                        </select>
+                    </div>
+                    <div class="layui-inline">
+                        <select name="fixed" id="fixed" lay-filter="selectd">
+                            <option value="">全部固定</option>
+                            <option value="不带固定">不带固定</option>
+                            <option value="上固定">上固定</option>
+                            <option value="下固定">下固定</option>
+                            <option value="上下固定">上下固定</option>
+                        </select>
+                    </div>
+                    <div class="layui-inline">
+                        <select name="level" id="level" lay-filter="selectd">
+                            <option value="">全部类型</option>
+                            <option value="A类" {if condition="$res['level'] eq 'A类'"}selected{/if}>A类</option>
+                            <option value="B类" {if condition="$res['level'] eq 'B类'"}selected{/if}>B类</option>
+                            <option value="C类" {if condition="$res['level'] eq 'C类'"}selected{/if}>C类</option>
+                            <option value="D类" {if condition="$res['level'] eq 'D类'"}selected{/if}>D类</option>
+                            <option value="E类" {if condition="$res['level'] eq 'E类'"}selected{/if}>E类</option>
+                        </select>
+                    </div>
+                </blockquote> 
+                <div class="layui-col-xs12" id="all-flower">
+                    {volist name='bom' id='v'}
+                    <div class="layui-col-xs2 check-box" ids='{$v.id}'>
+                        <img src="/upload/{$v.structure_pic}"  height="100"/>
+                        {if condition="$v['select'] eq 1"}<i class="icon iconfont check">&#xe6af</i>{/if}
+                    </div>
+                    {/volist}
+                </div>
+                <div class="layui-form-item" style="padding-top: 10px;">
+                    <blockquote class="layui-elem-quote">
+                        <div class="layui-inline">
+                        <input type="checkbox" name="sex" value="全选" title="全选" lay-filter="checkall">
+                        <a href="javascript:;" class="layui-btn" id="add" style="margin-top: 6px;"><i class='icon iconfont'>&#xe6b9;</i>添加</a>
+                        </div>
+                       
+                    </blockquote>    
+                </div>  
+                <div class="layui-col-xs12 flower-list">
+                    {volist name='list' id='v'}
+                    <div class='layui-col-xs2'>
+                        <img src="/upload/{$v.structure_pic}"  height='100'/>
+                        <input name='structure_id[]' type='hidden' value='{$v.id}'/>
+                        <a title='删除' class='del-icon' onclick='flower_del(this)' href='javascript:;'><i class='layui-icon'>&#xe640;</i></a>
+                    </div>
+                    {/volist}
+                </div>
+                <div class="layui-form-item">
+                    <label for="L_repass" class="layui-form-label"></label>
+                    
+                    <button class="layui-btn" lay-filter="add" lay-submit="">保存</button>
+                </div>
+            </form>
+        </div> 
+    </div>
+    <script>layui.use(['form', 'layer'],
+                function () {
+                    $ = layui.jquery;
+                    var form = layui.form,
+                    layer = layui.layer;
+
+                    var html = '<i class="icon iconfont check">&#xe6b1</i>';//选中icon图标
+                    $(function () {
+                        //点击图片添加选中icon
+                        $('#all-flower').on('click', '.check-box', function () {
+                            $(this).find('i').remove();
+                            if ($(this).attr('attr') == 'false') {
+                                $(this).attr('attr', 'true');
+                                $(this).find('i').remove();
+                            } else {
+                                $(this).attr('attr', 'false');
+                                $(this).append(html)
+                            }
+
+                        })
+
+                        //添加结构图片
+                        $('#add').click(function () {
+
+                            $('.check-box').each(function () {
+                                if ($(this).attr('attr') == 'false') {
+                                    var row = $('.flower-list').find('div').length;
+                                    var id = $(this).attr('ids');  //id
+                                    var pic = $(this).find('img').attr('src'); //图片
+                                    var check_html = "<div class='layui-col-xs2'><img src='" + pic + "'  height='100'/>\n\
+                                                        <input name='structure_id[]' type='hidden' value='"+id+"'/>  \n\
+                                                      <a title='删除' class='del-icon' onclick='flower_del(this)' href='javascript:;'><i class='layui-icon'>&#xe640;</i></a></div>";
+                                    $('.flower-list').append(check_html);
+                                }
+                            })
+                        })
+                    })
+                    //监听全选
+                    form.on('checkbox(checkall)', function (data) {
+                        $('.check-box').find('i').remove();
+                        if (data.elem.checked) {
+                            $('.check-box').attr('attr', false);
+                            $('.check-box').append(html);
+                        } else {
+                            $(this).attr('attr', true);
+                            $('.check-box').find('i').remove();
+                        }
+                        form.render('checkbox');
+                    })
+
+                    //监听下拉刷新
+                    form.on('select(selectd)',function(data){
+                        var window = $('#window_type option:selected').val();
+                        var hands = $('#hands option:selected').val();
+                        var fixed = $('#fixed option:selected').val();
+                        var level = $('#level option:selected').val();
+                        $.post("{:url('series/findStructure')}",{window_type:window,hands:hands,fixed:fixed,level:level},function(obj){
+                            var html = '';
+                            var array = obj.data;     
+                            for(i=0;i<array.length;i++){                              
+                                html += "<div class='layui-col-xs3 check-box' ids='"+array[i]['id']+"'>\n\
+                                          <img src='/upload/"+array[i]['structure_pic']+"'  height='100'/>\n\
+                                          </div>";                                                             
+                            }
+                            $('#all-flower').html(html);
+                            
+                        },'json');
+                    })
+
+                    //监听提交表单
+                    form.on('submit(add)',
+                            function (data) {
+                                
+                                ajaxform("{:url('bom/saveFlowerStructure')}", data.field, 2);
+                                return false;
+                            });
+
+                });
+        /*删除*/
+        function flower_del(obj) {
+            $(obj).parent().remove();
+        }
+    </script>
+        <script>
+         //回调参数
+        function callbackdata() {
+
+            var data = {ruler_name:$('#ruler option:selected').text(),ruler:$('#ruler option:selected').val(),
+                        calculate_name:$('#calculate option:selected').text(),calculate:$('#calculate option:selected').val()};                       
+            return data;
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>佛山市微元科技-扫码报工系统</title>
+
+<link href="__STATIC__/theme/manage/css/bootstrap.min.css" rel="stylesheet">
+<link href="__STATIC__/theme/manage/css/bootstrap-table.css" rel="stylesheet">
+<link href="__STATIC__/theme/manage/css/styles.css" rel="stylesheet">
+
+<!--[if lt IE 9]>
+<script src="__STATIC__/theme/manage/js/html5shiv.js"></script>
+<script src="__STATIC__/theme/manage/js/respond.min.js"></script>
+<![endif]-->
+
+</head>
+
+<body>
+	
+	{include file="public/header" /}	
+	{include file="public/menu" /}	
+	
+	<div class="col-sm-9 col-sm-offset-3 col-lg-10 col-lg-offset-2 main">			
+		<div class="row">
+			<ol class="breadcrumb">
+				<li><a href="#"><span class="glyphicon glyphicon-home"></span></a></li>
+				<li class="active">SQL指令</li>
+			</ol>
+		</div>
+		
+		<div class="row">
+			<div class="col-lg-12">
+				<h1 class="page-header">SQL指令执行</h1>
+			</div>
+		</div>
+				
+		
+		<div class="row">
+			<div class="col-lg-12">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<a class="btn btn-primary" href="javascript:void(0);" onclick="execute_sql();">执行SQL</a>
+					</div>
+					<div class="panel-body">
+					<form role="form">
+						<textarea class="form-control" id="sqltext" rows="5"></textarea>
+						<br/>
+						<p>多个SQL语句请用英文";"分号分隔开！</p>
+					</form>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		
+		
+	</div>
+
+	<script src="__STATIC__/theme/manage/js/jquery-1.11.1.min.js"></script>
+	<script src="__STATIC__/theme/manage/js/bootstrap.min.js"></script>
+	<script src="__STATIC__/theme/manage/js/bootstrap-table.js"></script>
+	<script src="__STATIC__index/js/layer/layer.js"></script>
+	<script>
+		!function ($) {
+			$(document).on("click","ul.nav li.parent > a > span.icon", function(){		  
+				$(this).find('em:first').toggleClass("glyphicon-minus");	  
+			}); 
+			$(".sidebar span.icon").find('em:first').addClass("glyphicon-plus");
+		}(window.jQuery);
+
+		$(window).on('resize', function () {
+		  if ($(window).width() > 768) $('#sidebar-collapse').collapse('show')
+		})
+		$(window).on('resize', function () {
+		  if ($(window).width() <= 767) $('#sidebar-collapse').collapse('hide')
+		})
+		
+		
+		var lock=false;
+		function execute_sql(id){
+			
+			if(lock){
+				return;
+			}
+			
+			layer.confirm('确认要执行SQL吗？', {
+				  btn: ['确认','取消']
+				}, function(){
+					
+					lock=true;
+					layer.load();
+					
+					var sql=$("#sqltext").val();
+					
+					$.ajax({
+						  url: "{:Url('Index/execute_sql')}",
+						  data:{"sql":sql},
+						  dataType:"json",
+						  type:'POST',
+						  success:function(obj){
+							  layer.closeAll();
+							  lock=false;
+							  //console.log(obj);
+							  if(obj.status==1){
+								  layer.msg('执行成功， 语句:'+obj.sql+'  站点:'+obj.site+' 执行次数:'+obj.total);
+							  }else{
+								  layer.msg(obj.msg);
+							  }
+						  }
+					  })
+					
+				}, function(){
+					lock=false;
+				});
+		}
+	</script>	
+</body>
+
+</html>

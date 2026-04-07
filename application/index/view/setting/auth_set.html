@@ -1,0 +1,176 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD HTML 4.01 Strict//EN' 'http://www.w3.org/TR/html4/strict.dtd'>
+<html>
+<head>
+<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>
+<link href="__STATIC__index/css/index.css" rel="stylesheet" type="text/css"/>
+<title>设置</title>
+<style type="text/css">
+.content{margin-top:20px;width:96%;margin-left:20px;}
+.left{ background:#fff; border:1px solid #EAEAEA;float:left; width:140px; padding:25px 10px;border-radius: 5px 5px 5px 5px}
+.left li{ float:left; width:140px; text-align:center; font-size:16px; line-height:55px; border-bottom:1px solid #eee;}
+.left li a{ color:#333;}
+.left li a:hover{ color:#01a0fb;}
+.left li a.paa{ color:#01a0fb;}
+.right{margin-left:10px;float:left;width:86%;margin-bottom: 50px;}
+.add-user button{width:70px;height:34px;line-height:34px;border:0;outline:none;text-align:center;background:#1874CD;color:#fff;font-size:13px;border-radius:8px;}
+.u-pages{box-shadow:0px 3px 2px #A3A3A3;background:#CFCFCF;font-weight:bold;margin-top:10px;width:100%;height:50px;line-height:50px;}
+.u-pages ul li{}
+.u-pages ul{display:flex;}
+.row-line{width:1px;height:50px;background:#EAEAEA;}
+.ath{display:none;width:30%;height:auto;background:#E3E3E3;position:absolute;z-index:9999;left:36%;top:30%;border-radius:8px;}
+.ath div{width:100%;text-align:center;height:40px;line-height:40px;margin-top:30px;font-size:14px;}
+.ath div input{padding-left:4px;width:70%;height:40px;line-height:40px;border-radius:4px;border:0;margin-bottom:6px;}
+.ath div .spa{letter-spacing:8px;}
+.btne{width:80px;height:40px;line-height:40px;background:#FF4040;color:#fff;border:0;outline:none;border-radius:8px;margin-left:42%;margin-top:18px;margin-bottom:10px;}
+.role{width: 70%;height: 40px;border-radius: 6px;border: none;}
+.mb{display:none;width:100%;height:100%;background:black;opacity:0.6;position:fixed;z-index:1000;}
+.u-content{border-left:1px solid #EAEAEA;border-right:1px solid #EAEAEA;border-bottom:1px solid #EAEAEA;width:100%;height:50px;line-height:50px;}
+.u-content ul{display:flex;}
+.rows-line{width:1px;height:50px;background:#C4C4C4;}
+.x-btn{width: 50px;height: 36px;border: none;color: #fff;background: #1874CD;border-radius: 6px;}
+.s-btn{border: none;width: 50px;height: 36px;border-radius: 6px;color: #fff;background: #FF0025;}
+</style>
+</head>
+<body>
+	<div class="mb"></div>
+	<div class="top out"><a href="{:Url('Index/loginout')}">退出登录</a><a href="{:Url('Index/index')}">首页</a></div>
+	<div class="content">
+		<div class="left">
+			<ul>
+				<li><a href="{:Url('Setting/setting')}" >用户管理</a></li>
+				<li><a href="{:Url('Setting/allocation')}">工序分配</a></li>
+				<li><a href="{:Url('Setting/role_set')}">角色管理</a></li>
+				<li><a href="{:Url('Setting/auth_set')}" style="color:#01a0fb;">权限管理</a></li>
+			</ul>
+		</div>
+		<div class="right"> 
+			<div class="add-user"><button>添加权限</button></div>
+			<div class="ath">
+				<form action="" method="post">
+					<div><span>名称：</span><input name="path" id="path" type="text"/></div>
+					<div><span>描述：</span><input name="des" id="des" type="text"/></div>
+					<div><span>级别：</span>
+						<select class="role" id="role">
+							<option value="0">父级</option>
+							{volist name="mrule" id="op"}
+							<option value="{$op.id}">{$op.title}</option>
+							{/volist}
+						</select>
+					</div>
+				</form>
+				<button class="btne">添加</button>
+			</div>
+			<div class="u-pages">
+				<ul>
+					<li style="width:14%;text-align:center;">名称</li>
+					<div class="row-line"></div>
+					<li style="width:12%;text-align:center;">描述</li>
+					<div class="row-line"></div>
+					<li style="width:12%;text-align:center;">排序</li>
+					<div class="row-line"></div>
+					<li style="width:18%;text-align:center;">创建时间</li>
+					<div class="row-line"></div>
+					<li style="width:24%;text-align:center;">操作</li>
+				</ul>
+			</div>
+			{volist name="rule" id="re"}
+			<div class="u-content">
+				<ul>
+					<li style="width:13.9%;text-align:center;">{$re.name}</li>
+					<div class="rows-line"></div>
+					<li style="width:12%;text-align:center;">{$re.title}</li>
+					<div class="rows-line"></div>
+					<li style="width:12%;text-align:center;">{$re.sort}</li>
+					<div class="rows-line"></div>
+					<li style="width:18%;text-align:center;"></li>
+					<div class="rows-line"></div>
+					<li style="width:24%;text-align:center;"><a href="{:Url('Setting/change_auth',array('id'=>$re.id))}"><button class="x-btn">编辑</button></a>
+					<a href="{:Url('Setting/del',array('kid'=>$re.id,'kind'=>3))}"><button class="s-btn">删除</button></a></li>
+				</ul>
+			</div>
+			{volist name="re['second']" id="se"}
+			<div class="u-content">
+				<ul>
+					<li style="width:13.9%;text-align:center;">{$se.name}</li>
+					<div class="rows-line"></div>
+					<li style="width:12%;text-align:center;">———{$se.title}</li>
+					<div class="rows-line"></div>
+					<li style="width:12%;text-align:center;">{$se.sort}</li>
+					<div class="rows-line"></div>
+					<li style="width:18%;text-align:center;"></li>
+					<div class="rows-line"></div>
+					<li style="width:24%;text-align:center;"><a href="{:Url('Setting/change_auth',array('id'=>$se.id))}"><button class="x-btn">编辑</button></a>
+					<a href="{:Url('Setting/del',array('kid'=>$se.id,'kind'=>3))}"><button class="s-btn">删除</button></a></li>
+				</ul>
+			</div>
+			{/volist}
+			{/volist}
+		</div>
+	</div>
+	
+	<script src="__STATIC__index/js/jquery.min.js"></script>
+	<script src="__STATIC__index/js/layer/layer.js"></script>
+	<script type="text/javascript">
+		//下拉选择-1
+		$(document).ready(function(){
+			var ide = document.getElementById('role');
+			ide.selectedIndex = -1;
+		})
+		
+		
+		$('.add-user').click(function(){
+			$('.ath').fadeIn();
+			$('.mb').fadeIn();
+		})
+		
+		$('.mb').click(function(){
+			$('.ath').fadeOut();
+			$('.mb').fadeOut();
+		})
+		
+		//录入
+		$('.btne').click(function(){
+			//获取参数
+			var path = $('#path').val();
+			var des = $('#des').val();
+			var pid = $('#role').val();
+			if(path == ''){
+				layer.msg('请输入名称');
+				return false;
+				
+			}
+			if(des==''){
+				layer.msg('请填写描述');
+				return false;
+			}
+			if(pid==''){
+				layer.msg('请选择级别');
+				return false;
+			}
+			var data={};
+			data['path'] = path;
+			data['des'] = des;
+			data['pid'] = pid;
+			
+			$.ajax({
+				url:"{:Url('setting/inrule')}",
+				data:{path,des,pid},
+				dataType: 'json',
+				success:function(obj){
+					console.log(obj);
+					if(obj.status==1){
+						layer.msg('成功');
+						setTimeout(function(){
+							window.location.reload();
+						},1000);
+						
+					}
+					
+				}
+			
+			},'json');
+		})
+		
+	</script>
+</body>
+</html>

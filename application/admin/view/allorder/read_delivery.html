@@ -1,0 +1,71 @@
+{include file="public/header"/}
+<style>
+    .alltable{height:232px;overflow-y: scroll;}
+</style>
+<body>
+    <div class="layui-fluid">
+        <div class="layui-row">
+            <form class="layui-form">
+
+                <div class="layui-col-xs12">
+                    
+                    <div class="layui-form-item" style="padding-top: 10px;">
+                        <blockquote class="layui-elem-quote">
+                            <div class="layui-inline">
+                            <input type="text" name="search" placeholder="输入订单号/经销商名称" class="layui-input" style="display:inline;width: 220px;">
+                            <button class="layui-btn" id="add">搜索</button>
+                            </div>
+                            <div class="layui-inline">
+                                {if condition="$send['is_send'] eq 0"}
+                                <p style='font-size:13px;'>自送   &nbsp;&nbsp;司机姓名：{$send['driver_name']}    司机电话：{$send['driver_phone']}</p>
+                                {elseif condition="$send['is_send'] eq 3"}
+                                <p style='font-size:13px;'>请车   &nbsp;&nbsp;司机姓名：{$send['driver_name']}    司机电话：{$send['driver_phone']}</p>
+                                {elseif condition="$send['is_send'] eq 1"}
+                                <p style='font-size:13px;'>物流    &nbsp;&nbsp;物流公司：{$send['logistics_name']}   物流电话：{$send['logistics_numbers']}</p>
+                                {elseif condition="$send['is_send'] eq 4"}
+                                <p style='font-size:13px;'>快递    &nbsp;&nbsp;物流公司：{$send['logistics_name']}   物流电话：{$send['logistics_numbers']}</p>
+                                {else/}
+                                <p style='font-size:13px;'>自提    &nbsp;&nbsp;</p>
+                                {/if}
+                            </div>
+                        </blockquote>    
+                    </div> 
+                    <div class="select-table">
+                        <table class="layui-table layui-form" lay-skin="line">
+                        <thead>
+                            <tr>                                       
+                                <th>序号</th>
+                                <th>订单号</th>
+                                <th>经销商</th>
+                                <th>送货地址</th>
+                                <th>数量</th>
+                                <th>预计到达时间</th>
+                                <th>签收时间</th>
+                                <th>收款情况</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {volist name='list' id='v'}
+                            <tr>
+                                <td>{$v.sort}</td>
+                                <td>{$v.number}</td>
+                                <td>{$v.dealer}</td>
+                                <td>{$v.send_address}</td>
+                                <td>{$v.count}</td>
+                                <td>{$v.arrive_time}</td>
+                                <td>{if condition="$v['sign_time'] neq 0"}{$v.sign_time|date='Y-m-d H:i:s',###}{/if}</td>
+                                <td>¥：{$v.total_price}</br>{if condition="$v['sign_time'] != ''"}{$pay_type[$v['pay_type']]}{/if}</td>
+                            </tr>
+                            {/volist}
+                        </tbody>
+                        </table>
+                    </div>
+                </div>  
+
+            </form>
+        </div> 
+    </div>
+
+</body>
+
+</html>

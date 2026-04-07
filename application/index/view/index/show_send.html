@@ -1,0 +1,147 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD HTML 4.01 Strict//EN' 'http://www.w3.org/TR/html4/strict.dtd'>
+<html>
+<head>
+<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>
+<script src="__STATIC__/theme/index/js/jquery-1.10.2.js"></script>
+<link href="__STATIC__index/css/index.css" rel="stylesheet" type="text/css"/>
+<title>订单出库</title>
+</head>
+<style type="text/css">
+	.xiug{width: 100%;margin-left: 30px;margin-top: 40px;}
+	.xiug input{width: 110px;height: 40px;border-radius: 10px;text-align: center;}	
+.order{display:block;width:80%;margin-left:10%;height:auto;margin-bottom:50px;border-radius:8px;}
+.order div{width:100%;text-align:left;height:30px;line-height:30px;margin-top:10px;font-size:14px;}
+.order div input{padding-left:4px;width:70%;height:30px;line-height:30px;border-radius:4px;border:0;margin-top:4px; font-size:12px;}
+.order div .spa{letter-spacing:4px;}
+.order div textarea{padding: 8px;width: 76%;border-radius: 6px;}
+.order div select{padding-left:4px;width:70%;height:30px;line-height:30px;border-radius:4px;border:0;margin-top:4px; font-size:12px;}
+.btn{width: 70px;height: 30px;background: #7EC0EE;border: none;color: #fff;border-radius: 5px;display:inline-block;cursor:pointer;}
+.child1{margin-left:15px;background:#b52323}
+.child0{background:#458B00}
+.order div input.inputtxt{width:100px;border-bottom:solid 1px #458B00;border-radius:0;text-align:center;}
+.child3{background:none;color:#50a120;text-decoration: none;width:100px;}
+.imgs{margin-top:10px;}
+#img li{display:inline-block;width:160px;height:160px;float:left;padding-right:5px;margin-bottom:5px;}
+#img li img{display:block;max-width:160px;max-height:160px;cursor:pointer;}
+.order u{text-decoration:none;}
+</style>
+<body>
+<div class="order">
+	<form action="" method="post">
+	<div>
+			<span>订单状态：{$order_status}</span>
+	</div>
+	
+	{volist name="inGx" id="cvo"}
+	<div>
+			<span>{$cvo['dname']}：
+			{php}
+					if(isset($checks[$cvo['id']])){
+						$check=$checks[$cvo['id']];
+			{/php}
+			
+			{if condition="$check['issend'] eq '1'"}
+			
+			<u><font style=" color: #50a120">【{$check['in_num']}】</font>[已出库 {php}echo date('Y-m-d',$check['sendtime']){/php} ]
+				<a href="javascript:void(0);" style=" color: #fff; background: #ff0000" onclick="javascript:toRefuseOut({$check['id']},{$order['id']});" title="驳回">[驳回]</a>
+			</u>
+			{elseif condition="$check['endtime'] gt 0 and $check['issend'] neq '1'" /}
+			<u><font style=" color: #50a120">【{$check['in_num']}】</font> 
+				<a href="javascript:void(0);" style="color:#50a120;" onclick="javascript:toReport({$check['orstatus']},{$order['id']});" title="出库">[出库]</a> 
+				<a href="javascript:void(0);" style="color:#50a120;" onclick="javascript:toRefuse({$check['id']},{$order['id']});" title="驳回">[驳回]</a>
+			</u>
+			{/if}
+			
+			{php}
+					}else{
+			{/php}
+			<i>{$cvo['dname']}--[未入库]</i>
+			{php}
+					}
+			{/php}
+			
+			</span>
+	</div>
+	{/volist}
+
+
+
+	</form>
+
+</div>
+
+
+
+<script src="__STATIC__index/js/jquery.min.js"></script>
+<script src="__STATIC__index/js/layer/layer.js"></script>
+<script src="__STATIC__index/js/laydate/laydate.js"></script>
+<script type="text/javascript">
+function toReport(gxid,orderid){
+	layer.confirm('确认要执行出库吗？',{icon:3,title:'提示'},function(index){
+		$.ajax({
+			  url: "{:Url('Index/batch_send')}",
+			  data:{"gxid":gxid,"orderid":orderid},
+			  dataType:"json",
+			  type:'POST',
+			  success:function(obj){
+				  //console.log(obj);
+				  if(obj.status==1){
+					  layer.msg('出库完成');
+					  setTimeout(function(){
+							parent.window.location.reload();	
+						},1500);
+				  }else{
+					  layer.msg(obj.msg);
+				  }
+			  }
+		  });
+	  	layer.close(index);
+	})
+}
+
+function toRefuse(flow_check_id,orderid){
+	layer.confirm('确认要驳回吗？',{icon:3,title:'提示'},function(index){
+		$.ajax({
+			  url: "{:Url('Index/in_refuse')}",
+			  data:{"fid":flow_check_id,"orderid":orderid},
+			  dataType:"json",
+			  type:'POST',
+			  success:function(obj){
+				  if(obj.status==1){
+					  layer.msg(obj.msg);
+					  setTimeout(function(){
+						  parent.window.location.reload();	
+						},1500);
+				  }else{
+					  layer.msg(obj.msg);
+				  }
+			  }
+		  });
+	  	layer.close(index);
+	})
+}
+
+function toRefuseOut(flow_check_id,orderid){
+	layer.confirm('确认要驳回吗？',{icon:3,title:'提示'},function(index){
+		$.ajax({
+			  url: "{:Url('Index/out_refuse')}",
+			  data:{"fid":flow_check_id,"orderid":orderid},
+			  dataType:"json",
+			  type:'POST',
+			  success:function(obj){
+				  if(obj.status==1){
+					  layer.msg(obj.msg);
+					  setTimeout(function(){
+						  parent.window.location.reload();	
+						},1500);
+				  }else{
+					  layer.msg(obj.msg);
+				  }
+			  }
+		  });
+	  	layer.close(index);
+	})
+}
+</script>
+</body>
+</html>

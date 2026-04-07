@@ -1,0 +1,119 @@
+{include file="public/header"/}
+<style>
+    .input-field{ width: 80px}
+    .input-formula{ width: 400px}
+    .input-count{ width: 10%}
+    .input-name { width: 20%}
+</style>
+<body>
+
+    <div class="layui-fluid">
+        <div class="layui-col-md3">
+            <img src="/upload/{$structure.ruler_pic}" style="max-width: 100%;max-height: 500px;"/>
+        </div>
+        <div class="layui-col-md9" style="padding:15px;">
+            <form class="layui-form layui-col-space5">
+                <div class="layui-form-item">
+                    
+                    <div class="layui-input-inline">
+                        <input type="text" id="code" name="name" required="" lay-verify="required" class="layui-input" placeholder="请输入公式名称" value="{$name.name}">
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">
+                        <span class="x-red">*</span>不能为空
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                     <div class="layui-input-inline">
+                        对应物料
+                    </div>
+                    <div class="layui-input-inline" style="width: 250px">
+                        计算公式
+                    </div>
+                    <div class="layui-input-inline" style="width: 30px;margin-left: 80px;">
+                        数量
+                    </div>
+                    <div class="layui-input-inline" style="width: 50px;margin-left: 50px;">
+                        输出名称
+                    </div>
+                </div>
+                <div id="box">
+                    {volist name='list' id='v'}
+                <div class="layui-form-item" id="clone">
+                    <div class="input-field layui-inline ">
+                        <select name="bom[]">
+                            <option value="边框" {if condition="$v['bom'] eq '边框'"}selected{/if}>边框</option>
+                            <option value="外框" {if condition="$v['bom'] eq '外框'"}selected{/if}>外框</option>
+                            <option value="内框" {if condition="$v['bom'] eq '内框'"}selected{/if}>内框</option>
+                            <option value="中挺" {if condition="$v['bom'] eq '中挺'"}selected{/if}>中挺</option>
+                            <option value="扇" {if condition="$v['bom'] eq '扇'"}selected{/if}>扇</option>
+                            <option value="小门框" {if condition="$v['bom'] eq '小门框'"}selected{/if}>小门框</option>
+                            <option value="纱网" {if condition="$v['bom'] eq '纱网'"}selected{/if}>纱网</option>
+                            <option value="花件" {if condition="$v['bom'] eq '花件'"}selected{/if}>花件</option>
+                            <option value="配件" {if condition="$v['bom'] eq '配件'"}selected{/if}>配件</option>
+                            <option value="中横" {if condition="$v['bom'] eq '中横'"}selected{/if}>中横</option>
+                            <option value="小门框" {if condition="$v['bom'] eq '小门框'"}selected{/if}>小门框</option>
+                            <option value="上中横" {if condition="$v['bom'] eq '上中横'"}selected{/if}>上中横</option>
+							<option value="下中横" {if condition="$v['bom'] eq '下中横'"}selected{/if}>下中横</option>
+							<option value="窄边框" {if condition="$v['bom'] eq '窄边框'"}selected{/if}>窄边框</option>
+							<option value="窄内框" {if condition="$v['bom'] eq '窄内框'"}selected{/if}>窄内框</option>
+							<option value="窄外框" {if condition="$v['bom'] eq '窄外框'"}selected{/if}>窄外框</option>
+							<option value="纱压线" {if condition="$v['bom'] eq '纱压线'"}selected{/if}>纱压线</option>
+                        </select>
+                    </div>
+                    <div class="layui-inline input-formula">
+                        <input type="text" id="code" name="formula[]" required="" lay-verify="required" class="layui-input" value="{$v.formula}">
+                    </div>
+                    <div class="layui-inline input-count">
+                        <input type="text" id="code" name="count[]" required="" lay-verify="required" class="layui-input" value="{$v.count}">
+                    </div>
+                    <div class="layui-inline input-name">
+                        <input type="text" id="code" name="export_name[]" class="layui-input" value="{$v.export_name}">
+                    </div>
+                    <button type="button" class="layui-btn layui-btn-radius layui-btn-danger" onclick="del(this)">删除</button>
+                </div>
+                    {/volist}
+                </div>
+                <div style="float: right">
+                    
+                    <button type="button" id="add" class="layui-btn layui-btn-radius layui-btn-warm">继续添加</button>
+                     
+                </div>
+                <div class="layui-col-md12">
+                    <input name='scf_id' type='hidden' value='{$scf_id}'/>
+                    <button class="layui-btn" lay-filter="add" lay-submit="" style="margin-left: 40%;">立即保存</button>              
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+<script>layui.use(['laydate', 'form'],
+            function () {
+                $ = layui.jquery;
+                var laydate = layui.laydate;
+                var form = layui.form;
+                
+                 $(function(){
+                    $('#add').click(function(){
+                        var html = $('#clone').clone();
+                        $('#box').append(html);
+                        form.render('select');  
+                    })     
+                })
+                //监听提交
+                form.on('submit(add)',
+                function(data) {
+                    ajaxform("{:url('editCalculateFormula')}",data.field);
+                    return false;
+                });
+            });
+</script>
+<script src="__STATIC__/js/jquery.min.js" charset="utf-8"></script>
+<script>
+   
+    
+    //删除
+    function del(obj){
+        $(obj).parent().remove();
+    }
+</script>
+</html>

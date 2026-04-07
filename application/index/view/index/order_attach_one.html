@@ -1,0 +1,143 @@
+<div class="setbacks">
+	<div class="process-box">
+		<div class="process-box-inner">
+			{volist name="group" id="vo"}
+	{php} 
+			$cache_id=$key;
+			if(!isset($order_gxlist[$cache_id])||count($order_gxlist[$cache_id][0])<=0){
+				continue;
+			}
+	{/php}
+<?php 
+	$a=$order_gxlist[$cache_id][0];
+	$gpstatus='inx_3';
+	foreach ($a as $b){
+		if($b['inouts']!=2){ 
+			if($b['endtime']!==0){	
+				$gpstatus='inx_1';
+			}else if($b['endtime']== 0&&$b['starttime']!==0&&$b['state']==1){
+				$gpstatus='inx_2';
+				break;
+			}else if($b['isbad']== 1){	
+				$gpstatus='inx_2';
+				break;
+			}else if ($b['isover']==1){ 				
+				$gpstatus='inx_2';
+				break;
+			}
+		 }else{
+			if ($b['outstatus']==2)
+	  		{
+				$gpstatus='inx_2';
+				break;
+			}else if($b['outstatus']==1){
+				$gpstatus='inx_1';
+			}
+		} 
+	}
+?>
+
+
+			<ul>
+				{foreach $a as $b}
+				<script>
+					var tempData = {php} echo json_encode($b); {/php};
+					// console.log(tempData);
+				</script>
+				{php} 
+						$dname=htmlspecialchars_decode($b['dname']);	
+						$dtime='';
+						if($b['starttime']>0){
+							$dtime=date('Y-m-d',$b['starttime']);
+						}
+						if (($b['state']==1&&$b['endtime']>0)||($b['starttime'] >0&&$b['endtime']>0)){
+							$dtime.="  -  ";
+						}
+						if($b['endtime']>0){
+								$dtime.=date('Y-m-d',$b['endtime']);
+						}
+				{/php}
+
+				{php} if($b['inouts']!=2){ {/php}
+					{php}
+							$status='';
+							$move_class='';
+							
+							$b_data=$b['gxid'];
+							$b_data_id=$b['orderid'];
+							$b_data_inout=$b['inouts'];
+							$b_data_content=$b['text'];
+							$b_data_name=$b['name'];
+								
+							if($b['starttime']== 0&& $b['endtime']==0){
+								$status.='未开始';
+								$classname="li-unstart";
+								$move_class='no3';
+							}
+							if($b['endtime']== 0&&$b['starttime']>0&&$b['state']==1){
+								$status.='进行中';
+								$classname="li-ongoing";
+								$move_class='no2';
+							}
+							
+							if($b['endtime']== 0&&$b['starttime']>0&&$b['state']==2){
+								$status.='进行中';
+								$classname="li-ongoing";
+								$move_class='no2';
+							}
+							
+							if($b['endtime']>0){
+								$status.='完成';
+								$classname="li-finish";
+								$move_class='no5';
+							}
+							
+							if($b['isbad']== 1){
+								$status.='|异常';
+								$classname="li-error";
+								$move_class='diff';
+								$b_data_id=$b['fid'];
+							}
+							if ($b['isover']==1)
+							{ 
+								$status.='|超时';
+								$classname="li-overtime";
+							}
+					{/php}
+	
+					<li data="{$b_data}" data-id="{$b_data_id}" data-oag="{$oag}" data-inout="{$b_data_inout}" data-content="{$b_data_content}" data-name="{$b_data_name}" class="{$classname} {$move_class}">
+						{$dname}({$status}) {if $dtime!=''} &nbsp;|&nbsp;{$dtime}{/if}
+					</li>
+					{php} }else{ {/php}
+					{php}
+							$status='';
+							if ($b['outstatus']==2)
+							{ 
+								$status='部分发货';
+								$classname=$b['overtime']!=''?'li-error':'li-ongoing';
+							}else if($b['outstatus']==1){
+								$status='全部发货';
+								$classname='li-finish';
+							}else{
+								$status='未发货';
+								$classname='li-unstart';
+							}
+					{/php}
+						<li class="{$classname} {$move_class}">
+							{$dname}({$status}) {if $dtime!=''}| &nbsp;{$dtime}{/if}
+						</li>
+
+					{php} } {/php}
+					{/foreach}
+				</ul>
+			{/volist}
+			<div class="delcopyorder-operate">
+				<div class="delcopyorder" id="delcopyorder" onclick="deleteComfirmline({$oag},this);">
+					<img src="__STATIC__/theme/index/images/delete.png" width="32">
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+</div>

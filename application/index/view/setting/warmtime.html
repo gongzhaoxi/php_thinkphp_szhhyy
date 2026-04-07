@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+<meta name="referrer" content="never">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>生产进度扫码报工系统</title>
+{include file="public/header" /}
+</head> 
+
+<body class="set_warningTime_modal">
+	<div class="modal-body">
+		<div class="modal-body-middle">
+			<div class="warning-time-box">
+				<span>预警天数：</span>
+				<input type="text" id="warningTime" value="{$list.day?$list.day:''}" placeholder="输入预警天数">
+			</div>
+		</div>
+		<div class="modal-body-bottom">
+			<div class="btne" data-id="{$list.id?$list.id:''}">确认设置</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+	
+		$('.btne').click(function(){
+			var day = $("#warningTime").val();
+			var id = $(this).data('id');
+			var kind = 0;
+			if(day==''){
+				layer.msg("请输入预警天数");
+				return false;
+				}
+			if(id !== ''){
+				kind = 1;
+			}
+			$.ajax({
+				url: "{:Url('Setting/warmtime')}",
+				data: {"day":day,"id":id,"kind":kind},
+				dataType: 'json',
+				success:function(obj){
+					var index = parent.layer.getFrameIndex(window.name);
+					if(obj.code==0){
+						layer.msg('设置成功');
+						setTimeout(function(){
+							layer.close(index);
+							window.parent.location.reload();
+						},1000);				
+					}else{
+						layer.msg('缺少参数');
+						setTimeout(function(){
+							layer.close(index);
+							window.parent.location.reload();
+						},1000);
+					}
+				}
+			})
+		});
+		
+		
+	</script>
+
+</body>
+</html>

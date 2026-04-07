@@ -1,0 +1,93 @@
+{include file="public/header"/}
+<body>
+    <div class="layui-fluid">
+        <div class="layui-row">
+            <form class="layui-form">
+
+                <div class="layui-col-xs12">
+                    
+                    <div class="layui-form-item" style="padding-top: 10px;">
+                        <blockquote class="layui-elem-quote">
+                            <div class="layui-inline">
+                            <input type="text" name="search" placeholder="输入订单号/经销商名称" class="layui-input" style="display:inline;width: 220px;">
+                            <button class="layui-btn" id="add">搜索</button>
+                            </div>
+                        </blockquote>    
+                    </div> 
+                   
+                    <div class="select-table">
+                        <table class="layui-table layui-form" lay-skin="line">
+                        <thead>
+                            <tr>                                       
+                                <th>排序</th>
+                                <th>订单号</th>
+                                <th>经销商</th>
+                                <th>地址</th>
+                                <th>数量</th>
+                                <th>签收时间</th>
+                                <th>收款情况</th>
+                                <th>选择</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {volist name='list' id='v'}
+                            <tr>
+                                <td>{$v.sort}</td>
+                                <td>{$v.number}<input name="number[]" type="hidden" value="{$v.number}"/></td>
+                                <td>{$v.dealer}</td>
+                                <td>{$v.address}</td>
+                                <td>{$v.count}</td>
+                                <td>{$v.sign_time}</td>
+                                <td>¥：{$v.have_pay}</br>{if condition="$v['sign_time'] != ''"}{$pay_type[$v['pay_type']]}{/if}</td>
+                                <td><input type="checkbox" name="check[]" lay-skin="primary" value="{$v['id']}" {if condition="$v['send_finance'] eq 1"}disabled checked='true'{/if}></td>
+                            </tr>
+                            {/volist}
+                        </tbody>
+                        </table>
+                    </div>
+                    <div class="layui-form-item" style="width:30%;margin-left: 30%">
+                        <label class="layui-form-label">勾选</label>
+                        <div class="layui-input-block">
+                          <input type="radio" name="sex" value="所有订单" title="所有订单" lay-filter="checkall">
+                          <input type="radio" name="sex" value="已收款订单" title="已收款订单">
+                        </div>
+                      </div>
+                    <div>
+                        <input name="sid" type="hidden" value="{$sid}"/>
+                        <button class="layui-btn" type="button" lay-filter="add" lay-submit="" style="margin-left: 40%;">提交给财务审核</button>
+                    </div>
+                </div>  
+
+            </form>
+        </div> 
+    </div>
+
+</body>
+<script>layui.use(['laydate', 'form'],
+        function() {
+            var laydate = layui.laydate;
+            var  form = layui.form;
+            
+             // 监听全选
+            form.on('radio(checkall)', function(data){
+
+              if(data.elem.checked){
+                $('tbody input').prop('checked',true);
+              }else{
+                $('tbody input').prop('checked',false);
+              }
+              form.render('checkbox');
+            });
+            
+            //监听表单提交
+            form.on('submit(add)',
+            function(data) {
+                ajaxform("{:url('sendFinance')}",data.field);
+                return false;
+            });
+        });
+
+    
+        
+    </script>
+</html>

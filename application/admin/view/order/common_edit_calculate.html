@@ -1,0 +1,135 @@
+<div class="layui-form-item">
+                        <label for="username" class="layui-form-label">
+                            <span class="x-red">*</span>横间距</label>
+                        <div class="layui-input-inline">
+                            <input type="text" id="spacing" name="spacing" required="" lay-verify="required" class="layui-input" value="{$info.spacing}">
+                        </div>
+                        <div class="layui-form-mid layui-word-aux">
+                             默认120mm，如需修改请填写
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label for="username" class="layui-form-label">
+                            <span class="x-red"></span>竖间距</label>
+                        <div class="layui-input-inline">
+                            <input type="text" id="bottom_spacing" name="bottom_spacing"  class="layui-input" value="{$info.bottom_spacing}">
+                        </div>
+                       
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">
+                            <span class="x-red"></span>右竖间距</label>
+                        <div class="layui-input-inline">
+                            <input type="text" id="right_bottom_spacing" name="right_bottom_spacing"  class="layui-input" value="{$info.right_bottom_spacing}">
+                        </div>
+                    </div>
+					<div class="layui-form-item">
+						<label class="layui-form-label"> <span class="x-red"></span>中竖间距
+						</label>
+						<div class="layui-input-inline">
+							<input type="text" id="center_row_spacing" name="center_row_spacing"
+								class="layui-input" value="{$info.center_row}">
+						</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label"> <span class="x-red"></span>中左竖间距
+						</label>
+						<div class="layui-input-inline">
+							<input type="text" id="center_left_spacing" name="center_left_spacing"
+								class="layui-input" value="{$info.center_left}">
+						</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label"> <span class="x-red"></span>中右竖间距
+						</label>
+						<div class="layui-input-inline">
+							<input type="text" id="center_right_spacing"
+								name="center_right_spacing" class="layui-input" value="{$info.center_right}">
+						</div>
+					</div>
+					<div class="layui-form-item">
+                        <label class="layui-form-label">
+                            <span class="x-red"></span>左到中</label>
+                        <div class="layui-input-inline">
+                            <input type="text"  name="left_to_middle"  class="layui-input" value="{$info.left_to_middle}">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">
+                            <span class="x-red"></span>右到中</label>
+                        <div class="layui-input-inline">
+                            <input type="text"  name="right_to_middle"  class="layui-input" value="{$info.right_to_middle}">
+                        </div>
+                    </div>
+					<div class="layui-form-item">
+						<label class="layui-form-label"> <span class="x-red"></span>中到左
+						</label>
+						<div class="layui-input-inline">
+							<input type="text" name="middle_to_left" class="layui-input" value="{$info.center_to_left}">
+						</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label"> <span class="x-red"></span>中到右
+						</label>
+						<div class="layui-input-inline">
+							<input type="text" name="middle_to_right" class="layui-input" value="{$info.center_to_right}">
+						</div>
+					</div>
+					<div class="layui-form-item">
+                        <label class="layui-form-label">
+                            <span class="x-red"></span>下固横间距</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="bottom_fixed_spacing"  class="layui-input" value="{$info.bottom_fixed_spacing}">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">
+                            <span class="x-red"></span>下固竖间距</label>
+                        <div class="layui-input-inline">
+                            <input type="text"  name="bottom_vertical_spacing"  class="layui-input" value="{$info.bottom_vertical_spacing}">
+                        </div>
+                    </div>
+                    <div class="layui-form-item" id="hands-box" style="">
+                        <label class="layui-form-label">把手位</label>
+                        <div class="layui-inline">
+                            <select name="hands" id="hands">
+                              <option value="">请选择</option>
+                              {volist name="$array['hands']" id='v'}
+                              <option value="{$v.hands_id}" {if condition="$array['hands_id'] == $v['hands_id']"}selected{/if}>{$v.name}</option>
+                              {/volist}
+                            </select>
+                        </div>                     
+                    </div>
+                    <div class="layui-form-item">
+                        <label for="username" class="layui-form-label">
+                            <span class="x-red">*</span>锁位高</label>
+                        <div class="layui-input-inline">
+                            <input type="text" id="lock_position" name="lock_position" class="layui-input" value="{$info.lock_position}">
+                        </div>
+                        <div class="layui-form-mid layui-word-aux">
+                             单位mm
+                        </div>
+                    </div>
+                    <div class="layui-form-item" >
+                        <label for="username" class="layui-form-label">
+                            生产备注
+                        </label>
+                        <div class="layui-input-inline">
+                            <input type="text" id="cal_note" name="cal_note" autocomplete="off" class="layui-input" value="{$info.cal_note}">
+                        </div>
+                    </div>
+                    <div class="layui-form-item" id="flower-boxd" style="{if condition="$info['flower_ids'] eq 0"}{/if}">
+                        <label for="username" class="layui-form-label">
+                            <span class="x-red"></span>上下固花件
+                        </label>
+                        <div class="layui-input-inline">
+                            <input type="text" id="flowers" name="flowers" class="layui-input" value="{$info.flower_types}">
+                        </div>
+                        <input name="flower_pics" id="flower_pics" type="hidden" value="{$info.flower_pics}"/>
+                        <input name="flower_ids" id="flower_ids" type="hidden" value="{$info.flower_ids}"/>
+                        <input name="flower_max_heights" id="flower_max_heights" type="hidden" value="{$flowerHeights.max_height}" />
+                        <input name="flower_min_heights" id="flower_min_heights" type="hidden" value="{$flowerHeights.min_height}" />
+                        <input name="flower_max_widths" id="flower_max_widths" type="hidden" value="{$flowerHeights.max_width}" />
+                        <input name="flower_min_widths" id="flower_min_widths" type="hidden" value="{$flowerHeights.min_width}" />
+                        <button class="layui-btn" type="button" onclick="show_flowers()">点击选择</button>
+                    </div>

@@ -1,0 +1,554 @@
+<?php $current='6'; ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>微元生产工序报工管理系统,建材行业生产管理系统,门窗生产管理系统,微元科技,佛山市微元科技有限公司</title>
+{include file="public/header" /}
+</head>
+<style>
+.s-l-title{display: flex;align-items: center;color:#fff;line-height: 34px;margin-top: 6px;padding: 0 12px;}
+.s-l-title p{margin-left:20px}
+.s-l-title input{width:18px;height:18px}
+.s-l-func{display:flex;justify-content: flex-end;padding:8px 0}
+.s-l-func div{text-align: center;width: 104px;line-height: 29px;color: #fff;background: cadetblue;border-radius: 6px;font-size: 12px;letter-spacing: 1px;margin-right:8px;cursor: pointer;}
+.s-l-li{display:inline-block; width: 49%;padding:10px 20px;font-size:13px;border-bottom: 1px solid rgba(43, 98, 174, 0.5);}
+.selx{display:inline-block; width: 6%; margin-top: 2px;vertical-align: middle;}
+.s-l-li>:nth-child(2){display: inline-block;width: 24%;text-align: center;}
+.s-l-li>:nth-child(3){display: inline-block;width: 20%;text-align: center;}
+.s-l-li>:nth-child(4){display: inline-block;width: 12%;text-align: center;}
+.s-l-li>:nth-child(5){display: inline-block;width: 12%;text-align: center;}
+.s-l-li>:nth-child(6){display: inline-block;width: 16%;text-align: center;}
+.line{width:1px;height:38px;display:inline-block;background:#2b62ae;position: absolute;margin-top: 8px;}
+.hide{display:none}
+.man-total{position: absolute;text-align: center;width: 130px;left:0;line-height: 36px;background: cadetblue;color: #fff;border-radius: 4px;font-size: 13px;}
+.check-report{padding-bottom:20px;padding-top: 8px;}
+.check-report :nth-child(1){float:left}
+.check-report :nth-child(2){float:right}
+.func-left{float:left}
+.func-right{float:right}
+.sc-l{margin:0 20px}
+.s-l-menu{padding:8px 0;margin-bottom:50px}
+.s-l-menu div{text-align: center;width: 104px;line-height: 29px;color: #fff;background: cadetblue;border-radius: 4px;font-size: 12px;letter-spacing: 1px;margin-right:8px}
+.send{line-height: 36px;width: 130px;height: 36px;color: #fff; background: brown;text-align: center;margin: 8px 0;border-radius: 4px;}
+#ta-tr{background:#9cbcc9;}
+.header-title{line-height:38px}
+</style>
+<body>
+	<div class="baogong_piecework popup-box">
+		<div class="popup-header">
+			<div>计件管理</div>
+		</div>
+		<div class="popup-body" style="padding-top: 40px;">
+			<div class="body-nav">
+				<ul class="body-nav-list">
+					<li><a href="{:url('Salary/salary')}">已对账提成</a></li>
+					<li><a href="{:url('Salary/formula')}">计件公式</a></li>
+					<li><a href="{:url('Salary/handSalary')}">员工提成<br>（手输）</a></li>
+					<li class="li-active"><a href="{:url('Salary/paysalary')}">日对账</a></li>
+				</ul>
+			</div>
+			<div class="body-center">
+				<!-- 员工提成 -->
+				<div class="body-content-box  body-nav-active">
+					<div class="content-header">
+						<div class="content-header-left"></div>
+						<form class="content-header-right layui-form" id="formd" action="{:url('Salary/paysalary')}" method="get">
+							<div class="search-box">
+								<input type="text" id="year" name="date" value="{$date}" autocomplete="off" placeholder="报工日期">
+								<select name="uid" id="uid" lay-verify="required" lay-search lay-filter="uid">
+									<option value="">请选择员工</option>
+									{volist name="man" id="ml"}
+										<option value="{$ml.id}" {if condition="$ml['id'] eq $uid"
+									}selected="selected"{/if}>{$ml.uname}</option>
+										{/volist}
+								</select>
+								<input type="hidden" name="type" id="type">
+								<input type="hidden" name="gid" id="gid">
+								<select name="gid_select" id="gid_select" lay-verify="required" lay-search lay-filter="gid_select">
+									<option value="">请选择工序</option>
+									{volist name="gxlist" id="gl"}
+											{if condition="$gl['dname'] neq ''"}
+												<option {if condition="$gl['id'] eq $gid&&$type eq 0" }selected="selected" {/if} value="0_{$gl.id}">{$gl.dname}</option>
+											{else}
+												<option {if condition="$gl['id'] eq $gid&&$type eq 1" }selected="selected" {/if} value="1_{$gl.id}">{$gl.name}</option>
+											{/if}
+										{/volist}
+								</select>
+                                <div class="imitate-select warehousing-option">
+                                    <span class="select-txt">请选择状态</span>
+									<div class="triangle-down"></div>
+									<input type="hidden" name="status" id="status">
+                                    <ul data-sign="gid">
+										<li {if condition="$ispay eq 0"}data-selected="true"{/if} data-value="0">未对账</li>
+										<li {if condition="$ispay eq 1"}data-selected="true"{/if} data-value="1">待对账</li>
+										<li {if condition="$ispay eq 2"}data-selected="true"{/if} data-value="2">已对账</li>
+										<li {if condition="$ispay eq 3"}data-selected="true"{/if} data-value="3">已发提</li>
+                                    </ul>
+                                </div>
+								<span class="search-btn" id="searchSalary">搜索</span>
+                            </div>
+                            
+						</form>
+						<div class="man-total">员工未审核汇总</div>
+					</div>
+					<div class="content-center unset-padding-top">
+						<div class="content-center-inner">
+						<div class="send">以下内容推送审核</div>
+							{php}$k=0;{/php}
+							{foreach name="list" item="lt" key="ke"}
+							<div class="sc-l">
+								<div class="s-l-title">
+									<p>员工：{$lt.man_name}</p>
+									<p>工序：{$lt.gx_name}</p>
+									<p class="location-right">报工时间：{$lt.date}</p>
+								</div>
+								<div class="s-l-content">
+								<table border="1">
+										<tr class="header-title" id="ta-tr">
+											<th>序号</th>
+											<th>生产流水号</th>
+											<th>产品名称</th>
+											<th>套数</th>
+											<th>面积</th>
+											<th>玻扇数</th>
+											<th>纱扇数</th>
+											<th>单价</th>
+											<th>提成</th>
+											<th>实发提成</th>
+										</tr>
+									{php}
+									$snum_total=$area_total=$doornum_total=$screenwin_total=$salary_total=$real_money_total=0;{/php}
+									{volist name="lt.order_list" id="ls"}
+										<tr>
+											<td>
+												<div class="imitate-checkbox-small checkbox-small{$k}">
+													<input type="hidden" name="inpcheck{$k}" class="idh{$lt['id']}" data-type="{$lt.type}" value="{$ls.fid}">
+													<span></span>
+												</div></td>
+											<td>{$ls.produce_no}</td>
+											<td>{$ls.pname}</td>
+											<td>{$ls.snum}</td>
+											<td>{$ls.area}</td>
+											<td>{$ls.doornum}</td>
+											<td>{$ls.screenwin}</td>
+											<td>{$ls.price}</td>
+											<td class="td{$k}{$key}" data-orderid="{$ls.orderid}" data-id="{$ls.sid}" onmouseover="showFormula(this)" onmouseout="closeFormula()">{$ls.salary}</td>
+											<td>
+												<input type="text" name="real_money{$k}" data-fid="{$ls.fid}" value="{$ls.real_money?$ls.real_money:$ls.salary}" style="text-align:center;width:68px;line-height:26px"></input>
+											</td>
+										</tr>
+										{php}
+										$ls['snum']?$snum_total+=$ls['snum']:'';
+										$ls['area']?$area_total+=$ls['area']:'';
+										empty($ls['doornum'])?'':$doornum_total+=$ls['doornum'];
+										empty($ls['screenwin'])?'':$screenwin_total+=$ls['screenwin'];
+										$ls['salary']?$salary_total+=$ls['salary']:'';
+										$ls['real_money']?$real_money_total+=$ls['real_money']:'';;{/php}
+										{/volist}
+										<tr id="ta-tr">
+											<td>
+												<div class="imitate-checkbox-all checkbox-all{$k}" data-index="{$k}">
+													<span></span>
+													<input type="hidden" name="allsel">
+												</div>
+											</td>
+											<td></td>
+											<td></td>
+											<td>{$snum_total}</td>
+											<td>{$area_total}</td>
+											<td>{$doornum_total}</td>
+											<td>{$screenwin_total}</td>
+											<td></td>
+											<td>{$salary_total}</td>
+											<td>{$real_money_total==0?$salary_total:$real_money_total}</td>
+										</tr>
+										
+										</table>
+										<div class="check-report">
+											<div>员工审核：{$lt.true_time}</div>
+											<div>财务审核：{$lt.give_name?$lt.give_name:''}  {$lt.give_time}</div>
+										</div>
+										<div class="s-l-menu">
+											<div class="func-left checktrue" data-type="2" data-status="{$lt['type']}" data-index="{$k}">确认已对账</div>
+											<div class="func-left checktrue" data-type="3" data-status="{$lt['type']}" data-index="{$k}">确认已发提</div>
+											<div class="func-right save_data" data-status="{$lt['type']}" data-index="{$k}" style="width:118px">保存刷新实发提成</div>
+											<div class="func-right print" data-status="{$lt['type']}" data-index="{$k}">打印清单</div>
+											<div class="func-right data_excel" data-status="{$lt['type']}" data-index="{$k}">导出数据</div>
+											<div class="func-right checktrue" data-status="{$lt['type']}" data-type="1" data-status="{$lt['type']}" data-index="{$k}">推送审核</div>
+										</div>
+								</div>
+							</div>
+							{php}$k++;{/php}
+							{/foreach}
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+    </div>
+</body>
+<script type="text/javascript">
+	var layer , laydate;
+	layui.use(['layer', 'laydate', 'form'],function(){
+		layer = layui.layer;
+		laydate = layui.laydate;
+		laydate.render({
+			elem : '#year' //指定元素
+			,
+			range : true
+		});
+		laydate.render({
+			elem : '#inyear' //指定元素
+			,
+			range : true
+		});
+		var form = layui.form;
+		form.render();
+		form.on('select(uid)', function(data){
+			selectman();
+		});
+		// 选择工序
+		form.on('select(gid_select)', function(data){
+			var _dataArr = $(data.elem).find('option:selected').val().split('_');
+			var _dataType = _dataArr[0];	// 工序类型
+			var _dataVal = _dataArr[1];		// 工序id
+			$('#type').val(_dataType);
+			$('#gid').val(_dataVal);
+			selectgx();
+		})
+	})
+	//移动显示公式
+	function showFormula(e){
+		var _class = $(e).attr('class');
+		var _html = '';
+		var orderid = $(e).data('orderid');
+		var fid = $(e).data('id');
+		$.ajax({
+			url: "{:url('salary/show_formula')}",
+			data:{orderid,fid},
+			dataType:'json',
+			success:function(res){
+				if(res.code==0){
+					var obj = res.data;
+					var order = obj.order;
+					var text = obj.text;
+					var field = obj.field;
+					var qrfield = res.field;
+					var show = obj.text;
+					field = field.split('$');
+					for(var s in field){
+						field[s]=field[s].replace(/[^a-zA-Z]/g,'');
+						order[field[s]]?show=show.replace('$'+field[s],order[field[s]]):'';
+						for(var i in qrfield){
+							if(qrfield[i]['fieldname']==field[s]){
+								text=text.replace('$'+field[s],'('+qrfield[i]['explains']+')'+'$'+field[s]);
+							}
+						}
+					}
+					_html = '<div>公式：'+text+'</div>';
+					_html += '<div>计算：'+show+'</div>';
+					layer.tips(_html, '.'+_class, {
+						  tips: [1, '#3595CC'],
+						  time: 0
+						});
+				}
+			}
+		})
+	}
+	function closeFormula(){
+		layer.closeAll();
+	}
+	function selectman() {
+		$('#formd').submit();
+	}
+	function selectgx() {
+		$('#formd').submit();
+	}
+	// 搜索
+	$('#searchSalary').click(function(e){
+		e.preventDefault();
+		e.stopPropagation();
+		$('#formd').submit();
+	});
+	//勾选内容对账or推送审核or已发提
+	$('.checktrue').click(function(){
+		var data = [];
+		var _index = $(this).data('index');
+		var _type = $(this).data("type");
+		var _status = $(this).data("status");
+		$("input[name='inpcheck"+_index+"']").each(function(){
+			var _this = $(this);
+			if(_this.parent().attr('data-sign') == 'true'){
+				data.push(_this.val())
+			}
+		});
+		if(data.length==0){
+			layer.msg('请勾选内容！');
+		}
+		layer.confirm('是否修改',{icon:3,title:'提示'},function(index){
+			$.ajax({
+				url:"{:url('salary/changestatus')}",
+				data: {"id":data,"status":_type,'type':_status},
+				dataType: 'json',
+				success:function(res){
+					if(res.code==0){
+						layer.msg(res.msg);
+					}else{
+						layer.msg(res.msg);
+					}
+					setTimeout(function(){
+						window.location.reload();
+					},1500)
+				}
+			})
+			layer.close(index)
+		})
+	})
+	//勾选内容对账or推送审核or已发提
+	$('.send').click(function(){
+		var data = [];
+		var _len = "{$k}";
+		var _type = 1;
+		for(var s=0;s<_len;s++){
+			var list = {};
+			var idl = [];
+			var _status = 0;
+			$("input[name='inpcheck"+s+"']").each(function(){
+				var _this = $(this);
+				if(_this.parent().attr('data-sign') == 'true'){
+					idl.push(_this.val())
+					_status = _this.data('type');
+				}
+			});
+			list['id'] = idl.join(',');
+			list['type'] = _status;
+			data.push(list);
+		}
+		if(data.length==0){
+			layer.msg('请勾选内容！');
+			return
+		}
+		layer.confirm('是否修改',{icon:3,title:'提示'},function(index){
+			$.ajax({
+				url:"{:url('salary/send_all_check')}",
+				data: {"data":data,"status":_type},
+				dataType: 'json',
+				success:function(res){
+					if(res.code==0){
+						layer.msg(res.msg);
+					}else{
+						layer.msg(res.msg);
+					}
+					setTimeout(function(){
+						window.location.reload();
+					},1500)
+				}
+			})
+			layer.close(index)
+		})
+	})
+	//打印内容
+	$('.print').click(function(){
+		var ids = '';
+		var _index = $(this).data('index');
+		var _type = $(this).data('status');
+		$("input[name='inpcheck"+_index+"']").each(function(){
+			var _this = $(this);
+			if(_this.parent().attr('data-sign') == 'true'){
+				ids += _this.val()+',';
+			}
+		});
+		var idl = ids.slice(0,-1);
+		if(idl==''){
+			layer.msg('请勾选内容！');
+			return
+		}
+		layer.open({
+			type: 2,
+			title: '打印',
+			shadeClose: true,
+			shade: 0.8,
+			area: ['75%', '95%'],
+			content: "printsalary?id="+idl+"&type="+_type //iframe的url
+		})
+	})
+	//保存实际提成
+	$('.save_data').click(function(){
+		var data = [];
+		var _index = $(this).data('index');
+		var _type = $(this).data('status');
+		var s=0;
+		$("input[name='real_money"+_index+"']").each(function(){
+			var _this = $(this);
+			var list = {};
+			list['value'] = _this.val();
+			list['fid'] = _this.data('fid');
+			data.push(list);
+		});
+		if(data.length==0){
+			layer.msg('请勾选内容！');
+			return
+		}
+		layer.confirm('是否修改',{icon:3,title:'提示'},function(index){
+			$.ajax({
+				url:"{:url('salary/save_data')}",
+				data: {data,type:_type},
+				dataType: 'json',
+				success:function(res){
+					if(res.code==0){
+						layer.msg(res.msg);
+					}else{
+						layer.msg(res.msg);
+					}
+					setTimeout(function(){
+						window.location.reload();
+					},1500)
+				}
+			})
+			layer.close(index)
+		})
+	})
+	
+	$('.man-total').click(function(){
+		/* $('#formd').attr('action',"{:Url('Salary/nocheckExcel')}");
+		$('#formd').submit();
+		$('#formd').attr('action',"{:Url('Salary/paysalary')}"); */
+		window.location.href="{:Url('Salary/nocheckExcel')}";
+	})
+	
+	$('.data_excel').click(function(){
+		var _this = $(this);
+		var _index = _this.data('index');
+		var _type = _this.data('status');
+		var data = [];
+		var date = $('#year').val();
+		$("input[name='inpcheck"+_index+"']").each(function(){
+			var _this = $(this);
+			if(_this.parent().attr('data-sign') == 'true'){
+				data.push(_this.val())
+			}
+		});
+		if(data.length==0){
+			layer.msg('请勾选内容！');
+			return
+		}
+		data = data.join(",");
+		window.location.href="{:Url('Salary/person_salary_excel')}?id="+data+"&date="+date+"&type="+_type;
+	})
+	
+</script>
+<script type="text/javascript">
+	$('#formd').find('.imitate-select').each(function(){
+        var _this = $(this);
+        if(_this.children('ul').children('li[data-selected=true]').html() != null){
+            var tempTxt = _this.children('ul').children('li[data-selected=true]').html();
+            var tempVal = _this.children('ul').children('li[data-selected=true]').attr('data-value');
+            var tempTy = _this.children('ul').children('li[data-selected=true]').attr('data-type');
+            _this.children('.select-txt').attr('data-value',tempVal).html(tempTxt);
+            _this.children('input[type=hidden]').val(tempVal);
+            _this.children('input[name="type"]').val(tempTy);
+        }
+    })
+	// 选择搜索条件
+	$('.imitate-select').click(function(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		var _this = $(this);
+		var clickSign = _this.attr('data-sign');
+		$('.imitate-select').removeAttr('data-sign').children('ul').hide();
+		if (clickSign == 'true') {
+			_this.children('ul').hide();
+			_this.removeAttr('data-sign');
+		} else {
+			_this.children('ul').show();
+			_this.attr('data-sign', 'true');
+		}
+	});
+	$(window).click(function(){
+		
+		var elem = event.srcElement ? event.srcElement : event.target;
+		while (elem) { //循环判断至跟节点，防止点击的是div子元素 
+			if (elem.id && elem.id == 'orderScreenBox') {
+				return;
+			}
+			if($(elem).hasClass('modal-content')){
+				return;
+			}
+			elem = elem.parentNode;
+		}
+		$('.modal-box').fadeOut();
+		$('.imitate-select').removeAttr('data-sign').children('ul').hide();
+		$('.content-header-left').removeAttr('data-click').css({
+			top: '0',
+		}).children('.filter-orders').removeClass('filter-orders-active');
+		$('.content-header-left').siblings('.order-screen-box').css({
+			height: '0',
+			overflow: 'hidden'
+		})
+	});
+	$('.imitate-select ul').delegate('li','click',function(e){
+		e.preventDefault();
+		e.stopPropagation();
+		var _this = $(this);
+		var tempTxt = _this.html();
+		var _thisValue = _this.attr('data-value');
+		var _thisTy = _this.attr('data-type');
+		_this.parent().parent().children('.select-txt').attr('data-value',_thisValue).html(tempTxt);
+		_this.parent().hide();
+		_this.parent().parent().removeAttr('data-sign');
+		var _clickTarget = _this.parent().attr('data-sign');
+		_this.parent().siblings('input[type=hidden]').val(_thisValue);
+		_this.parent().siblings('input[name="type"]').val(_thisTy);
+		switch (_clickTarget) {
+			case 'uid':
+				selectman();
+				break;
+			case 'gid':
+				selectgx();
+				break;
+		
+			default:
+				break;
+		}
+	});
+
+	$('.imitate-checkbox-all').click(function(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		let _this = $(this);
+		let clickSign = _this.attr('data-sign');
+		let _index = _this.data('index');
+		if (clickSign == 'true') {
+			_this.removeAttr('data-sign');
+			_this.children('span').hide();
+			$('.s-l-content').find('.checkbox-small'+_index).removeAttr('data-sign').children('span').hide();
+		} else {
+			_this.children('span').show();
+			_this.attr('data-sign', 'true');
+			$('.s-l-content').find('.checkbox-small'+_index).attr('data-sign','true').children('span').show();
+		}
+	});
+	$('.imitate-checkbox-small').click(function(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		let _this = $(this);
+		let clickSign = _this.attr('data-sign');
+		let _index = _this.data('index');
+		if (clickSign == 'true') {
+			_this.removeAttr('data-sign');
+			_this.children('span').hide();
+		} else {
+			_this.children('span').show();
+			_this.attr('data-sign', 'true');
+		}
+		var maxLength = $('.s-l-content').find('.checkbox-small'+_index).length;
+		var selectLength = $('.s-l-content').find('.checkbox-small'+_index+'[data-sign=true]').length;
+		if(maxLength == selectLength){
+			$('.checkbox-all'+_index).attr('data-sign', 'true').children('span').show();
+		} else{
+			$('.checkbox-all'+_index).removeAttr('data-sign').children('span').hide();
+		}
+	});
+</script>
+</html>

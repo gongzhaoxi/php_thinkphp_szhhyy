@@ -1,0 +1,130 @@
+{include file="public/header"/}
+
+<div class="layui-fluid">
+    <div class="layui-row">
+        <form class="layui-form">
+            {volist name='list' id='v' key='k'}
+            <div class="layui-form-item">
+                <label class="layui-form-label">{$bomname[$v['type']]}</label>
+                <div class="layui-inline">
+                    <select name="info[{$k}][one_level]" class="one_level" lay-filter='one'>
+                        <option value='' {if condition="$v['one_level'] eq ''"}selected{/if}>请选择</option>
+                        <option value="bom_aluminum" {if condition="$v['one_level'] eq 'bom_aluminum'"}selected{/if}>铝型材</option>
+                        <option value="bom_flower" {if condition="$v['one_level'] eq 'bom_flower'"}selected{/if}>花件</option>
+                        <option value="bom_five" {if condition="$v['one_level'] eq 'bom_five'"}selected{/if}>五件</option>
+                        <option value="bom_hands" {if condition="$v['one_level'] eq 'bom_hands'"}selected{/if}>把手位</option>
+                        <option value="bom_yarn" {if condition="$v['one_level'] eq 'bom_yarn'"}selected{/if}>纱网</option>
+                    </select>
+                    <input name="info[{$k}][type]" type='hidden' value='{$k}'/>
+                    <input name='two_level' type='hidden' class='two_level' value='{$v.two_level}'/>
+                </div>
+                <div class="layui-inline" {if condition="$k == 6"}style="width:25%"{if/}>
+                    <select name="info[{$k}][two_level]" class="boms">
+                        
+                    </select>
+                </div>
+                {if condition="$k eq 1"}
+                <div class="layui-inline">
+                    <input type="text" name="take" class="layui-input" placeholder="框搭框" {if condition="$v.take neq 0"}value='{$v.take}'{/if}>
+                </div>
+                {elseif condition="$k==2"}
+                <div class="layui-inline">
+                    <input type="text" name="frame_take_fan" class="layui-input" placeholder="框搭扇" {if condition="$list[0]['frame_take_fan'] neq 0"}value='{$list[0]['frame_take_fan']}'{/if}>
+                </div>
+				<div class="layui-inline">
+				    <input type="text" name="waikuangbian" class="layui-input" placeholder="外框边" {if condition="$list[0]['waikuangbian'] neq 0"}value='{$list[0]['waikuangbian']}'{/if}>
+				</div>
+				{elseif condition="$k==4"}
+				<div class="layui-inline">
+				    <input type="text" name="shawangbian" class="layui-input" placeholder="纱网边" {if condition="$list[0]['shawangbian'] neq 0"}value='{$list[0]['shawangbian']}'{/if}>
+				</div>
+				{elseif condition="$k==5"}
+				<div class="layui-inline">
+				    <input type="text" name="menshanbian" class="layui-input" placeholder="门扇边" {if condition="$list[0]['menshanbian'] neq 0"}value='{$list[0]['menshanbian']}'{/if}>
+				</div>
+                {elseif condition="$k==6"}
+                <div class="layui-inline" style="width: 10%">
+                    <input type="text" name="small_frame" class="layui-input" placeholder="小门框搭框" {if condition="$list[0]['small_frame'] neq 0"}value='{$list[0]['small_frame']}'{/if}>
+                </div>
+                <div class="layui-inline" style="width: 10%">
+                    <input type="text" name="small_fan" class="layui-input" placeholder="小门框搭扇" {if condition="$list[0]['small_fan'] neq 0"}value='{$list[0]['small_fan']}'{/if}>
+                </div>
+				{elseif condition="$k==13"}
+				<div class="layui-inline" style="width: 10%">
+					<input type="text" name="ZK_B_KDK" class="layui-input" placeholder="窄边框搭框" {if condition="$list[0]['ZK_B_KDK'] neq 0"}value='{$list[0]['ZK_B_KDK']}'{/if}>
+				</div>
+				<div class="layui-inline" style="width: 10%">
+					<input type="text" name="ZK_B_KDS" class="layui-input" placeholder="窄外框搭扇" {if condition="$list[0]['ZK_B_KDS'] neq 0"}value='{$list[0]['ZK_B_KDS']}'{/if}>
+				</div>
+                {/if}
+            </div>
+            {/volist}
+            <div class="layui-form-item">
+                <label for="L_repass" class="layui-form-label"></label>
+                <input name="series_id" type="hidden" value="{$id}"/>
+                <button class="layui-btn" lay-filter="add" lay-submit="">保存</button>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    layui.use(['form', 'layer'],
+            function () {
+                $ = layui.jquery;
+                var form = layui.form,
+                layer = layui.layer;
+              
+              
+                $(function(){
+                    $('select.one_level').each(function(){
+                        var boms = $(this);
+                        var two_level = $(this).nextAll('input[name=two_level]').val();
+                        var table = $(this).find('option:selected').val();
+                        if(table){
+                            $.post("{:url('series/findbom')}",{table:table},function(obj){  
+                                var html = '';
+                                var array = obj.data;     
+                                for(i=0;i<array.length;i++){
+                                    if(two_level == array[i]['id']){
+                                       var select = 'selected';
+                                    }else{
+                                       var select = '1' ;
+                                    }
+                                    html += "<option value="+array[i]['id']+" "+select+">"+array[i]['code']+"("+array[i]['name']+")</option>";
+                                }      
+                                boms.parent().next().find('select').html(html); 
+                                form.render('select');  //更新渲染
+                            },'json'); 
+                        }
+                    })
+                })
+                //监听select,selct二级联动
+                form.on('select(one)',
+                        function (data) {
+                             $.post("{:url('findbom')}",{table:data.value},function(obj){
+                                var html = '';
+                                var array = obj.data;     
+                                for(i=0;i<array.length;i++){
+                                    html += "<option value="+array[i]['id']+">"+array[i]['code']+"("+array[i]['name']+")</option>";
+                                }
+                                $(data.elem).parent().next().find('select').html(html);
+                                form.render('select');  //更新渲染
+                             },'json');
+                        });
+                        
+                //监听提交表单
+                form.on('submit(add)',
+                        function (data) {                         
+                            ajaxform("{:url('series/bomAdd')}", data.field,2);
+                            return false;
+                        });
+            });
+
+</script>
+<script src="__STATIC__/js/jquery.min.js" charset="utf-8"></script>  
+<script>
+    
+</script>
+</body>
+
+</html>

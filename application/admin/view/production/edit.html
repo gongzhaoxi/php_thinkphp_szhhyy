@@ -1,0 +1,158 @@
+{include file="public/header"/}
+<link rel="stylesheet" href="__STATIC__/css/select.css">
+<div class="layui-fluid">
+	<div class="layui-row">
+		<form class="layui-form">
+			<blockquote class="layui-elem-quote">订单信息</blockquote>
+			<div class="layui-form-item">
+				<label for="number" class="layui-form-label">
+					订单编号
+				</label>
+				<div class="layui-input-inline">
+					<input type="text" id="number" name="number" value="{$model.number}" required="" lay-verify="required" class="layui-input" >
+				</div>
+				<label for="dealer" class="layui-form-label">
+					经销商
+				</label>
+				<div class="layui-input-inline">
+					<input type="text" id="dealer" name="dealer" value="{$model.dealer}" required="" lay-verify="required" class="layui-input" >
+				</div>
+				<label for="area" class="layui-form-label">
+					面积
+				</label>
+				<div class="layui-input-inline">
+					<input type="text" id="area" name="area" value="{$model.area}" required="" lay-verify="required" class="layui-input" >
+				</div>	
+				<label for="type" class="layui-form-label">
+					订单类型
+				</label>
+				<div class="layui-input-inline">
+					{php}
+					$arr = config('order_type');
+					{/php}
+					<input type="text" id="type" name="type" value="{:$arr[$model.type]??''}" required="" lay-verify="required" class="layui-input" >
+				</div>				
+			</div>
+			<div class="layui-form-item">
+				<label for="end_time" class="layui-form-label">
+					交货时间
+				</label>
+				<div class="layui-input-inline">
+					<input type="text" id="end_time" name="end_time" value="{$model.end_time}" required="" lay-verify="required" class="layui-input" >
+				</div>
+				<label for="addtime" class="layui-form-label">
+					创建日期
+				</label>
+				<div class="layui-input-inline">
+					<input type="text" id="addtime" name="addtime" value="{:date('Y-m-d H:i:s',$model.addtime)}" required="" lay-verify="required" class="layui-input" >
+				</div>
+				<label for="note" class="layui-form-label">
+					备注
+				</label>
+				<div class="layui-input-inline">
+					<input type="text" id="note" name="note" value="{$model.note}" required="" lay-verify="required" class="layui-input" >
+				</div>
+			</div>	
+		</form>
+	</div>
+	
+	<blockquote class="layui-elem-quote">工序信息</blockquote>
+	<form class="layui-form">
+		<button class="layui-btn add" type="button">增加</button>
+		<button class="layui-btn" lay-filter="save" lay-submit="">保存</button>
+		<table class="layui-table" id="order_process">
+			<colgroup>
+				<col>
+				<col width="250">
+			</colgroup>
+			<thead>
+				<tr>
+					<th>工序名称</th>
+					<th>操作</th>
+				</tr> 
+			</thead>
+			<tbody>
+				{volist name="model.process" id="vo"}
+				<tr>
+					<td>{$vo['name']}<input type="hidden" value="{$vo['id']}" name="process_id[]" class="process_id"  /></td>
+					<td>
+						<button class="layui-btn up" type="button">向上</button>
+						<button class="layui-btn down" type="button">向下</button>
+						<button class="layui-btn layui-btn-danger delete" type="button">删除</button>
+					</td>
+				</tr>
+				{/volist}
+			</tbody>
+		</table>
+		<input name="order_id" type="hidden" value="{$model.id}"/>
+	</form>
+</div>
+<script>
+var process = {:json_encode($process,true)};
+layui.config({
+	base: "/static/js/",
+}).extend({
+	select: "select",
+}).use(['form','select','table'],function() {
+	$ = layui.jquery;
+	form = layui.form,select = layui.select;
+	form.on('submit(save)',function(data) {
+		ajaxform("{:url('edit')}",data.field);
+		return false;
+	});  
+	
+	var table = layui.table;
+	var order_id = '{$model.id}';
+	
+	$("body").on("click",".layui-table tbody tr .up",function(){
+		var li_index=$(this).closest("tr").index();
+		if(li_index>=1){
+			$(this).closest("tr").insertBefore($(this).closest("tbody").find("tr").eq(Number(li_index)-1));
+		}
+	});
+	$("body").on("click",".layui-table tbody tr .down",function(){
+		var li_index=$(this).closest("tr").index();
+		$(this).closest("tr").insertAfter($(this).closest("tbody").find("tr").eq(Number(li_index)+1));
+	});
+	$("body").on("click",".layui-table tbody tr .delete",function(){
+		$(this).closest("tr").remove();
+	});	
+	$("body").on("click",".add",function(){
+		var html = '<form style="margin-top:20px;" class="layui-form"><div class="layui-form-item"><label class="layui-form-label">工序</label><div class="layui-input-block"><select name="process_id"  required="" lay-verify="required">';
+		layui.each(process, function (index, item) {
+			html += '<option value="'+item.id+'">'+item.name+'</option>';
+		})
+		html += '</select></div></div><div class="layui-form-item"><label for="L_repass" class="layui-form-label"></label><button class="layui-btn" lay-filter="addProcess" lay-submit="">保存</button></div></form>';
+		layer.open({
+			title:'添加工序',
+			type: 1,
+			area: ['700px', '80%'],
+			content: html,
+			success: function(layero, index){
+				form.render();
+				form.on('submit(addProcess)',function(data) {
+					var ids = [];
+					$('.process_id').each(function(){
+						ids.push($(this).val());
+					})
+					if(ids.indexOf(data.field.process_id) != -1){
+						layer.msg('工序已存在');
+					}else{
+						var name = '';
+						layui.each(process, function (index, item) {
+							if(item.id == data.field.process_id){
+								name = item.name;
+							}
+						})
+						$('#order_process tbody').append('<tr><td>'+name+'<input type="hidden" value="'+data.field.process_id+'" name="process_id[]" class="process_id"  /></td><td><button class="layui-btn up" type="button">向上</button><button class="layui-btn down" type="button">向下</button><button class="layui-btn layui-btn-danger delete" type="button">删除</button></td></tr>');
+						layer.close(index);
+					}
+					return false;
+				}); 
+			}
+		});
+	});
+});
+</script>
+</body>
+</html>

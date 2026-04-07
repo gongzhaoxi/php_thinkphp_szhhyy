@@ -1,0 +1,28 @@
+<div class="order">
+  <form action="#" id="forme" method="post">
+    <div><span>销售条码：</span><input type="text" name="ordersn" id="ordersn" autocomplete="off" value="" oninput="if(value.length>30)value=value.slice(0,30)" placeholder="请输入订单编号，不能超出30个英文/数字"/></div>
+    <div><span>客户名称：</span><input type="text" autocomplete="off" name="uname" id="uname" value="" oninput="if(value.length>10)value=value.slice(0,10)" placeholder="请输入客户名称，不能超出10个字"/></div>
+    <div><span style="margin-left:20px">特殊物料名称：</span><input type="text" autocomplete="off" name="diff" id="diff" value="" placeholder="请输入特殊物料名称"/><span style="color:red">（选填）</span></div>
+    <div class="cp"><span>物料名称：</span><select id="series" onchange="selectdo()">
+    				{volist name="serl" id="sl"}
+    				<option value="{$sl.id}">{$sl.xname}</option>{/volist}
+    			</select>
+    			<select id="series-se">
+    			</select></div>
+    <div><span>下单日期：</span><input type="text" id="laydate" autocomplete="off" name="time" value="" placeholder="请点击此次，选择下单时间"/></div>
+    <div><span>交货日期：</span><input type="text" id="laydates" autocomplete="off" name="times" value="" placeholder="请点击此次，选择交货时间"/></div>
+    <div><span style="letter-spacing: 10px;">扇数：</span><input type="text" autocomplete="off" name="snum" id="snum" value="" placeholder="请输入扇数"/></div>
+    <div><span class="spa" style="letter-spacing: 10px;">规格：</span><input type="text" autocomplete="off" name="specs" id="specs" value="" placeholder="请输入规格"/></div>
+    <div><span class="spa" style="letter-spacing: 10px;">颜色：</span><input type="text" autocomplete="off" name="color" id="color" value="" placeholder="请输入颜色名称"/></div>
+    <div><span class="spa" style="letter-spacing: 10px;">铰向：</span><input type="text" autocomplete="off" name="jx" id="jx" value="" placeholder="请输入铰向"/></div>
+    <div><span class="spa" style="letter-spacing: 10px;">工艺：</span><input type="text" autocomplete="off" name="gy" id="gy" value="" placeholder="请输入工艺"/></div>
+    <div><span class="spa" style="letter-spacing: 10px;">型号：</span><input type="text" autocomplete="off" name="xhao" id="xhao" value="" placeholder="请输入型号"/></div>
+    <div><span style="letter-spacing: 10px;" >套数：</span><input type="text" autocomplete="off" name="bnum" id="bnum" value="" placeholder="请输入套数"/></div>
+    <div><span style="letter-spacing: 10px;">面积：</span><input type="text" autocomplete="off" name="area" id="area" value="" placeholder="请输入面积"/></div>
+    <div><span>单据编号：</span><input type="text" autocomplete="off" name="bhao" id="bhao" value="" placeholder="请输入单据编号"/></div>
+    <div><span>工程地址：</span><input type="text" autocomplete="off" name="address" id="address" value="" placeholder="请输入工程地址"/></div>
+    <div style="height:auto;display:flex;margin-left:50px;width:90%"><span class="spa" style="letter-spacing: 10px;">备注：</span><textarea rows="4" placeholder="请输入备注信息" name="tip" id="tip" cols="20"></textarea></div>
+    
+  </form>
+  <button class="btne">确认无误！并提交订单，GO！</button>
+</div>

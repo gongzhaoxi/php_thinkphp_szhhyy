@@ -1,0 +1,64 @@
+{include file="public/header"/}
+<style>
+    .layui-form-label{ width: 90px;}
+</style>
+<div class="layui-fluid">
+	<div class="layui-row">
+		<form class="layui-form">
+			<div class="layui-form-item">
+				<label for="username" class="layui-form-label">
+					工序名称
+				</label>
+				<div class="layui-input-inline">
+					<input type="text" id="name" name="name" value="{$model.name}" required="" lay-verify="required" class="layui-input" >
+				</div>
+				<div class="layui-form-mid layui-word-aux">
+					<span class="x-red">*</span>
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label for="sort" class="layui-form-label">
+					排序
+				</label>
+				<div class="layui-input-inline">
+					<input type="text" id="sort" name="sort" value="{$model.sort}" required="" lay-verify="required" class="layui-input" >
+				</div>
+				<div class="layui-form-mid layui-word-aux">
+					<span class="x-red">*</span>小的排前面
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label for="status" class="layui-form-label">
+					状态
+				</label>
+				<div class="layui-input-inline">
+					<select name='status'>
+						<option value='0' {if condition="$model['status'] eq 0"}selected{/if}>禁用</option>
+						<option value='1' {if condition="$model['status'] eq 1"}selected{/if}>启用</option>
+					</select>
+				</div>
+				<div class="layui-form-mid layui-word-aux">
+					
+				</div>
+			</div>			
+			<div class="layui-form-item">
+				<label for="L_repass" class="layui-form-label"></label>
+				<input name="id" type="hidden" value="{$model.id}"/>
+				<button class="layui-btn" lay-filter="save" lay-submit="">保存</button>
+			</div>
+		</form>
+	</div>
+</div>
+<script>
+layui.use(['laydate','form'],function() {
+	$ = layui.jquery;
+	var form = layui.form;
+	//监听提交
+	form.on('submit(save)',function(data) {
+		ajaxform("{:url('edit')}",data.field);
+		return false;
+	});
+});
+</script>
+</body>
+</html>

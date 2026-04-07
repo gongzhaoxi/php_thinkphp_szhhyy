@@ -1,0 +1,89 @@
+{include file="public/header2"/}
+<style type="text/css">
+    .gx-list{color: #FFFFFF;background-color: #28ab3b;padding: 2px 5px;text-align: center}
+</style>
+<body>
+<div class="layui-fluid">
+    <form action="" method="post">
+        {volist name='list' id='v'}
+        <div class="gx-list"><span>工序名称：</span>
+            {$v['name']}[{$v.count}]
+            {$v.into_time}
+            <button type="button" class="layui-btn layui-btn-danger layui-btn-sm" style="margin-left: 15px;" onclick="toRepeal({$v.id},{$v.orderid})">撤回</button>
+        </div>
+        {/volist}
+        {if condition="count($list) > 0"}
+            {if condition="$res['endstatus'] eq 1"}
+            <a href="javascript:void(0);" id="inouts"  data-id="{$v['orderid']}" onclick="javascript:allReport(this)" class="layui-btn layui-btn-normal" style="margin-left: 35%">确定已全部入库</a>
+            {else/}
+            <a href="javascript:void(0);" id="inouts" class="layui-btn layui-btn-normal" style="margin-left: 35%">已全部入库</a>
+            {/if}
+        {/if}
+        <button type="button" class="layui-btn layui-btn-danger layui-btn-sm" style="margin-left:45%" onclick="toBg({$orderid})">入库报工</button>
+    </form>
+
+
+</div>
+
+<script type="text/javascript">
+    layui.use(['form', 'laydate','layer','upload'],
+        function() {
+            $ = layui.jquery;
+            var form = layui.form;
+            var layer = layui.layer;
+
+        });
+    //撤销报工
+    function toRepeal(id,orderid) {
+
+        layer.confirm("是否执行撤销入库", {icon: 3, title: '提示'}, function (index) {
+            $.ajax({
+                url: "{:Url('Index/in_refuse2')}",
+                data:{"fid":id,"orderid":orderid},
+                dataType:"json",
+                type:'POST',
+                success:function(obj){
+                    if(obj.status==1){
+                        layer.msg(obj.msg);
+                        setTimeout(function(){
+                            window.location.reload();
+                        },1500);
+                    }else{
+                        layer.msg(obj.msg);
+                    }
+                }
+            });
+            layer.close(index);
+        })
+    }
+    function toBg(orderid){
+    	layer.close();
+		window.open("{:url('Printer/scan_qrcode')}?orderid="+orderid);
+    }
+    function allReport(e){
+        var orderid = $(e).data('id');
+        layer.confirm('确认整单入库完成吗？',{icon:3,title:'提示'},function(index){
+            $.ajax({
+                url: "{:Url('Index/all_into')}",
+                data:{"orderid":orderid},
+                dataType:"json",
+                type:'POST',
+                success:function(obj){
+                    /* console.log(obj); */
+                    if(obj.code==0){
+                        layer.msg('入库完成');
+                        setTimeout(function(){
+                            parent.location.reload();
+                        },1500);
+                    }else{
+                        layer.msg(obj.msg);
+                    }
+                }
+            });
+            layer.close(index);
+        })
+    }
+
+</script>
+</body>
+</html>

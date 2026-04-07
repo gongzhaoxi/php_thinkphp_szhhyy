@@ -1,0 +1,406 @@
+<?php $current='7'; ?>
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+        <title>微元生产工序报工管理系统,建材行业生产管理系统,门窗生产管理系统,微元科技,佛山市微元科技有限公司</title>
+		{include file="public/header" /}
+	</head>
+	<body>
+		<div class="baogong_scheduling popup-box">
+			<div class="popup-header">
+				<div>排产</div>
+			</div>
+			<div class="popup-body">
+				{include file="schedule/menu" /}
+				<div class="body-center" style="background-color: unset;">
+					<!-- 新版已排产列表 -->
+					<div class="body-content-box body-nav-active" style="background-color:#041247;width:calc(100% - 110px);">
+						<div class="content-nav" id="paginate-syFocusThumb">
+							<div data-sign="up" class="content-nav-up"><span></span></div>
+							<ul class="categoryList"></ul>
+							<div data-sign="down" class="content-nav-down"><span></span></div>
+						</div>
+						<div class="content-header">
+							<div class="content-header-left positionLeft" data-index="2">
+								<div  class="filter-orders">订单筛选</div>
+							</div>
+							<div class="content-header-center">
+								<div class="tab-box dateTab">
+									{php}
+											$now=time();
+											$today=date('Y-m-d',$now);
+											$tomorrow=date('Y-m-d',strtotime("+1 day"));
+											$afterday=date('Y-m-d',strtotime("+2 day"));
+									{/php}
+									<div class="date-txt date-1st" data-day="{$today}"><span class="icon-point icon-point-active"></span>今天</div>
+									<div class="date-txt date-2nd" data-day="{$tomorrow}"><span class="icon-point"></span>明天</div>
+									<div class="date-txt date-3rd" data-day="{$afterday}"><span class="icon-point"></span>后天</div>
+								</div>
+							</div>
+							<div id="orderScreenBox" class="order-screen-box">
+								<div class="screen-box-top unset-border-bottom">
+									<ul class="screen-list">
+										<li class="screen-group">
+											<div class="screen-group-left">生产日期：</div>
+											<div class="screen-group-right">
+												<input type="text" id="s_date1" name="day" placeholder="选择排产时间" autocomplete="off">
+											</div>
+										</li>
+										<li class="screen-group">
+											<div class="screen-group-left">生产单号：</div>
+											<div class="screen-group-right">
+												<input type="text" name="unique_sn" id="unique_sn" placeholder="输入生产单号" autocomplete="off">
+											</div>
+										</li>
+									</ul>
+								</div>
+								<div class="screen-box-bottom">
+									<div class="screenSureBtn" onclick="javascript:mysearch();">立即筛选</div>
+								</div>
+							</div>
+						</div>
+						<div class="content-center" id="syFocusThumb"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="contentText4" class="exporta" style="padding:15px;height:150px;">
+			<div>
+			工序班组：
+			<select name="team" class="team select-common" >
+			<option value="0">请选择班组</option>
+			
+			{volist name="team[0]" id="e"}
+			<option value="{$e.id}">+ {$e.team_name}</option>
+			{php} 
+					if(isset($team[$e['id']])){ 
+						$childs=$team[$e['id']];
+						foreach($childs as $val){
+			{/php}
+			<option value="{$val.id}">&nbsp;&nbsp;&nbsp;- {$val.team_name}</option>
+			{php} 
+						}
+					} 
+			{/php}
+			{/volist}
+			{/volist}
+			
+			</select>
+			</div>
+			<div style="margin-top: 5px;">
+			生产日期：<input type="text"  class="do_time" id="do_time" value="" placeholder="点击选择生产日期" autocomplete="off"/>
+			</div>
+			
+			<div style="width:100%;margin-top:15px;text-align:center;float:right;">
+			<button class="btne" onclick="sure_change();">确认无误，转班组</button>
+			</div>
+			
+			</div>
+		<!-- 打印排产单 -->
+		<div class="modal-box" id="printSchedulingModal">
+			<div class="modal-content">
+				<div class="modal-header">
+					<div class="modal-header-left">
+						<div class="modal-header-title">
+							<span>打印排产单</span>
+						</div>
+					</div>
+					<div class="modal-header-right">
+						<span class="close-modal-btn"></span>
+					</div>
+				</div>
+				<div class="modal-body">
+					<div class="iframe-box">
+						<iframe class="myIframe" id="myIframe_scheduled" frameborder="0"></iframe>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+	<!-- 新版已排产列表 -->
+	<script type="text/javascript">
+		var search_url="{:Url('Schedule/ajax_scheduled')}";
+		var current_page = 1;
+		var current_day="{php} echo date('Y-m-d',time()); {/php}";
+		var unfinishIdArr = [];	// 当前工序未完成排产单的id
+		
+		function aclick(click_day){
+			current_day=click_day;
+			ajax_html(current_page,click_day);
+		}
+		function mysearch(){
+			ajax_html(current_page,"");
+		}
+		
+		//click_day 是点击今天\明天\后天之后才有值
+		function ajax_html(_page_index,click_day){
+			var _data = new Object();
+			var gx_name = $(".categoryList .li-active").html();//当前选择的工序名
+			var day = "";
+			var input_day=$("#s_date1").val();
+			if(click_day!=''){
+				day = click_day;
+			}else if(input_day!=''){
+				day = input_day;
+			}else{
+				day = current_day;
+			}
+			var unique_sn = $("#unique_sn").val();
+				_data.unique_sn = unique_sn;
+				_data.gx_name = gx_name;
+				_data.day = day;
+				
+			layer.load();
+			$.ajax({
+				url: search_url,
+				data: _data,
+				dataType: "html",
+				type: 'POST',
+				success:function(obj){
+					$('#syFocusThumb').html(obj);
+					layer.closeAll();
+				},
+				error: function(data){
+					layer.closeAll();
+				}
+			});
+		}
+		
+		// 获取备料数据
+		var _toc = new Array();
+		{volist name="gxname_list" id="vo"}
+		_toc.push("{$vo['gx_name']}");
+		{/volist}
+		for (let index = 0; index < _toc.length; index++) {
+			var tempHtml = '<li data-rel="' + index + '">' + _toc[index] + '</li>';
+			$('.categoryList').append(tempHtml);
+		}
+		$('.categoryList li').eq(0).addClass('li-active');
+		$(document).ready(function(){
+			ajax_html(current_page,"");
+			laydate.render({
+				elem: '#s_date1'
+			});
+		})
+		
+		//打印详细
+		function sprint(id){
+			var e = window.event;
+			e.preventDefault();
+			e.stopPropagation();
+			$('#printSchedulingModal').fadeIn();
+			$('#myIframe_scheduled').attr('src',"schedule_prints?id=" + id);
+		}
+		
+		//未完成订单转班组
+		function change_team(id){
+			schedule_id=id;
+			layer.open({
+				  type: 1,
+				  title: '转班组',
+				  shadeClose: true,
+				  shade: 0,
+				  area: ['350px', '230px'],
+				  content: $("#contentText4"),
+				  success:function(){
+					laydate.render({
+						elem: '#do_time'
+					});
+				  }
+			}); 
+		}
+		var isLock=false;
+		//转班组
+		function sure_change(){
+			if(isLock){
+				return;
+			}
+			var tid=$(".layui-layer-content").find(".team").find("option:selected").val();//新班组的id
+			var do_time=$(".layui-layer-content").find(".do_time").val();
+			 
+			if(tid==null||tid==0||tid==undefined){
+				layer.msg("请选择工序班组");
+				return;
+			}
+			if(do_time==null||do_time==''||do_time==undefined){
+					layer.msg("请选择生产日期");
+					return;
+			}
+			//锁定不准重复提交
+			isLock=true;
+		
+			layer.load(0, {
+				  shade: [0.1,'#fff']
+			});
+			$.ajax({
+				  url: "{:Url('Schedule/save_change')}",
+				  data:{"schedule_id":schedule_id,'tid':tid,'do_time':do_time},
+				  dataType:"json",
+				  type:'POST',
+				  success:function(obj){
+					  isLock=false;
+					  layer.closeAll();
+					  if(obj.status==2){
+						 layer.msg(obj.msg);
+						 return;
+					  }
+					  layer.msg('转班组成功');
+					  setTimeout(function(){
+						 window.location.reload();
+					 },1500)
+				  },error:function(){
+					  layer.closeAll();
+					  layer.msg('网络错误,请重试');
+				  }
+			  })
+		}
+		
+		//单个删除
+		function deleteItem(id,_obj){
+			layer.confirm('是否删除排产项目',{icon:3,title:'提示'},function(index){
+				$.ajax({
+					url: "{:Url('Schedule/del_schedual_item')}",
+					data: {"id":id},
+					dataType:"json",
+					success:function(obj){
+						
+						if(obj.status==1){
+							layer.msg('删除成功');
+							$(_obj).parent("span").remove();
+						}else{
+							layer.msg(obj.msg);
+						}
+						
+					}
+				})
+				layer.close(index);
+			})
+		}
+		//批量删除
+		function deAllItems(ids){
+			// id
+			layer.confirm('是否删除所有排产单',{icon:3,title:'提示'},function(index){
+				layer.load(0);
+				$.ajax({
+					url: "{:Url('Schedule/del_schedual_items')}",
+					data: {"id":ids},
+					dataType:"json",
+					success:function(obj){
+						layer.closeAll();
+						if(obj.status==1){
+							layer.msg('删除成功');
+							mysearch();
+						}else{
+							layer.msg(obj.msg);
+						}
+						
+					}
+				})
+				layer.close(index);
+			})
+		}
+	</script>
+	<script type="text/javascript">
+		$('.close-modal-btn').click(function(){
+			$('.modal-box').hide();
+		});
+		// 今天/明天/后天切换
+		$('.dateTab .date-txt').click(function(e){
+			e.preventDefault();
+			e.stopPropagation();
+			let _this = $(this);
+			var _day = _this.attr('data-day');
+			_this.children('.icon-point').addClass('icon-point-active');
+			_this.siblings('.date-txt').children('.icon-point').removeClass('icon-point-active');
+			aclick(_day);
+		})
+		$(window).click(function(){
+			var elem = event.srcElement ? event.srcElement : event.target;
+			while (elem) { //循环判断至跟节点，防止点击的是div子元素 
+				if (elem.id && elem.id == 'orderScreenBox') {
+					return;
+				}
+				elem = elem.parentNode;
+			}
+			$('.modal-box').fadeOut();
+			$('.imitate-select').removeAttr('data-sign').children('ul').hide();
+			$('.content-header-left').removeAttr('data-click').css({
+				top: '0',
+			}).children('.filter-orders').removeClass('filter-orders-active');
+			$('.content-header-left').siblings('.order-screen-box').css({
+				height: '0',
+				overflow: 'hidden'
+			})
+		});
+		// 未排产订单筛选
+		$('.content-header-left').click(function(e){
+			e.preventDefault();
+			e.stopPropagation();
+			let _this = $(this);
+			let clickIndex = _this.attr('data-index');
+			let clickSign = _this.attr('data-click');
+			if(clickSign == 'true'){
+				_this.removeAttr('data-click').css({
+					top: '0',
+				}).children('.filter-orders').removeClass('filter-orders-active');
+				_this.siblings('.order-screen-box').css({
+					height: '0',
+					overflow: 'hidden'
+				})
+			} else{
+				_this.siblings('.order-screen-box').css({
+					height: 'auto',
+					overflow: 'unset'
+				});
+				var _top = _this.siblings('.order-screen-box').css('height');
+				_this.attr('data-click', 'true').css({
+					top: _top,
+				}).children('.filter-orders').addClass('filter-orders-active');
+			}
+		});
+
+		$('.categoryList').delegate('li','click',function(e){
+			e.preventDefault();
+			e.stopPropagation();
+			var _this = $(this);
+			_this.addClass('li-active').siblings().removeClass('li-active');
+			var _index = _this.attr('data-rel');
+			current_page = _index;
+			ajax_html(_index,'');
+		});
+		// 选择前后一个
+		$('.content-nav div').click(function(e){
+			e.preventDefault();
+			e.stopPropagation();
+			var _this = $(this);
+			var clickSign = _this.attr('data-sign');
+			switch (clickSign) {
+				case 'down':
+					var isNext = $('.categoryList .li-active').next().length;
+					if(isNext != 0){
+						$('.categoryList .li-active').removeClass('li-active').next().addClass('li-active');
+					} else{
+						$('.categoryList li').last().addClass('li-active').siblings().removeClass('li-active');
+					}
+					break;
+				
+				case 'up':
+					var isPrev = $('.categoryList .li-active').prev().length;
+					if(isPrev != 0){
+						$('.categoryList .li-active').removeClass('li-active').prev().addClass('li-active');
+					} else{
+						$('.categoryList li').first(0).addClass('li-active').siblings().removeClass('li-active');
+					}
+					break;
+				default:
+					break;
+			}
+			var _liIndexTxt = $('.categoryList .li-active').attr('data-rel');
+			if(_liIndexTxt != '' && _liIndexTxt != undefined){
+				current_page = _liIndexTxt;
+				ajax_html(_liIndexTxt);
+			}
+		})
+	</script>
+</html>

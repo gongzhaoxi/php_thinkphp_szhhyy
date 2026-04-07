@@ -1,0 +1,301 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+        <title>微元生产工序报工管理系统,建材行业生产管理系统,门窗生产管理系统,微元科技,佛山市微元科技有限公司</title>
+        {include file="public/header" /}
+        <script src="__STATIC__index/js/erp.js"></script>
+    </head>
+    <style>
+    	.modal-body-left{width: 68%;float: left;}
+		.modal-body-right{width: 30%;float: right;height: 600px;margin-top: 20px;margin-right: 12px;border: 1px solid;}
+    	.item-top{margin: 12px 0px;}
+    	.item-title{float: left;font-size: 16px;font-weight: bold;line-height: 34px;margin: 0 12px;}
+		.item-btn{float: right;margin-right: 12px;width: 88px;line-height: 30px;color: #fff;background: #0e5b56;border: 0;cursor: pointer;}
+		.item-data{clear: both;margin: 0 12px;padding-top: 16px;font-size: 14px;font-weight: bold;}
+		.item-li{display: flex;line-height: 32px;margin-top: 16px;background: blueviolet;color: #FFF;}
+		.item-li :nth-child(1){text-align:center;width:22%;}
+		.item-li :nth-child(2){text-align:center;width:30%;}
+		.item-li :nth-child(3){text-align:center;width:16%;}
+		.item-li :nth-child(4){text-align:center;width:16%;}
+		.item-li :nth-child(5){text-align:center;width:16%;}
+		.item-msg{background:	#483D8B;margin-top:0;border-bottom:1px solid;color:#fff}
+    </style>
+    <body class="glassplan_modal set_plan_modal">
+        <div class="modal-body">
+        	<div class="modal-body-left">
+            <form class="layui-form set-plan-form">
+                <div class="layui-form-item">
+                    <button type="button" id="form-submit" class="layui-btn" style="margin: auto;">确认信息无误,并提交</button>
+                </div>
+                <div class="layui-form-item">
+                    <div class="form-item">
+                        <label class="layui-form-label">第一工序预生产开始时间：</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="start_date" id="start_date"   placeholder="选择日期" autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="form-item">
+                        <label class="layui-form-label">添加类型：</label>
+                        <div class="layui-input-inline">
+                            <div class="imitate-select">
+                                <span class="select-txt">有效排产</span>
+                                <span class="triangle-down"></span>
+                                <input type="hidden" name="status" id="status" value="2">
+                                <ul data-sign="status">
+                                    <li data-value="2">有效排产</li>
+<!--                                    <li data-value="1">预排产</li>-->
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-item">
+                        <label class="layui-form-label">生产单归类选择：</label>
+                        <div class="layui-input-inline">
+                            <div class="imitate-select">
+                                <span class="select-txt">按相同提交时间归类</span>
+                                <span class="triangle-down"></span>
+                                <input type="hidden" name="typed" id="typed" value="1">
+                                <ul data-sign="status">
+                                    <li data-value="1">按相同提交时间归类</li>
+                                    <li data-value="2">按相同需求时间归类</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-item">
+                        <label class="layui-form-label" >生产流水号：</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="unique_sn" id="unique_sn"   placeholder="生产流水号" >
+                        </div>
+                    </div>
+                    <div class="form-item">
+                        <label for="username" class="layui-form-label">客户名称：</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="custom" id="custom"  placeholder="客户名称" >
+                        </div>
+                        <button type="button" id="filter-order" class="layui-btn layui-btn-sm">立即筛选</button>
+                    </div>
+                </div>
+                <ul id="order-box" class="order-box"></ul>
+            </form>
+            </div>
+            <div class="modal-body-right">
+            	<div class="layui-item item-top">
+            		<div class="item-title">产值汇总分析：</div>
+            		<button type="button" id="item-btn" class="item-btn">计算排产值</button>
+            	</div>
+            	<div class="layui-item item-data">
+            		<label class="item-label">汇总数量：</label>
+            		<span class="total_data"></span>
+            	</div>
+            	<div class="layui-item item-li">
+            		<p>预生产日期</p>
+            		<p>工序</p>
+            		<p>固定产值</p>
+            		<p>已占用</p>
+            		<p>排产值</p>
+            	</div>
+            	<div class="layui-item add-content">
+         
+            	</div>
+            </div>
+        </div>
+    </body>
+    <script>
+    var layer, laydate;
+    layui.use(['layer','laydate'],function(){
+        laydate = layui.laydate;
+        layer = layui.layer;
+        laydate.render({
+            elem: '#start_date' //指定元素
+        });
+    })
+    // 立即筛选
+    $('#filter-order').click(function(){
+        var type = $('#typed').find('option:selected').val();
+        var custom = $('#custom').val();
+        var uniques_sn = $('#unique_sn').val();
+        layer.load();
+        $.post("{:url('filter_order')}",{type:type,custom:custom,unique_sn:uniques_sn},function(obj){
+            layer.closeAll('loading');
+            if(obj.code == 1){
+                layer.msg(obj.msg,{icon:2});
+                return;
+            }
+            var html = "";
+            $('#order-box').html('');
+            $.each(obj.data,function(k,val){
+                html += '<li>';
+                html += '<div class="order-item">';
+                
+                html += '<div class="imitate-checkbox-all"><span></span>';
+                html += '<input type="hidden" name="checkall" title="全选"></div>';
+                html += '<span class="txt">全选</span>';
+                html += '时间节点:' + val['date'] + '</div>';
+
+                html += '<div class="order-item-list">';
+                $(val['data']).each(function(k2,val2){
+                    html += '<div class="item-list-inner">';
+                    html += '<div class="imitate-checkbox-small"><span></span>';
+                    html += '<input type="hidden" class="orderid" name="orderid[]" title="' + val2['unique_sn'] + '" value="' + val2['id'] + '"></div>';
+                    html += '<span>' + val2['unique_sn'] + '</span></div>';
+                });
+                html += '</div>';
+                html += "</li>";
+            })
+            $('#order-box').html(html);
+        },'json')
+    });
+    //计算排产值
+    $("#item-btn").click(function(){
+    	var list = [];
+    	var time = $('#start_date').val()
+        $('.orderid').each(function(){
+            var _this = $(this);
+            var isChecked = _this.parent().parent().attr('data-sign');
+            if(isChecked == 'true'){
+                list.push(_this.val());
+            }
+        });
+        if(list.length == 0){
+            layer.msg('请勾选订单');
+            return;
+        }
+        $.ajax({
+        	url: "{:url('calculate_schedule')}",
+        	data: {'order':list,'time':time},
+        	dataType: 'json',
+        	success:function(res){
+        		console.log(res)
+        		if(res.code==0){
+        			var _html = '';
+        			var _text = '';
+        			$('.add-content').html('');
+        			$('.total_data').html('');
+        			$.each(res.list,function(i,val){
+        				_html += '<div class="item-li item-msg">';
+        				_html += '<p>'+val['starttime']+'</p>';
+        				_html += '<p>'+val['name']+'</p>';
+        				_html += '<p>'+val['unit']+'</p>';
+        				_html += '<p>'+val['already']+'</p>';
+        				_html += '<p>'+val['val']+'</p>';
+        				_html += '</div>'
+        			})
+        			_text = res.title.count+' 套| '+res.title.area+' ㎡| '+res.title.bs_num+' 玻扇| '+res.title.ss_num+'纱扇';
+        			$('.total_data').html(_text);
+        			$('.add-content').html(_html);
+        		}else{
+        			layer.msg(res.msg);
+                    return;
+        		}
+        	}
+        })
+    })
+    // 表单提交
+    $('#form-submit').click(function(){
+        var list = [];
+        $('.orderid').each(function(){
+            var _this = $(this);
+            var isChecked = _this.parent().parent().attr('data-sign');
+            if(isChecked == 'true'){
+                list.push(_this.val());
+            }
+        });
+        if(list.length == 0){
+            layer.msg('请勾选订单');
+            return;
+        }
+        ajaxform("{:url('add_preproduct_plan')}",{data:list,start_date:$('#start_date').val(),status:$('input[name=status]').val()},1);
+    });
+
+    // 全选
+    $('#order-box').delegate('li .order-item .imitate-checkbox-all', 'click',function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        var _this = $(this);
+        var clickSign = _this.attr('data-sign');
+        if (clickSign == 'true') {
+            _this.children('span').hide();
+            _this.removeAttr('data-sign');
+            _this.parent().siblings('.order-item-list').children('.item-list-inner').removeAttr('data-sign').children('.imitate-checkbox-small').children('span').hide();
+        } else {
+            _this.children('span').show();
+            _this.attr('data-sign', 'true');
+            _this.parent().siblings('.order-item-list').children('.item-list-inner').attr('data-sign','true').children('.imitate-checkbox-small').children('span').show();
+        }
+    });
+    // 单选框
+    $('#order-box').delegate('li .order-item-list .item-list-inner', 'click',function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        var _this = $(this);
+        var clickSign = _this.attr('data-sign');
+        if (clickSign == 'true') {	// 取消选中
+            _this.children('.imitate-checkbox-small').children('span').hide();
+            _this.removeAttr('data-sign');
+        } else {	// 选中
+            _this.children('.imitate-checkbox-small').children('span').show();
+            _this.attr('data-sign', 'true');
+        }
+        // 当前全部订单
+        var tempLength = _this.parent().find('.item-list-inner').length;
+        var selectLength = _this.parent().find('.item-list-inner[data-sign="true"]').length;
+        if(tempLength == selectLength){	// 全部选中
+            _this.parent().siblings('.order-item').children('.imitate-checkbox-all').attr('data-sign', 'true').children('span').show();
+        } else{
+            _this.parent().siblings('.order-item').children('.imitate-checkbox-all').removeAttr('data-sign').children('span').hide();
+        }
+    });
+
+
+
+
+    $('.imitate-select').click(function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var _this = $(this);
+        var clickSign = _this.attr('data-sign');
+        $('.imitate-select').removeAttr('data-sign').children('ul').hide();
+        if (clickSign == 'true') {
+            _this.children('ul').hide();
+            _this.removeAttr('data-sign');
+        } else {
+            _this.children('ul').show();
+            _this.attr('data-sign', 'true');
+        }
+    });
+    $(window).click(function(){
+        $('.modal-box').fadeOut();
+        var elem = event.srcElement ? event.srcElement : event.target;
+        while (elem) { //循环判断至跟节点，防止点击的是div子元素 
+            if (elem.id && elem.id == 'orderScreenBox') {
+                return;
+            }
+            elem = elem.parentNode;
+        }
+        $('.imitate-select').removeAttr('data-sign').children('ul').hide();
+        $('.content-header-left').removeAttr('data-click').css({
+            top: '0',
+        }).children('.filter-orders').removeClass('filter-orders-active');
+        $('.content-header-left').siblings('.order-screen-box').css({
+            height: '0',
+            overflow: 'hidden'
+        })
+    });
+    $('.imitate-select ul').delegate('li','click',function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        var _this = $(this);
+        var tempTxt = _this.html();
+        var _thisValue = _this.attr('data-value');
+        _this.parent().parent().children('.select-txt').attr('data-value',_thisValue).html(tempTxt);
+        _this.parent().hide();
+        _this.parent().parent().removeAttr('data-sign');
+        _this.parent().siblings('input[type=hidden]').val(_thisValue);
+        var _clickTarget = _this.parent().attr('data-sign');
+    });
+    </script>
+</html>
+

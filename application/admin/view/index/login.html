@@ -1,0 +1,35 @@
+
+{include file='public/header'}
+<link rel="stylesheet" href="__STATIC__/css/login.css">
+<body class="login-bg">
+    
+    <div class="login layui-anim layui-anim-up">
+        <div class="message">微窗花</div>
+        <div id="darkbannerwrap"></div>
+        
+        <form method="post" class="layui-form" >
+            <input name="login_name" placeholder="用户名"  type="text" lay-verify="required" class="layui-input" >
+            <hr class="hr15">
+            <input name="login_password" lay-verify="required" placeholder="密码"  type="password" class="layui-input">
+            <hr class="hr15">
+            <input value="登录" lay-submit lay-filter="login" style="width:100%;" type="submit">
+            <hr class="hr20" >
+        </form>
+    </div>
+    <script>
+       
+            layui.use('form', function(){
+             $ = layui.jquery;
+              var form = layui.form;
+              //监听提交表单
+                form.on('submit(login)',
+                        function (data) {                            
+                           ajaxform("{:url('checkLogin')}",data.field);
+                            return false;
+                        });
+              
+            });
+      
+    </script>
+</body>
+</html>

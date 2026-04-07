@@ -1,0 +1,73 @@
+{include file="public/header"/}
+<link rel="stylesheet" href="__STATIC__/css/select.css">
+<div class="layui-fluid">
+	<div class="layui-row">
+		<form class="layui-form">
+			<div class="layui-form-item">
+				<label for="start_date" class="layui-form-label">
+					流程开始
+				</label>
+				<div class="layui-input-block">
+					<input type="text" id="start_date" name="start_date" value="{$model['start_date']}" required="" lay-verify="required" class="layui-input" >
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label for="end_date" class="layui-form-label">
+					流程结束
+				</label>
+				<div class="layui-input-block">
+					<input type="text" id="end_date" name="end_date" value="{$model['end_date']}" required="" lay-verify="required"  class="layui-input" >
+				</div>
+			</div>
+			<div class="layui-form-item" >
+				<label class="layui-form-label">报工开始人</label>
+				<div class="layui-input-block" >
+					<select name="start_worker" xm-select="start_worker" required  lay-verify="required" xm-select-search  xm-select-search-type="dl" xm-select-radio>
+						<option value="">请选择</option>
+						{volist name="worker" id="vo"}
+						<option value="{$vo['name']}" {if $vo['name'] == $model['start_worker']}selected{/if}>{$vo['name']}</option>
+						{/volist}
+					</select>
+				</div>
+			</div>		
+			<div class="layui-form-item" >
+				<label class="layui-form-label">报工结束人</label>
+				<div class="layui-input-block" >
+					<select name="end_worker" xm-select="end_worker" required  lay-verify="required" xm-select-search  xm-select-search-type="dl" xm-select-radio>
+						<option value="">请选择</option>
+						{volist name="worker" id="vo"}
+						<option value="{$vo['name']}" {if $vo['name'] == $model['end_worker']}selected{/if}>{$vo['name']}</option>
+						{/volist}
+					</select>
+				</div>
+			</div>				
+			<div class="layui-form-item">
+				<input type="hidden" id="id" name="id" value="{$model['id']}"  >
+				<label for="L_repass" class="layui-form-label"></label>
+				<button class="layui-btn" lay-filter="save" lay-submit="">保存</button>
+			</div>
+		</form>
+	</div>
+</div>
+<script>
+layui.config({
+	base: "/static/js/",
+}).extend({
+	select: "select",
+}).use(['form','select','laydate'],function() {
+	$ = layui.jquery;
+	form = layui.form,select = layui.select,laydate = layui.laydate;
+	form.on('submit(save)',function(data) {
+		ajaxform("{:url('report')}",data.field);
+		return false;
+	});  
+	laydate.render({
+		elem: '#start_date' //指定元素
+	});
+	laydate.render({
+		elem: '#end_date' //指定元素
+	});	
+});
+</script>
+</body>
+</html>

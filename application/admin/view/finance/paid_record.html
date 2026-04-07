@@ -1,0 +1,87 @@
+{include file="public/header"/}
+<style>
+    .layui-form-label{ width: 90px;}
+</style>
+        <div class="layui-fluid">
+            <div class="layui-row">
+                <form class="layui-form ">
+                    {volist name='list' id='v'}
+                    <div class="box">
+						<div class="layui-form-item" style="margin-bottom: 0px;">
+							<label class="layui-form-label" style="text-align: left;width: 200px">
+								收款日期:&nbsp;&nbsp;&nbsp;&nbsp;{$v['addtime']|date='Y-m-d H:i:s',###}
+							</label>
+							<label class="layui-form-label" style="width: 50px;">
+								收款备注
+							</label>
+							<div class="layui-input-inline" style="width: 300px">
+								<input type="text"  name="finance_remark"  class="layui-input" value="{$v.finance_remark}">
+							</div>
+						</div>
+						<div class="layui-form-item ">
+							<label class="layui-form-label" style="width: 50px;">
+								收款金额
+							</label>
+							<div class="layui-input-inline" style="width: 70px">
+								<input type="text" id="have_pay" name="have_pay" required="" lay-verify="required" class="layui-input" value="{$v.have_pay}">
+							</div>
+							<label class="layui-form-label" style="width: 50px;">
+								收款方式
+							</label>
+							<div class="layui-input-inline" style="width: 80px">
+								<select name="pay_type">
+									{volist name='pay_type' id='v2'}
+									<option value="{$key}" {if condition="$v['pay_type'] eq $key"}selected{/if}>{$v2}</option>
+									{/volist}
+								</select>
+							</div>
+							<label class="layui-form-label" style="width: 30px;">
+								折让
+							</label>
+							<div class="layui-input-inline" style="width: 70px">
+								<input type="text" id="finance_rebate" name="finance_rebate"  class="layui-input" value="{$v.finance_rebate}">
+							</div>
+							<label class="layui-form-label" style="width: 50px;">
+								其它收款
+							</label>
+							<div class="layui-input-inline" style="width: 70px">
+								<input type="text" id="other_pay" name="other_pay"  class="layui-input" value="{$v.other_pay}">
+							</div>
+							<input type="hidden"  name="id" value="{$v.id}">
+							<button type="button" class="layui-btn layui-btn-sm save-btn">保存</button>
+						</div>
+					</div>
+                    {/volist}
+                    <input type="hidden" id="order_id"  name="order_id" value="{$order_id}">
+                </form>
+            </div>
+        </div>
+        <script>layui.use(['laydate','form'],
+            function() {
+                $ = layui.jquery;
+                var form = layui.form;
+                var laydate = layui.laydate;
+                
+                //执行一个laydate实例
+                laydate.render({
+                    elem: '#test' //指定元素
+                });
+
+                $('.save-btn').click(function () {
+                    var _box = $(this).parents('.box');
+                    var have_pay = _box.find('input[name=have_pay]').val();
+                    var pay_type = _box.find('select option:selected').val();
+                    var other_pay = _box.find('input[name=other_pay]').val();
+                    var rebate = _box.find('input[name=finance_rebate]').val();
+					var finance_remark = _box.find('input[name=finance_remark]').val();
+                    var id = _box.find('input[name=id]').val();
+                    var order_id = $('#order_id').val();
+                    ajaxform("{:url('paidRecord')}",{have_pay:have_pay,pay_type:pay_type,other_pay:other_pay,id:id,order_id:order_id,rebate:rebate,finance_remark:finance_remark})
+                });
+
+                
+            });</script>
+
+    </body>
+
+</html>

@@ -1,0 +1,104 @@
+{include file="public/header"/}
+<style>
+    .layui-col-xs12 .iconfont{ font-size: 20px;}
+    .check-box{ margin-top: 10px;}
+    .check { position: absolute;left: 20%;top:35px;}
+    .del-icon{ margin-left: 30%;}
+    #check-box { margin-top: 23px;}
+</style>
+<body>
+    <div class="layui-fluid">
+        <div class="layui-row">
+            <form class="layui-form">
+                <blockquote class="layui-elem-quote">
+                    <div style="width: 20%;display: inline-block;">
+                        <select name="type" id="type" lay-filter='iscut'>
+                            <option value="">全部类型</option>
+                            <option value="0">不可切花件</option>
+                            <option value="1">可切花件</option>
+                        </select>
+                    </div>
+                    <div style="width:20%;display: inline-block;">
+                        <input name="search" type="text" placeholder="搜索名称" class="layui-input" value="{$keyword}"/>
+                        
+                    </div >
+                    <div style="width:20%;display: inline-block;">
+                        <button type="submit" class="layui-btn">搜索</button>
+                    </div>
+                </blockquote> 
+                <div class="layui-col-xs12" id="all-flower">
+                    {volist name='flower' id='v'}
+                    <div class="layui-col-xs3 check-box" ids='{$v.id}'pic="{$v.pic}" max_height="{$v.max_height}" min_height="{$v.min_height}">
+                        <img src="/upload/{$v.pic}"  height="100"/>
+                        <input name='info[{$key}][name]' id="name" type='text' class='layui-input' style='width:55%' placeholder='重命名' value='{$v.name}'>
+                        <input name='info[{$key}][price]' type='text' lay-verify='required' class='layui-input' style='width:55%' placeholder='价格' value='{$v.price}'>
+                        
+                    </div>
+                    {/volist}
+                </div>  
+                <div class="layui-col-xs12 flower-list">
+                   
+                </div>
+                <div class="layui-form-item">
+                    <input name="series_id" id="series_id" value="{$series_id}" type="hidden"/>
+                    <label for="L_repass" class="layui-form-label"></label>
+                </div>
+            </form>
+        </div> 
+    </div>
+    <script>layui.use(['form', 'layer'],
+                function () {
+                    $ = layui.jquery;
+                    var form = layui.form,
+                    layer = layui.layer;
+            
+                    var html = '<i class="icon iconfont check">&#xe6b1</i>';//选中icon图标
+                    $(function(){
+                        //点击图片添加选中icon
+                        $('#all-flower').on('click','.check-box',function(){
+                            $('.check-box').attr('check','false');
+                            $('.check-box').find('i').remove();
+                            $(this).attr('check','true');
+                            $(this).append(html)              
+
+                        })
+                    })
+                    
+                    //监听是否可切 类型下拉
+                    form.on('select(iscut)',function(data){
+                        $.post("{:url('order/findCut')}",{iscut:data.value,series_id:$('#series_id').val()},function(obj){                            
+                            var html = '';
+                            var row = $('.flower-list').find('div').length;
+                            var array = obj.data;     
+                            for(i=0;i<array.length;i++){                              
+                                html += "<div class='layui-col-xs3 check-box' ids='"+array[i]['id']+"' pic='"+array[i]['pic']+"' max_height='"+array[i]['max_height']+"' min_height='"+array[i]['min_height']+"'>\n\
+                                         <img src='/upload/"+array[i]['pic']+"' height='100'/><input name='info["+row+"][name]' type='text' class='layui-input' value="+array[i]['name']+" style='width:55%' placeholder='重命名'>\n\
+                                         <input name='info["+row+"][price]' type='text' lay-verify='required' class='layui-input' style='width:55%' placeholder='价格' value="+array[i]['price']+">\n\
+                                          </div>";                                                             
+                            }
+                            $('#all-flower').html(html);
+                            
+                        },'json');
+                    })
+                });
+        
+    </script>
+    <script src="__STATIC__/js/jquery.min.js" charset="utf-8"></script>
+    <script>
+         //回调参数
+        function callbackdata() {
+            var data = {};
+            $('.check-box').each(function(){
+                if($(this).attr('check') == 'true'){
+                    data = {id:$(this).attr('ids'),name:$(this).find('#name').val(),pic:$(this).attr('pic'),max_height:$(this).attr('max_height'),
+                        min_height:$(this).attr('min_height')
+                    };
+                }
+            })            
+            return data;
+        }
+    </script>
+
+</body>
+
+</html>

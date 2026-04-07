@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+        <title>微元生产工序报工管理系统,建材行业生产管理系统,门窗生产管理系统,微元科技,佛山市微元科技有限公司</title>
+		{include file="public/header" /}
+        <script src="__STATIC__index/js/erp.js"></script>
+    </head>
+<body class="set_plan_field">
+    <div class="modal-body">
+        <div class="field-group">
+            <div class="fg-dt">系统固定字段列表</div>
+            <div class="fg-dd">
+                <a href="javascript:void(0)" class="fixed-btn">批次号</a>
+                <a href="javascript:void(0)" class="fixed-btn">销售单号</a>
+                <a href="javascript:void(0)" class="fixed-btn">生产单号</a>
+                <a href="javascript:void(0)" class="fixed-btn">规格</a>
+                <a href="javascript:void(0)" class="fixed-btn">订购数量</a>
+                <a href="javascript:void(0)" class="fixed-btn">已回厂片数</a>
+                <a href="javascript:void(0)" class="fixed-btn">类型</a>
+            </div>
+        </div>
+        <div class="field-group">
+            <div class="fg-dt">增加字段列表</div>
+            <div class="fg-dd" id="add-box">
+                {volist name='field' id='v'}
+                <span class="add-btn">
+                    <a href="javascript:void(0)">{$v.value}</a><i class="layui-icon layui-icon-delete del" onclick="del(this)"></i>
+                </span>
+                {/volist}
+            </div>
+        </div>
+        <div class="field-group">
+            <div class="fg-dt">添加字段</div>
+            <div class="fg-dd">
+                <input name="add_field" id="add_field" type="text" autocomplete="off" />
+                <a href="javascript:void(0)" id="add-field-btn">添加字段</a>
+            </div>
+        </div>
+        <div class="field-group">
+            <button type="button" id="form-submit">确认信息无误并提交</button>
+        </div>
+    </div>
+	
+</body>
+<script>
+    $(function(){
+        $('#add-field-btn').click(function(){
+            var text = $('#add_field').val();
+            if(text == ''){
+                layer.msg('请填写字段');
+                return;
+            }
+            var html = '<span class="add-btn"><a href="javascript:void(0)">' + text + '</a><i class="layui-icon layui-icon-delete del" onclick="del(this)"></i></span>'
+            $('#add-box').append(html);
+        })
+        
+        //提交表单
+        $('#form-submit').click(function(){
+            var list = [];
+            $('.add-btn').each(function(){
+                list.push($(this).children('a').text());
+            });
+            if(list.length == 0){
+                layer.msg('请添加字段');
+                return;
+            }
+            ajaxform("{:url('set_plan_field')}",{data:list},1);
+        })
+    })                    
+
+    function del(obj){
+        $(obj).parent().remove();
+    }
+    
+</script>
+</html>
+

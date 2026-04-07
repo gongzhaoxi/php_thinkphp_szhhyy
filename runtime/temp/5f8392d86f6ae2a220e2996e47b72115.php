@@ -1,0 +1,381 @@
+<?php if (!defined('THINK_PATH')) exit(); /*a:2:{s:102:"/mnt/datadisk0/www/wwwroot/wchuanghua.ecloudm.com/public/../application/admin/view/series/bom_add.html";i:1722820679;s:91:"/mnt/datadisk0/www/wwwroot/wchuanghua.ecloudm.com/application/admin/view/public/header.html";i:1635496794;}*/ ?>
+<!DOCTYPE html>
+<html class="x-admin-sm">
+    <head>
+        <meta charset="UTF-8">
+        <title>深圳恒辉</title>
+        <meta name="renderer" content="webkit|ie-comp|ie-stand">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<!--        <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />-->
+        <meta http-equiv="Cache-Control" content="no-siteapp" />
+        <link rel="stylesheet" href="/static/css/font.css">
+        <link rel="stylesheet" href="/static/css/xadmin.css">
+        <!-- <link rel="stylesheet" href="/static/css/theme5.css"> -->
+        <script src="/static/lib/layui/layui.js" charset="utf-8"></script>
+        <script type="text/javascript" src="/static/js/xadmin.js"></script> 
+        <script type="text/javascript" src="/static/js/erp.js"></script>       
+        <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+        <!--[if lt IE 9]>
+          <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+          <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+        <script>
+            // 是否开启刷新记忆tab功能
+             var is_remember = false;
+        </script>
+    </head>
+
+<div class="layui-fluid">
+    <div class="layui-row">
+        <form class="layui-form">
+            <div class="layui-form-item">
+                <label class="layui-form-label">边框</label>
+                <div class="layui-inline">
+                    <select name="info[1][one_level]" class="one_level" lay-filter='one'>
+                        <option value="">请选择</option>
+                        <option value="bom_aluminum">铝型材</option>
+                        <option value="bom_flower">花件</option>
+                        <option value="bom_five">五件</option>
+                        <option value="bom_hands">把手位</option>
+                        <option value="bom_yarn">纱网</option>
+                    </select>
+                    <input name="info[1][type]" type='hidden' value='1'/>
+                </div>
+                <div class="layui-inline">
+                    <select name="info[1][two_level]" class="boms">
+                        
+                    </select>
+                </div>
+                <div class="layui-inline">
+                    <input type="text" name="take" class="layui-input" placeholder="框搭框">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">外框</label>
+                <div class="layui-inline">
+                    <select name="info[2][one_level]" class="one_level" lay-filter='one'>
+                        <option value="">请选择</option>
+                        <option value="bom_aluminum">铝型材</option>
+                        <option value="bom_flower">花件</option>
+                        <option value="bom_five">五件</option>
+                        <option value="bom_hands">把手位</option>
+                        <option value="bom_yarn">纱网</option>
+                    </select>
+                    <input name="info[2][type]" type='hidden' value='2'/>
+                </div>
+                
+                <div class="layui-inline">
+                    <select name="info[2][two_level]" class="boms">
+                        
+                    </select>
+                </div>
+                <div class="layui-inline">
+                    <input type="text" name="frame_take_fan" class="layui-input" placeholder="框搭扇">
+                </div>
+				<div class="layui-inline">
+				    <input type="text" name="waikuangbian" class="layui-input" placeholder="外框边">
+				</div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">内框</label>
+                <div class="layui-inline">
+                    <select name="info[3][one_level]" class="one_level" lay-filter='one'>
+                        <option value="">请选择</option>
+                        <option value="bom_aluminum">铝型材</option>
+                        <option value="bom_flower">花件</option>
+                        <option value="bom_five">五件</option>
+                        <option value="bom_hands">把手位</option>
+                        <option value="bom_yarn">纱网</option>
+                    </select>
+                    <input name="info[3][type]" type='hidden' value='3'/>
+                </div>
+                
+                <div class="layui-inline">
+                    <select name="info[3][two_level]" class="boms">
+                        
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">中横</label>
+                <div class="layui-inline">
+                    <select name="info[4][one_level]" class="one_level" lay-filter='one'>
+                        <option value="">请选择</option>
+                        <option value="bom_aluminum">铝型材</option>
+                        <option value="bom_flower">花件</option>
+                        <option value="bom_five">五件</option>
+                        <option value="bom_hands">把手位</option>
+                        <option value="bom_yarn">纱网</option>
+                    </select>
+                    <input name="info[4][type]" type='hidden' value='4'/>
+                </div>
+                
+                <div class="layui-inline">
+                    <select name="info[4][two_level]" lay-verify="required" class="boms">
+                        
+                    </select>
+                </div>
+				<div class="layui-inline">
+				    <input type="text" name="shawangbian" class="layui-input" placeholder="纱网边">
+				</div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">扇</label>
+                <div class="layui-inline">
+                    <select name="info[5][one_level]" class="one_level" lay-filter='one'>
+                        <option value="">请选择</option>
+                        <option value="bom_aluminum">铝型材</option>
+                        <option value="bom_flower">花件</option>
+                        <option value="bom_five">五件</option>
+                        <option value="bom_hands">把手位</option>
+                        <option value="bom_yarn">纱网</option>
+                    </select>
+                    <input name="info[5][type]" type='hidden' value='5'/>
+                </div>
+                
+                <div class="layui-inline">
+                    <select name="info[5][two_level]" lay-verify="required" class="boms">
+                        
+                    </select>
+                </div>
+				<div class="layui-inline">
+				    <input type="text" name="menshanbian" class="layui-input" placeholder="门扇边">
+				</div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">小门框</label>
+                <div class="layui-inline">
+                    <select name="info[6][one_level]" class="one_level" lay-filter='one'>
+                        <option value="">请选择</option>
+                        <option value="bom_aluminum">铝型材</option>
+                        <option value="bom_flower">花件</option>
+                        <option value="bom_five">五件</option>
+                        <option value="bom_hands">把手位</option>
+                        <option value="bom_yarn">纱网</option>
+                    </select>
+                    <input name="info[6][type]" type='hidden' value='6'/>
+                </div>
+                
+                <div class="layui-inline" style="width:25%">
+                    <select name="info[6][two_level]" class="boms">
+                        
+                    </select>
+                </div>
+                <div class="layui-inline" style="width: 10%">
+                    <input type="text" name="small_frame" class="layui-input" placeholder="小门框搭框">
+                </div>
+                <div class="layui-inline" style="width: 10%">
+                    <input type="text" name="small_fan" class="layui-input" placeholder="小门框搭扇">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">面管</label>
+                <div class="layui-inline">
+                    <select name="info[7][one_level]" class="one_level" lay-filter='one'>
+                        <option value="">请选择</option>
+                        <option value="bom_aluminum">铝型材</option>
+                        <option value="bom_flower">花件</option>
+                        <option value="bom_five">五件</option>
+                        <option value="bom_hands">把手位</option>
+                        <option value="bom_yarn">纱网</option>
+                    </select>
+                    <input name="info[7][type]" type='hidden' value='3'/>
+                </div>
+
+                <div class="layui-inline">
+                    <select name="info[7][two_level]" class="boms">
+
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">立柱</label>
+                <div class="layui-inline">
+                    <select name="info[8][one_level]" class="one_level" lay-filter='one'>
+                        <option value="">请选择</option>
+                        <option value="bom_aluminum">铝型材</option>
+                        <option value="bom_flower">花件</option>
+                        <option value="bom_five">五件</option>
+                        <option value="bom_hands">把手位</option>
+                        <option value="bom_yarn">纱网</option>
+                    </select>
+                    <input name="info[8][type]" type='hidden' value='3'/>
+                </div>
+
+                <div class="layui-inline">
+                    <select name="info[8][two_level]" class="boms">
+
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">横杆</label>
+                <div class="layui-inline">
+                    <select name="info[9][one_level]" class="one_level" lay-filter='one'>
+                        <option value="">请选择</option>
+                        <option value="bom_aluminum">铝型材</option>
+                        <option value="bom_flower">花件</option>
+                        <option value="bom_five">五件</option>
+                        <option value="bom_hands">把手位</option>
+                        <option value="bom_yarn">纱网</option>
+                    </select>
+                    <input name="info[9][type]" type='hidden' value='3'/>
+                </div>
+                <div class="layui-inline">
+                    <select name="info[9][two_level]" class="boms">
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">内竖杆</label>
+                <div class="layui-inline">
+                    <select name="info[10][one_level]" class="one_level" lay-filter='one'>
+                        <option value="">请选择</option>
+                        <option value="bom_aluminum">铝型材</option>
+                        <option value="bom_flower">花件</option>
+                        <option value="bom_five">五件</option>
+                        <option value="bom_hands">把手位</option>
+                        <option value="bom_yarn">纱网</option>
+                    </select>
+                    <input name="info[10][type]" type='hidden' value='3'/>
+                </div>
+                <div class="layui-inline">
+                    <select name="info[10][two_level]" class="boms">
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+			    <label class="layui-form-label">上中横</label>
+			    <div class="layui-inline">
+			        <select name="info[11][one_level]" class="one_level" lay-filter='one'>
+			            <option value="">请选择</option>
+			            <option value="bom_aluminum">铝型材</option>
+			        </select>
+			        <input name="info[11][type]" type='hidden' value='11'/>
+			    </div>
+			    <div class="layui-inline">
+			        <select name="info[11][two_level]" lay-verify="required" class="boms">
+			        </select>
+			    </div>
+			</div>
+			<div class="layui-form-item">
+			    <label class="layui-form-label">下中横</label>
+			    <div class="layui-inline">
+			        <select name="info[12][one_level]" class="one_level" lay-filter='one'>
+			            <option value="">请选择</option>
+			            <option value="bom_aluminum">铝型材</option>
+			        </select>
+			        <input name="info[12][type]" type='hidden' value='12'/>
+			    </div>
+			    <div class="layui-inline">
+			        <select name="info[12][two_level]" lay-verify="required" class="boms">
+			        </select>
+			    </div>
+			</div>
+			<div class="layui-form-item">
+			    <label class="layui-form-label">窄边框</label>
+			    <div class="layui-inline">
+			        <select name="info[13][one_level]" class="one_level" lay-filter='one'>
+			            <option value="">请选择</option>
+			            <option value="bom_aluminum">铝型材</option>
+			        </select>
+			        <input name="info[13][type]" type='hidden' value='13'/>
+			    </div>
+			    <div class="layui-inline">
+			        <select name="info[13][two_level]" lay-verify="required" class="boms">
+			        </select>
+			    </div>
+					<div class="layui-inline">
+					    <input type="text" name="ZK_B_KDK" class="layui-input" placeholder="窄边框搭框">
+					</div>
+			</div>
+			<div class="layui-form-item">
+			    <label class="layui-form-label">窄内框</label>
+			    <div class="layui-inline">
+			        <select name="info[14][one_level]" class="one_level" lay-filter='one'>
+			            <option value="">请选择</option>
+			            <option value="bom_aluminum">铝型材</option>
+			        </select>
+			        <input name="info[14][type]" type='hidden' value='14'/>
+			    </div>
+			    <div class="layui-inline">
+			        <select name="info[14][two_level]" lay-verify="required" class="boms">
+			        </select>
+			    </div>
+			</div>
+			<div class="layui-form-item">
+			    <label class="layui-form-label">窄外框</label>
+			    <div class="layui-inline">
+			        <select name="info[15][one_level]" class="one_level" lay-filter='one'>
+			            <option value="">请选择</option>
+			            <option value="bom_aluminum">铝型材</option>
+			        </select>
+			        <input name="info[15][type]" type='hidden' value='15'/>
+			    </div>
+			    <div class="layui-inline">
+			        <select name="info[15][two_level]" lay-verify="required" class="boms">
+			        </select>
+			    </div>
+					<div class="layui-inline">
+					    <input type="text" name="ZK_B_KDS" class="layui-input" placeholder="窄外框搭扇">
+					</div>
+			</div>
+			<div class="layui-form-item">
+			    <label class="layui-form-label">纱压线</label>
+			    <div class="layui-inline">
+			        <select name="info[16][one_level]" class="one_level" lay-filter='one'>
+			            <option value="">请选择</option>
+			            <option value="bom_aluminum">铝型材</option>
+			        </select>
+			        <input name="info[16][type]" type='hidden' value='16'/>
+			    </div>
+			    <div class="layui-inline">
+			        <select name="info[16][two_level]" lay-verify="required" class="boms">
+			        </select>
+			    </div>
+			</div>
+            <div class="layui-form-item">
+                <label for="L_repass" class="layui-form-label"></label>
+                <input name="series_id" type="hidden" value="<?php echo $id; ?>"/>
+                <button class="layui-btn" lay-filter="add" lay-submit="">保存</button>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    layui.use(['form', 'layer'],
+            function () {
+                $ = layui.jquery;
+                var form = layui.form,
+                layer = layui.layer;
+              
+                //监听select,selct二级联动
+                form.on('select(one)',
+                        function (data) {
+                             $.post("<?php echo url('findbom'); ?>",{table:data.value},function(obj){
+                                var html = '';
+                                var array = obj.data;     
+                                for(i=0;i<array.length;i++){
+                                    html += "<option value="+array[i]['id']+">"+array[i]['code']+"("+array[i]['name']+")</option>";
+                                }
+                                $(data.elem).parent().next().find('select').html(html);
+                                form.render('select');  //更新渲染
+                             },'json');
+                        });
+                        
+                //监听提交表单
+                form.on('submit(add)',
+                        function (data) {                            
+                            ajaxform("<?php echo url('series/bomAdd'); ?>", data.field,2);
+                            return false;
+                        });
+            });
+
+</script>
+<script src="/static/js/jquery.min.js" charset="utf-8"></script>  
+<script>
+    
+</script>
+</body>
+
+</html>

@@ -1,0 +1,157 @@
+{include file="public/header"/}
+    
+    <body>
+         <div class="x-nav">
+            <span class="layui-breadcrumb">
+               <a href="javascript:void(0)">配送批次订单</a>
+            </span> 
+            
+            <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" onclick="location.reload()" title="刷新">
+                <i class="layui-icon layui-icon-refresh" style="line-height:30px"></i>
+            </a>
+        </div>
+        <div class="layui-fluid">
+            <div class="layui-row layui-col-space15">
+                <div class="layui-col-md12">
+                    <div class="layui-card">
+                        <div class="layui-card-body ">
+                            
+                        </div>
+                        <div class="layui-card-header">
+                            <form class="layui-form layui-col-space5" id="form1">
+                                <div class="layui-input-inline layui-show-xs-block">
+                                    <input type="text" name="number" placeholder="订单号" autocomplete="off" class="layui-input" value="{$number}">
+                                </div>
+                                <div class="layui-input-inline layui-show-xs-block">
+                                    <input type="text" name="starttime" id="starttime" placeholder="送货开始时间" autocomplete="off" class="layui-input" value="{$start_time}">
+                                </div>
+                                <div class="layui-input-inline layui-show-xs-block">
+                                    <input type="text" name="endtime" id="endtime" placeholder="送货结束时间" autocomplete="off" class="layui-input" value="{$end_time}">
+                                </div>
+                                <div class="layui-input-inline layui-show-xs-block">
+                                    <select name="status">
+                                        <option value=""  {if condition="$status == ''"}selected{/if}>全部状态</option>
+                                        <option value="0" {if condition="$status eq '0'"}selected{/if}>待配送</option>                                       
+                                        <option value="1" {if condition="$status eq '1'"}selected{/if}>配送中</option>
+                                        <option value="2" {if condition="$status eq '2'"}selected{/if}>已完成</option>
+                                    </select>
+                                </div>
+                                <div class="layui-input-inline layui-show-xs-block">
+                                    <button class="layui-btn" lay-submit="" lay-filter="sreach">
+                                        <i class="layui-icon">&#xe615;</i>
+                                    </button>
+                                </div>
+                                <div class="layui-input-inline layui-show-xs-block">
+                                    <a class="layui-btn layui-btn-normal" href="javascript:void(0)" id="export-btn">
+                                        导出数据
+                                    </a>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="layui-card-body ">
+                            <table class="layui-table layui-form">
+                                <thead>
+                                    <tr>                                       
+                                        <th>配送单号</th>
+                                        <th width="30%">包含订单号</th>
+                                        <th>送货时间</th>
+                                        <th>产品数量</th>
+                                        <th>进度/修改</th>
+                                        <th>配送方式</th>
+                                        <th>状态</th>
+                                        <th>操作</th>
+    
+                                </thead>
+                                <tbody>
+                                    {volist name='list' id='v'}
+                                    <tr>
+                                        <td>{$v.snumber}</td>
+                                        <td>{$v.all_number}</td>
+                                        <td>{$v.send_date}</td>
+                                        <td>{$v.count}</td>
+                                        <td>
+                                            <a href="javascript:void(0)" onclick="xadmin.open('查看详细', '{:url('readDelivery',array('id'=>$v['id']))}', 1200, 700)">查看</a>&nbsp;&nbsp;
+                                            <a href="javascript:void(0)" onclick="xadmin.open('查看详细', '{:url('editDelivery',array('id'=>$v['id']))}', 1200, 700)">修改</a>
+                                            </td>
+                                        <td>{$send_type[$v['is_send']]}</td>
+                                        <td>{$send_status[$v['status']]}</td>
+                                        <td>
+                                            {if condition="$v['is_check'] eq 1"}
+                                            <a title="打印" onclick="xadmin.open('打印配送单', '{:url('printDelivery',array('id'=>$v['id']))}',1200, 600)" href="javascript:;">
+                                                <i class="icon iconfont">&#xe6c9;</i>
+                                            </a>
+                                            {/if}
+                                            {if condition="$v['is_check'] eq 0"}
+                                            <a title="删除" onclick="delivery_del(this,{$v.id})" href="javascript:;">
+                                                <i class="layui-icon">&#xe640;</i>
+                                            </a>
+                                            {/if}
+                                        </td>
+                                    </tr>
+                                    {/volist}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="layui-card-body ">
+                            <div class="page">
+                                   {$page}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+    <script>layui.use(['laydate', 'form'],
+        function() {
+            var laydate = layui.laydate;
+            var  form = layui.form;
+            $ = layui.jquery;
+            
+            //设置左侧菜单栏的提示数量
+            $(function(){
+                 $.post("{:url('allorder/waitDeliveryCount')}",{id:1},function(obj){                         
+                    $('#wait-delivery-count',parent.document).text(obj.data);                      
+                 },'json');
+                 
+                 $.post("{:url('allorder/deliveryCount')}",{id:1},function(obj){                         
+                    $('#finance-delivery',parent.document).text(obj.data);                      
+                 },'json');
+
+
+            })
+            $('#export-btn').click(function () {
+                var start = $('#starttime').val();
+                var end = $('#endtime').val();
+                var status = $('select[name=status]').find('option:selected').val();console.log(status);
+                if(start == '' && end == '' && status == ''){
+                    layer.msg('至少选择一个筛选条件',{icon:2});
+                    return;
+                }
+                $('#form1').attr('action',"{:url('exportSend')}");
+                $('#form1').submit();
+                $('#form1').attr('action','');
+            })
+            //执行一个laydate实例
+            laydate.render({
+                elem: '#starttime' //指定元素
+            });
+            laydate.render({
+                elem: '#endtime' //指定元素
+            });
+
+
+        });
+
+        /*删除*/
+        function delivery_del(obj, id) {
+            layer.confirm('确认要删除吗？',
+            function(index) {
+                //发异步删除数据
+                ajaxform("{:url('delDelivery')}",{id:id},1);
+            });
+        }
+
+    </script>
+
+</html>

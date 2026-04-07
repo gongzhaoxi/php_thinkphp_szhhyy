@@ -1,0 +1,96 @@
+{include file="public/header"/}
+<style>
+    .layui-form-label{ width: 100px;}
+</style>
+        <div class="layui-fluid">
+            <div class="layui-row">
+                <form class="layui-form">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label" style="line-height: 15px;">整体是否考虑颜色:</label>
+                        <div class="layui-inline">
+                            <input type="radio" name="is_color" value="0" title="否" {if condition="$list[0]['is_color'] eq 0"}checked{/if}>
+                            <input type="radio" name="is_color" value="1" title="是" {if condition="$list[0]['is_color'] eq 1"}checked{/if}>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label" style="line-height: 15px;">添加物料:</label>
+                        <div class="layui-inline">
+                             <input type="text" id="material_number" name="material_number" class="layui-input"  placeholder="输入ERP物料编码">
+                        </div>
+                        <div class="layui-inline">
+                            <input type="text" id="unit_content"  name="unit_content" class="layui-input"  placeholder="输入1㎡使用量(mm)">
+                        </div>
+                        <div class="layui-inline">
+                             <a href="javascript:;" class="layui-btn" id="add"><i class='icon iconfont'>&#xe6b9;</i>添加</a>
+                        </div>
+                    </div>
+                    <p class="x-red">注:以下添加的物料编码不可重复添加</p>
+                    <table class="layui-table layui-form">
+                            <thead>
+                                <tr>
+                                    <th>对应使用物料编码(唯一)</th>
+                                    <th>1㎡使用量</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabled">
+                                {volist name='list' id='v'}
+                                <tr>
+                                    <td><input name="number[]" type="text" value="{$v.material_number}" class="layui-input"></td>
+                                    <td><input name="unit[]" type="text" value="{$v.unit_content}" class="layui-input"></td>
+                                    <td><button class='layui-btn-danger layui-btn layui-btn-xs' type='button' onclick='member_del(this)' ><i class='layui-icon'>&#xe640;</i>删除</button></td>
+                                </tr>
+                                {/volist}
+                            </tbody>
+                    </table>
+                    <div class="layui-form-item">
+                        <label for="L_repass" class="layui-form-label"></label>
+                        <input name="series_id" type="hidden" value="{$id}"/>
+                        <button class="layui-btn" lay-filter="add" lay-submit="">保存</button>
+                    </div>
+        </form>
+        </div>
+        </div>
+        <script>layui.use(['form', 'layer'],
+            function() {
+                $ = layui.jquery;
+                var form = layui.form,
+                layer = layui.layer;
+                
+                
+                $('#add').click(function(){
+                    var name = $('#material_number').val();
+                    var unit = $('#unit_content').val();
+                    var series_id = "{$id}";
+                    
+                    if(name == ''){
+                        layer.msg('请物料编码',{icon:2});
+                        return;
+                    }
+                    if(unit == ''){
+                        layer.msg('请输入使用量',{icon:2});
+                        return;
+                    }
+                    var html = "<tr><td><input name='number[]' type='text' class='layui-input' value='"+name+"'></td>\n\
+                                <td><input name='unit[]' type='text' class='layui-input' value='"+unit+"'></td>\n\
+                                <td><button class='layui-btn-danger layui-btn layui-btn-xs' type='button' onclick='member_del(this)' ><i class='layui-icon'>&#xe640;</i>删除</button></td>\n\
+                                </tr>";
+                    $('#tabled').append(html);
+                })
+                //监听提交
+                form.on('submit(add)',
+                function(data) {
+                    ajaxform("{:url('series/bindStockMaterial')}",data.field,2);
+                    return false;
+                });
+
+            });
+        /*删除*/
+        function member_del(obj) {
+            $(obj).parents("tr").remove();
+        }
+        </script>
+
+    </body>
+
+</html>

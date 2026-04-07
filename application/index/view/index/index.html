@@ -1,0 +1,1506 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>微元科技-数字化车间管理</title>
+		{include file="public/header" /}
+		<script src="__STATIC__/theme/index/js/echarts.min.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+		    var url_data_board = "{:url('Index/databoard')}";			// 数据看板
+		    var url_data_produce = "{:url('Index/producing_analize')}";	// 工序产能分析占比
+		    var url_data_staff = "{:url('Index/staff_analize')}";	// 员工产能排名
+		    var url_data_pine = "{:url('Index/pine')}";	// 超时工序图表+按时完成率+工序异常占比+工艺线总用时分析
+		    var url_data_receive = "{:url('Index/receiveCount')}"; //接单与生产数量
+		    var url_data_series = "{:url('Index/seriesColor')}"; //系列与颜色数量
+		    var url_data_schedule = "{:url('Index/schedulePercent')}"; //生产计划达成率
+		    var url_data_prea = "{:url('index/dayProduct')}"; //工序产能㎡数
+		    var url_data_kind = "{:url('Index/kind_data')}";//个类型数据汇总
+		</script>
+	</head>
+	<style>
+		.theme{
+			position: fixed;
+			top: 5px;
+			left: 10px;
+			z-index: 2;
+			display: flex;
+			align-items: center;
+		}
+		.theme a{
+			display: inline-block;
+			width: 20px;
+			height: 20px;
+			border-radius: 50%;
+			margin-left:10px;
+			
+		}
+		#theme_blue{
+			border:1px solid #fff;
+			background-color: skyblue;
+		}
+		#theme_white{
+			border:1px solid #666;
+			background-color: #fff;
+		}
+		body{
+			min-width: 1440px;
+    		overflow: auto;
+		}
+		.data-table,#materiel_form{
+			display: none;
+		}
+		.data-table-active{
+			display: table;
+		}
+		.table_form{
+			color: #333333;
+		}
+	</style>
+	<body>
+		<!-- 主题切换 -->
+		<div class="theme">
+			<div>主题:</div>
+			<a id="theme_blue" href="javascript:;"></a>
+			<a id="theme_white" href="javascript:;"></a>
+		</div>
+		<div class="baogong_index">
+			<header>
+				<div class="header-nav header-left">
+					<div class="user-group">
+						<div class="user-img"></div>
+						<div class="user-name">
+							<div class="name">{:session('name')}</div>
+							<div class="triangle-down"></div>
+							<div class="triangle-up"></div>
+						</div>
+						<ul>
+							<li onclick="modifypass();">修改密码</li>
+							<li class="li-line"></li>
+							<li><a href="{:Url('Index/loginout')}">退出</a></li>
+						</ul>
+					</div>
+					<ul class="nav-list">
+						{php} if(in_array('index',$sysmenu)){ {/php}
+						<li onclick="window.location.reload()">首页</li>
+						{php} } {/php}
+						{php} if(PRO_PAICHAN==1){ {/php}
+						<li data-src="/index/schedule/index.html">排产</li>
+						{php} } {/php}
+						{php} if(in_array('orders',$sysmenu)){ {/php}
+						<li data-src="/index/index/orders.html">全部订单</li>
+						{php} } {/php}
+						{php} if(in_array('warm',$sysmenu)){ {/php}
+						<li data-src="/index/index/warm.html">预警订单</li>
+						{php} } {/php}
+					</ul>
+				</div>
+				<div class="header-center">
+					<div><a href="javascript:;"></a></div>
+				</div>
+				<div class="header-nav header-right">
+					<ul class="nav-list">
+						{if condition="PART_INTO eq 1"}
+						<a target="_blank" href="http://{php}echo ERP_URL;{/php}?token={$Think.session.erp_login_key}" ><li>半成品出入库</li></a>
+						{else/}
+						{php} if(in_array('them',$sysmenu)){ {/php}
+						<li data-src="/index/index/them.html">入库订单</li>
+						{php} } {/php}
+						{php} if(in_array('out',$sysmenu)){ {/php}
+						<li data-src="/index/index/out.html">出库订单</li>
+						{php} } {/php}
+						{/if}
+						{php} if(PRO_SALARY==1){ {/php}
+						<li data-src="/index/salary/salary.html">计件管理</li>
+						{php} } {/php}
+						{php} if(in_array('setting',$sysmenu)){ {/php}
+						<li data-src="/index/setting/setting.html">参数设置</li>
+						{php} } {/php}
+					</ul>
+					<div class="header-right-menu">
+						<div title="异常订单" data-href="{:url('index/orders',array('isexcep'=>1))}" class="menu-waring" style="display:block">
+							<span>!</span>
+						</div>
+						<div title="超时订单" data-href="{:url('index/overtime_gx_order')}" class="menu-time" style="display:block">
+							<span>!</span>
+						</div>
+					</div>
+				</div>
+			</header>
+			<div class="content-body">
+				<div class="content-top content-center">
+					<div class="shujuhuizong data-group">
+						<div class="data-top">
+							<div class="data-top-left">数据汇总</div>
+							<form action="{:url('Index/export_databoard')}" id="databoard_export" target="_self" method="post" style="display:none;">
+								<input name="time" id="databoard_time" type="hidden" value=""/>
+								<input name="zone" id="databoard_zone" type="hidden" value=""/>
+							</form>
+							<div class="data-top-right">
+								<!-- <button type="button" class="export-btn" onclick="javascript:export_databoard();">导出</button> -->
+								<input class="time-control" name="reservation" id="reservation" placeholder="时间段筛选" value="">
+								<span class="triangle-down"></span>
+							</div>
+						</div>
+						<ul>
+							<li>
+								<div class="list-point"></div>
+								<div class="list-title">总单量</div>
+								<div class="list-data"><span id="total_order"></span>条 - <span id="total_area"></span>m²</div>
+							</li>
+							<li>
+								<div class="list-point"></div>
+								<div class="list-title">可产量</div>
+								<div class="list-data"><span id="produce_order"></span>条 - <span id="produce_area"></span>m²</div>
+							</li>
+							<li>
+								<div class="list-point"></div>
+								<div class="list-title">入库量</div>
+								<div class="list-data"><span id="in_order"></span>条 - <span id="in_area"></span>m²</div>
+							</li>
+							<li>
+								<div class="list-point"></div>
+								<div class="list-title">出库量</div>
+								<div class="list-data"><span id="out_order"></span>条 - <span id="out_area"></span>m²</div>
+							</li>
+							<li>
+								<div class="list-point"></div>
+								<div class="list-title" onclick="selectover()" style="cursor: pointer;">超期量</div>
+								<div class="list-data"><span id="warn_order"></span>条 - <span id="warn_area"></span>m²</div>
+							</li>
+						</ul>
+					</div>
+					<div class="yuangongchanneng" style="{php} if(PRO_PAICHAN!=1){ {/php}width:65%;{php} } {/php}">
+						<div class="data-top">
+							<div class="data-top-left">员工产能</div>
+							<div class="data-top-right">
+								<!-- <button type="button" class="export-btn" onclick="javascript:export_staff();">导出</button> -->
+								<div class="imitate-select" id="prepareFeed">
+									<span class="export-btn select-txt">全部工序</span>
+									<span class="triangle-down"></span>
+									<input type="hidden" id="gx_list" name="gx_list" value="">
+									<ul id="prepareFeedList" data-sign="prepareFeed"></ul>
+								</div>
+								<input type="text" class="time-control" placeholder="时间段选择" id="man_date">
+								<span class="triangle-down"></span>
+							</div>
+						</div>
+						<form action="{:url('Index/export_staff')}" id="staff_export" target="_self" method="post" style="display:none;">
+							<input name="time" id="ranking_time" type="hidden"/>
+							<input name="gx_name" id="ranking_gx_name" type="hidden"/>
+						</form>
+						<div class="data-center" id="channengChart" style="height: 200px;display: flex;">
+							<ul class="raking-list" id="list_1"></ul>
+							<ul class="raking-list" id="list_2"></ul>
+						</div>
+					</div>
+					<div class="shengchandachenglv">
+						<div class="data-top">
+							<div class="data-top-left">系列 ｜ 颜色分析</div>
+							<div class="data-top-right">
+								<!-- <button type="button" class="export-btn" onclick="javascript:export_series();">导出</button> -->
+								<input type="text" class="time-control" placeholder="时间段筛选" id="color_date" value="">
+								<span class="triangle-down"></span>
+							</div>
+						</div>
+						<form action="{:url('Index/exportSeries')}" id="export_series" target="_self" method="post" style="display:none;">
+							<input name="time" id="series_time" type="hidden" value="year"/>
+							<input name="zone" id="series_zone" type="hidden" value=""/>
+						</form>
+						<div class="data-center" id="yanseChart"></div>
+					</div>
+				</div>
+				<div class="content-center">
+					<div class="content-left">
+						<div class="left-center">
+							<div class="data-top">
+								<div class="data-top-left">工序产能 ｜ 人均工序产值（前15天）</div>
+								<!-- <div class="data-top-right">
+									<button type="button" class="export-btn" onclick="javascript:export_product_area();">导出</button>
+									<div>
+									<input type="text" class="time-control" id="avg_date" placeholder="时间段筛选" value="">
+									<span class="triangle-down"></span></div>
+								</div> -->
+							</div>
+							<form action="{:url('Index/dayProduct')}" id="export_day" target="_self" method="post" style="display:none;">
+									<input name="time" id="renjun_time" type="hidden" value=""/>
+									<input name="zone" id="renjun_zone" type="hidden" value=""/>
+								</form>
+							<div class="data-center" id="gongxuChart"></div>
+						</div>
+					</div>
+					<div class="content-line"></div>
+					<div class="content-right">
+						<div class="right-center">
+							<div class="gongxuzhuangtaifenxi">
+								<div class="data-top">
+									<div class="data-top-left">工序状态分析</div>
+									<div class="data-top-right">
+										<!-- <button type="button" class="export-btn" onclick="javascript:export_pine();">导出</button> -->
+										<input id="reservation3" name="reservation3" class="time-control" value="" placeholder="时间段筛选">
+										<span class="triangle-down"></span>
+									</div>
+								</div>
+								<form action="{:url('Index/export_pine')}" id="export_pine" target="_self" method="post"
+									style="display:none;">
+									<input name="time" id="pine_time" type="hidden" value="" />
+									<input name="zone" id="pine_zone" type="hidden" value="" />
+								</form>
+								<div class="data-center-box">
+									<div class="data-center" id="chaoshiChart"></div>
+									<div class="data-center" id="anshiChart"></div>
+									<div class="data-center" id="yichangChart"></div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="content-center content-footer">
+					<div class="content-right" style="border-left: none;width: 100%;">
+						<div class="right-bottom">
+							<div class="data-top">
+								<div class="">
+									<div class="layui-btn layui-btn-sm table_btn" data-sign="schedule" id="scheduleBtn">排产计划报表</div>
+									<div class="layui-btn layui-btn-sm  layui-btn-primary table_btn" data-sign="materiel" id="materielBtn">入库&接单报表</div>
+								</div>
+								<div class="data-top-right">
+									<form class="layui-form table_form" id="schedule_form">
+										<select name="schedule_gx" id="schedule_gx" lay-verify="required" lay-search lay-filter="schedule_gx">
+											<option value="">选择排产工序</option>
+											{volist name="gx_list" id="gl"}
+											<option {if $key==0}selected='selected'{/if} value="{$gl}">{$gl}</option>
+											{/volist}
+										</select>
+									</form>
+									<form class="layui-form table_form" id="materiel_form">
+										<select name="materiel_gx" id="materiel_gx" lay-verify="required" lay-search lay-filter="materiel_gx">
+											<option value="">选择物料类型工序</option>
+											{volist name="genre" id="ge"}
+											<option {if $key==0}selected='selected'{/if} value="{$ge.id}">{$ge.name}</option>
+											{/volist}
+										</select>
+									</form>
+								</div>
+							</div>
+							<style>
+								  /* 定义滚动条样式 */
+								.iyfc::-webkit-scrollbar {
+								  width: 6px;
+								  height: 6px;
+								  background-color: rgba(240, 240, 240, 1);
+								}
+								 
+								/*定义滚动条轨道 内阴影+圆角*/
+								.iyfc::-webkit-scrollbar-track {
+								  border-radius: 6px;
+								  box-shadow: inset 0 0 0px rgba(4, 5, 35, 1);
+								  background-color: rgba(4, 5, 35, 0.2);
+								}
+								 
+								/*定义滑块 内阴影+圆角*/
+								.iyfc::-webkit-scrollbar-thumb {
+								  border-radius: 6px;
+								  box-shadow: inset 0 0 0px rgba(79, 116, 235, 1);
+								  background-color: rgba(79, 116, 235, 1);
+								  cursor: pointer;
+								}
+							</style>
+							<div class="data-center iyfc" style="width: 100%; overflow-x: auto; overflow-y: hidden;">
+								<table border="0" class="layui-table data-table data-table-active" id="schedule_table">
+									<thead>
+										<tr class="unset-border-top">
+											<th colspan="2">{$month}</th>
+											<th style="width: 56px;line-height: 16px;">上月结算值</th>
+											{volist name="dates" id="ds"}
+											<th>{$ds}</th>
+											{/volist}
+											<th>合计</th>
+											<th>平均</th>
+										</tr>
+									</thead>
+									<tbody class="schedule-show">
+										<tr class="into-order">
+											<td rowspan="2">接单</td>
+											<td>套数</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+										</tr>
+										<tr>
+											<td>面积</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+										</tr>
+										<tr class="schedule">
+											<td rowspan="2">排产</td>
+											<td>套数</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+										</tr>
+										<tr>
+											<td>面积</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+										</tr>
+										<tr class="finish">
+											<td rowspan="2">未完成</td>
+											<td>套数</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+										</tr>
+										<tr>
+											<td>面积</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+										</tr>
+										<tr class="late">
+											<td>完成率</td>
+											<td>%</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td colspan="2">0</td>
+										</tr>
+									</tbody>
+								</table>
+								<table border="0" cellspacing="0" cellpadding="0" class="layui-table data-table" id="materiel_table">
+									<thead>
+										<tr class="unset-border-top">
+											<th colspan="2">{$month}</th>
+											<th style="width: 56px;line-height: 16px;">上月结算值</th>
+											{volist name="dates" id="ds"}
+											<th>{$ds}</th>
+											{/volist}
+											<th>合计</th>
+											<th>平均</th>
+										</tr>
+									</thead>
+									<tbody class="into-show">
+										<tr class="into-order">
+											<td rowspan="2">接单</td>
+											<td>套数</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+										</tr>
+										<tr>
+											<td>面积</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+										</tr>
+										<tr class="schedule">
+											<td rowspan="2">入库</td>
+											<td>套数</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+										</tr>
+										<tr>
+											<td>面积</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+										</tr>
+										<tr class="finish">
+											<td rowspan="2">未完成</td>
+											<td>套数</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+										</tr>
+										<tr>
+											<td>面积</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+										</tr>
+										<tr class="late">
+											<td>实际周期</td>
+											<td>天</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td>0</td>
+											<td colspan="2">0</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div style=" color: #8eadca; font-size: 12px; text-align: center; padding-top: 20px; float: left; background: no-repeat; width: 100%;">版所有  佛山市微元科技有限公司 | 地址：佛山市高新技术产业开发区禅城园孵化中心（兴华路25号）| 电话：18064681197（商务部）</div>
+		</div>
+		<div class="iframe-box iframe-box-outer" id="iframeBox">
+			<span class="closeIframe"></span>
+			<iframe class="myIframe" id="myIframe"></iframe>
+		</div>
+		
+	</body>
+	<script src="__STATIC__/theme/index/js/index.js"></script>
+	<script type="text/javascript">
+
+		// 主题切换
+		$('#theme_blue').click(function(){
+			// 蓝色
+			localStorage.setItem('theme','blue');
+			// changeTheme('blue');
+			window.location.reload();
+		})
+		$('#theme_white').click(function(){
+			// 浅色
+			localStorage.setItem('theme','white');
+			// changeTheme('white');
+			window.location.reload();
+		})
+		layui.use(['layer','laydate','form'],function(){
+			layer = layui.layer;
+			laydate = layui.laydate;
+			var form = layui.form;
+			// 数据汇总时间选择
+			laydate.render({
+				elem: '#reservation',
+				range: true,
+				format: 'yyyy/MM/dd',
+				btns: ['confirm'],
+				done: function(value, date, endDate){
+					// 处理时间格式
+					var re = new RegExp('/','g');
+					var zone = value.replace(re, "-");
+					var time = 'self';
+					colum_order(time,zone);
+				}
+			});
+			// 员工产能
+			laydate.render({
+				elem: '#man_date',
+				range: true,
+				format: 'yyyy/MM/dd',
+				btns: ['confirm'],
+				done: function(value, date, endDate){
+					// 处理时间格式
+					var re = new RegExp('/','g');
+					var zone = value.replace(re, "-");
+					var time = 'self';
+					var _gxname = $('#gx_list').val();
+					colume_staff(_gxname,time,zone);
+				}
+			});
+	
+			// 达成率
+			laydate.render({
+				elem: '#productionRate',
+				range: true,
+				format: 'yyyy/MM/dd',
+				btns: ['confirm'],
+				done: function(value, date, endDate){
+					// 处理时间格式
+					var re = new RegExp('/','g');
+					var zone = value.replace(re, "-");
+					var time = 'self';
+					var _teamid = $('#result_late').val();
+					schedule_percent(_teamid,time,zone);
+				}
+			});
+	
+			// 人均产能
+			laydate.render({
+				elem: '#avg_date',
+				range: true,
+				format: 'yyyy/MM/dd',
+				btns: ['confirm'],
+				done: function(value, date, endDate){
+					// 处理时间格式
+					var re = new RegExp('/','g');
+					var zone = value.replace(re, "-");
+					var time = 'self';
+					colume_produce(time,zone);
+				}
+			});
+			// 系列颜色
+			laydate.render({
+				elem: '#color_date',
+				range: true,
+				format: 'yyyy/MM/dd',
+				trigger: 'click' ,
+				btns: ['confirm'],
+				done: function(value, date, endDate){
+					// 处理时间格式
+					var re = new RegExp('/','g');
+					var zone = value.replace(re, "-");
+					var time = 'self';
+					series_color(time,zone);
+				}
+			});
+	
+			// 各数据汇总
+			laydate.render({
+				elem: '#month_data',
+				type: 'month',
+				trigger: 'click' ,
+				btns: ['confirm'],
+				done: function(value, date, endDate){
+					// 处理时间格式
+					var re = new RegExp('/','g');
+					var zone = value.replace(re, "-");
+					var time = 'self';
+					kind_data(time,zone);
+				}
+			});
+	
+			// 接单与入库
+			laydate.render({
+				elem: '#receive',
+				range: true,
+				format: 'yyyy/MM/dd',
+				btns: ['confirm'],
+				done: function(value, date, endDate){
+					// 处理时间格式
+					var re = new RegExp('/','g');
+					var zone = value.replace(re, "-");
+					var time = 'self';
+					receive(time,zone)
+				}
+			});
+			// 工序状态分析
+			laydate.render({
+				elem: '#reservation3',
+				range: true,
+				format: 'yyyy/MM/dd',
+				btns: ['confirm'],
+				done: function(value, date, endDate){
+					// 处理时间格式
+					var re = new RegExp('/','g');
+					var zone = value.replace(re, "-");
+					var time = 'self';
+					colume_pine(time,zone);
+				}
+			});
+			// 工序产能--数据
+			myChartProduce = echarts.init(document.getElementById('gongxuChart'));
+			optionProduce = {
+				tooltip: {
+					trigger: 'axis',
+				},
+				legend: {
+					data: [{
+							name: '工序产能',
+							textStyle: {
+								color: legendColor_1,
+							}
+						},
+						{
+							name: '人均工序产值',
+							textStyle: {
+								color: legendColor_2,
+							}
+						}
+					],
+				},
+				xAxis: [{
+					type: 'category',
+					show: false,
+				}],
+				yAxis: [{
+						type: 'value',
+						axisLabel: {
+							textStyle: {
+								color: titleColor,
+							}
+						},
+						splitLine: {
+							show: false
+						},
+					},
+					{
+						type: 'value',
+						axisLabel: {
+							textStyle: {
+								color: legendColor_2
+							}
+						},
+						splitLine: {
+							show: false
+						},
+					}
+				],
+				grid: {
+					top: '8%',
+					left: '0',
+					right: '0',
+					bottom: '2%',
+					containLabel: true
+				},
+			};
+		
+			// 系列颜色--数据
+			myChartSeries = echarts.init(document.getElementById('yanseChart'));
+			optionSeries = {
+				tooltip: {
+					trigger: 'item',
+					formatter: '{a} <br/>{b}: {c} ({d}%)'
+				},
+				series: [
+					{
+						name: '系列',
+						type: 'pie',
+						radius: ['60%', '80%'], // 圆心切割大小, 饼图大小
+						center: ["55%", "50%"], // 显示位置
+						label: {
+							normal: {
+								show: true,
+								formatter: '{d}%' //自定义显示格式(b:name, c:value, d:百分比)
+							}
+						},
+					},
+					{
+						name: '颜色',
+						type: 'pie',
+						radius: ['0', '40%'], // 圆心切割大小, 饼图大小
+						center: ["55%", "50%"], // 显示位置
+						label: {
+							normal: {
+								show: false,
+								formatter: '{d}%' //自定义显示格式(b:name, c:value, d:百分比)
+							}
+						},
+					}
+				]
+			};
+			
+			// 员工产能--数据
+			// var channengChart = echarts.init(document.getElementById('channengChart'));
+	
+			// 工序状态分析--数据
+			// 超时
+			myChartOvertime = echarts.init(document.getElementById('chaoshiChart'));
+			optionOvertime = {
+				title: {
+					text: '工序超时占比',
+					left: 'left',
+					textStyle: {
+						color: titleColor,
+						fontSize: 14
+					}
+				},
+				tooltip: {
+					trigger: 'item',
+					formatter: '{a} <br/>{b}: {c} ({d}%)'
+				},
+				legend: {
+					bottom: 0,
+					left: 'center',
+					icon: 'circle',
+					textStyle: {
+						color: legendColor,
+						fontSize: 10
+					}
+				},
+				series: [{
+					name: '工序超时占比',
+					type: 'pie',
+					radius: [0, '50%'], // 圆心切割大小, 饼图大小
+					center: ["50%", "40%"], // 显示位置
+					label: {
+						normal: {
+							show: true,
+						}
+					},
+				}]
+			};
+			myChartRate = echarts.init(document.getElementById('anshiChart'));
+			optionRate = {
+				title: {
+					text: '按时完成占比',
+					left: 'left',
+					textStyle: {
+						color: titleColor,
+						fontSize: 14
+					}
+				},
+				tooltip: {
+					trigger: 'item',
+					formatter: '{a} <br/>{b}: {c} ({d}%)'
+				},
+				legend: {
+					bottom: 0,
+					left: 'center',
+					icon: 'circle',
+					data: ['准时入库', '超时入库'],
+					textStyle: {
+						color: legendColor,
+						fontSize: 10
+					}
+				},
+				series: [{
+					name: '按时完成占比',
+					type: 'pie',
+					radius: [0, '50%'], // 圆心切割大小, 饼图大小
+					center: ["50%", "50%"], // 显示位置
+					label: {
+						normal: {
+							show: true,
+						}
+					},
+				}, ]
+			};
+			myChartExcep = echarts.init(document.getElementById('yichangChart'));
+			optionExcep = {
+				title: {
+					text: '工序异常占比',
+					left: 'left',
+					textStyle: {
+						color: titleColor,
+						fontSize: 14
+					}
+				},
+				tooltip: {
+					trigger: 'item',
+					formatter: '{a} <br/>{b}: {c} ({d}%)'
+				},
+				legend: {
+					bottom: 0,
+					left: 'center',
+					icon: 'circle',
+					textStyle: {
+						color: legendColor,
+						fontSize: 10
+					}
+				},
+				series: [{
+					name: '工序异常占比',
+					type: 'pie',
+					radius: [0, '50%'], // 圆心切割大小, 饼图大小
+					center: ["50%", "45%"], // 显示位置
+					label: {
+						normal: {
+							show: true,
+						}
+					},
+				}, ]
+			};
+			//第一列订单汇总请求
+			colum_order();
+			//第二列产能分析
+			colume_produce();
+			// //员工产能排名
+			colume_staff();
+			// //工序状态分析
+			colume_pine();
+			//接单与生产数
+			// receive();
+			// //系列与颜色
+			series_color('series');
+			// //工序产能平方米数
+			// product_area();
+
+			//各类型月数据
+			// kind_data();
+
+			// 表格切换
+			$('.table_btn').click(function(){
+				var _this = $(this);
+				var sign = _this.attr('data-sign');
+				_this.removeClass('layui-btn-primary').siblings('.table_btn').addClass('layui-btn-primary')
+				if(sign == 'schedule'){	// 排产计划
+					$('#schedule_table').addClass('data-table-active');
+					$('#materiel_table').removeClass('data-table-active');
+					$('#schedule_form').show();
+					$('#materiel_form').hide();
+				} else{	// 入库接单
+					$('#materiel_table').addClass('data-table-active');
+					$('#schedule_table').removeClass('data-table-active');
+					$('#schedule_form').hide();
+					$('#materiel_form').show();
+				}
+				form.render('select');
+			})
+			$('#materielBtn').click(function(){
+				intoOrderData();
+			})
+			form.on('select(schedule_gx)',function(data){
+				schedulePlanData();
+			})
+			form.on('select(materiel_gx)',function(data){
+				intoOrderData();
+			})
+		})
+
+	</script>
+	<script type="text/javascript">
+		//获取异常和超时工序报工数量
+		function getExceptionNum(){
+			/* $.ajax({
+				  url: "{:Url('Index/exception_data')}",
+				  data:{},
+				  dataType:"json",
+				  type:'POST',
+				  success:function(obj){
+					  var overtime=obj.overtime;
+					  var exception=obj.exception;
+					  if(overtime>0){
+						  $(".menu-time span").html(overtime);
+						  $(".menu-time").show();
+					  }
+					  if(exception>0){
+						  $(".menu-waring span").html(exception);
+						  $(".menu-waring").show();
+					  }
+				  }
+			  }) */
+		}
+		
+		$(window).click(function(){
+			var elem = event.srcElement ? event.srcElement : event.target;
+			while (elem) { //循环判断至跟节点，防止点击的是div子元素 
+				if (elem.id && elem.id == 'orderScreenBox') {
+					return;
+				}
+				if (elem.id && elem.id == 'iframeBox') {
+					$('#iframeBox').fadeOut().children('#myIframe').removeAttr('src');
+					return;
+				}
+				elem = elem.parentNode;
+			}
+			$('.imitate-select').removeAttr('data-sign').children('ul').hide();
+			$('.content-header-left').removeAttr('data-click').css({
+				top: '0',
+			}).children('.filter-orders').removeClass('filter-orders-active');
+			$('.content-header-left').siblings('.order-screen-box').css({
+				height: '0',
+				overflow: 'hidden'
+			});
+			
+		});
+		$(document).ready(function(){
+			getExceptionNum();
+			// 打开iframe
+			$('.nav-list li').click(function(e){
+				// e.preventDefault();
+				// e.stopPropagation();
+				let _this = $(this);
+				let iframeSrc = _this.attr('data-src');
+				if(iframeSrc != undefined){
+					$('.iframe-box-outer').fadeIn().children('#myIframe').attr('src',iframeSrc);
+				}
+			});
+			$(".menu-time").click(function(e){
+				e.preventDefault();
+				e.stopPropagation();
+				var iframeSrc = $(this).attr('data-href');
+				$('.iframe-box-outer').fadeIn().children('#myIframe').attr('src',iframeSrc);
+			});
+			$(".menu-waring").click(function(e){
+				e.preventDefault();
+				e.stopPropagation();
+				var iframeSrc = $(this).attr('data-href');
+				$('.iframe-box-outer').fadeIn().children('#myIframe').attr('src',iframeSrc);
+			});
+			// 关闭iframe
+			$('.closeIframe').click(function(e){
+				e.preventDefault();
+				e.stopPropagation();
+				$('.iframe-box').fadeOut().children('#myIframe').removeAttr('src');
+			});
+			
+			$('.imitate-select').click(function(e) {
+				e.preventDefault();
+				e.stopPropagation();
+			    var _this = $(this);
+			    var clickSign = _this.attr('data-sign');
+			    if (clickSign == 'true') {
+			        _this.children('ul').hide();
+			        _this.attr('data-sign', 'false');
+			    } else {
+			        _this.children('ul').show();
+			        _this.attr('data-sign', 'true');
+			    }
+			});
+			$('.imitate-select ul').delegate('li','click',function(e){
+				e.preventDefault();
+				e.stopPropagation();
+				var _this = $(this);
+				var tempTxt = _this.html();
+				var clickIndex = _this.attr('data-index');
+				_this.parent().siblings('.select-txt').html(tempTxt);
+				_this.parent().hide();
+				_this.parent().parent().removeAttr('data-sign');
+				var clickTarget = _this.parent().attr('data-sign');	// prepareFeed:员工产能的备料列表 storehouseGroup:生产达成率的班组选择
+				var _thisVal = _this.attr('data-value');
+				var _date = $('#man_date').val();
+				var _date_f = $('#productionRate').val();
+				_this.parent().siblings('input').val(_thisVal);
+				if(clickIndex == '0'){
+					tempTxt = '';
+				}
+				switch (clickTarget){
+					case 'prepareFeed':
+						_date==''?colume_staff(tempTxt):colume_staff(tempTxt,'self',_date);
+						break;
+					case 'storehouseGroup':
+						tempTxt = $("#result_late").val();
+						_date_f==''?schedule_percent(tempTxt):schedule_percent(tempTxt,'self',_date_f);
+					default:
+						break;
+				}
+			});
+			schedulePlanData();
+		})
+		//修改密码
+		function modifypass(){
+			layer.open({
+				type: 2,
+				  title: '修改密码',
+				  shadeClose: true,
+				  shade: 0.8,
+				  area: ['480px', '350px'],
+				  content: "{:url('index/modify_pass')}" //iframe的url
+			})
+		}
+	
+		// 跳转超期订单
+		function selectover(){
+			$('.iframe-box-outer').fadeIn().children('#myIframe').attr('src',"{:Url('Index/orders')}?over=1");
+		}
+		function schedulePlanData(){
+			var _gx = $('#schedule_gx').val();
+			if(_gx==''){
+				return
+			}
+			$.ajax({
+				url: "{:url('index/schedule_month_data')}",
+				data:{'gx':_gx},
+				dataType:'json',
+				success:function(res){
+					if(res.code==0){
+						var _data = res.data;
+						var _before = res.before;
+						var _html = '';
+						$('.schedule-show').html('');
+						for(var s in _data){
+							var result = _data[s];
+							if(s==0){
+								_html += '<tr class="into-order"><td rowspan="2">接单</td><td>套数</td><td>'+_before.count+'</td>';
+							}
+							if(s==1){
+								_html += '<tr><td>面积</td><td>'+_before.area.toFixed(2)+'</td>';
+							}
+							if(s==2){
+								_html += '<tr class="schedule"><td rowspan="2">排产</td><td>套数</td><td>'+_before.schedule_count+'</td>';
+							}
+							if(s==3){
+								_html += '<tr><td>面积</td><td>'+_before.schedule_area.toFixed(2)+'</td>';
+							}
+							if(s==4){
+								_html += '<tr class="finish"><td rowspan="2">未完成</td><td>套数</td><td>'+_before.unfinished_count+'</td>';
+							}
+							if(s==5){
+								_html += '<tr><td>面积</td><td>'+_before.unfinished_area.toFixed(2)+'</td>';
+							}
+							if(s==6){
+								_html += '<tr class="late"><td>完成率</td><td>%</td><td>'+_before.finished_rate+'</td>';
+							}
+							for(var i in result){
+								if(s==1||s==3||s==5){
+									_html += '<td>'+result[i].toFixed(2)+'</td>';
+								}else{
+									_html += '<td>'+result[i]+'</td>';
+								}
+							}
+							if(s==6){
+								_html += '<td colspan="2">/</td></tr>';
+							}else{
+								_html += '</tr>';
+							}
+							$('.schedule-show').html(_html);
+						}
+					}
+				}
+			})
+		}
+		function intoOrderData(){
+			var _genre = $('#materiel_gx').val();
+			$.ajax({
+				url: "{:url('index/into_order_data')}",
+				data:{'id':_genre},
+				dataType:'json',
+				success:function(res){
+					if(res.code==0){
+						var _data = res.data;
+						var _before = res.before;
+						var _html = '';
+						$('.into-show').html('');
+						for(var s in _data){
+							var result = _data[s];
+							if(s==0){
+								_html += '<tr class="into-order"><td rowspan="2">接单</td><td>套数</td><td>'+_before.count+'</td>';
+							}
+							if(s==1){
+								_html += '<tr><td>面积</td><td>'+_before.area.toFixed(2)+'</td>';
+							}
+							if(s==2){
+								_html += '<tr class="schedule"><td rowspan="2">入库</td><td>套数</td><td>'+_before.finish_count+'</td>';
+							}
+							if(s==3){
+								_html += '<tr><td>面积</td><td>'+_before.finish_area.toFixed(2)+'</td>';
+							}
+							if(s==4){
+								_html += '<tr class="finish"><td rowspan="2">未完成</td><td>套数</td><td>'+_before.unfinished_count+'</td>';
+							}
+							if(s==5){
+								_html += '<tr><td>面积</td><td>'+_before.unfinished_area.toFixed(2)+'</td>';
+							}
+							if(s==6){
+								_html += '<tr class="late"><td>实际周期</td><td>天</td><td>'+_before.day+'</td>';
+							}
+							for(var i in result){
+								if(s==1||s==3||s==5){
+									_html += '<td>'+result[i].toFixed(2)+'</td>';
+								}else{
+									_html += '<td>'+result[i]+'</td>';
+								}
+							}
+							_html += '</tr>';
+							$('.into-show').html(_html);
+						}
+					}
+				}
+			})
+		}
+	</script>
+</html>

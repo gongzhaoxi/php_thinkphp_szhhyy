@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+<meta name="referrer" content="never">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>生产进度扫码报工系统</title>
+<script src="__STATIC__index/js/jquery-1.8.3.min.js"></script>
+<link href="__STATIC__index/css/index.css" rel="stylesheet" />
+<!-- 调整打印内容尺寸 -->
+<script type="text/javascript">
+$(function(){
+  $("#get").click(function(){
+    $("#ht").val($("#div1 #qr img").height());
+    $("#wd").val($("#div1 #qr img").width());
+  });
+  $("#make").click(function(){    
+    $("#div1 #qr img").height($("#ht").val());
+    $("#div1 #qr img").width($("#wd").val());   
+  });
+});
+</script>
+<!-- 调整打印内容尺寸 -->
+</head> 
+
+<body onload="load()">
+<div class="top">
+<div class="t_01"><a style="float: right; margin-top: 21px; color: #fff; width: 100px; height: 40px;background-color: #00b348; line-height: 40px; text-align: center;" href="#" onClick="javascript:history.go(-1);" title="返回上一页">返回上一页</a></div>
+<!-- <div class="t_02">
+<div class="t02_big">
+<a href="#" title="用户管理">
+<div class="t02_bg"></div>
+<div class="t02_text">用户管理</div>
+</a>
+</div>
+<div class="t02_big">
+<a href="#" title="添加工序">
+<div class="t02_bg"></div>
+<div class="t02_text">添加工序</div>
+</a>
+</div>
+<div class="t02_big">
+<a href="#" title="批量添加模板">
+<div class="t02_bg"></div>
+<div class="t02_text">批量添加模板</div>
+</a>
+</div>
+</div> -->
+</div>
+<div class="menu">
+
+</div>
+
+<div class="qr" id="div1">
+<!--startprint-->
+<div id="qr" data-num="{$order.id}">
+<img src="">
+</div>
+<!--endprint-->
+<p>订单号：{$order.ordernum} 下单日期：{$order.ordertime|date="Y-m-d"}	客户名称	：{$order.uname}</p>
+<!-- 调整打印内容尺寸 -->
+<div class="set_up1">
+<p class="cc">打印纸尺寸</p>
+<font color="#d30404">注：输入的单位为“像素”，单位转换：2.8像素 = 1毫米。</font>
+<p><input type="text" id="ht" placeholder="高度"/> | <input type="text" id="wd" placeholder="宽度"/> <button type="button" id="make"/>设置</button><p>
+</div>
+<!-- 调整打印内容尺寸 -->
+
+</div>
+<!-- /////////////////////////////////           打印代码                 ///////////////////////////////////////////// -->
+<div class="printing"><button onClick="doPrint()">立即打印！订单二维码,GO！</button></div>
+<script language=javascript>
+function doPrint() {
+bdhtml=window.document.body.innerHTML;
+sprnstr="<!--startprint-->";
+eprnstr="<!--endprint-->";
+prnhtml=bdhtml.substr(bdhtml.indexOf(sprnstr)+17);
+prnhtml=prnhtml.substring(0,prnhtml.indexOf(eprnstr));
+window.document.body.innerHTML=prnhtml;
+window.print();
+}
+
+function load(){
+	 var logos = document.getElementById ('qr');
+	 var ordersn = $('#qr').attr('data-num');
+	 var data = {};
+	 var id = 'div1'
+	 data['id'] = ordersn;
+	    $.ajax({
+	             type: "POST",
+	             url: "{:Url('Index/qrcode')}",
+	             data: data,
+	             dataType: "json",
+	             success: function(r){
+							console.log(r);
+	                        if (r.code==200) { //console.log(r); 
+	                        var path = 'data:image/png;base64,'+r.data; //给img的src赋值。
+	                        console.log(path);
+	                         $("#qr").html("<img src="+path+" >");
+	                        
+	                       }else{
+ 								console.log('错了')	                            
+	                          }
+
+	                      }
+
+	         });
+}
+</script>
+<!-- /////////////////////////////////           打印代码                 ///////////////////////////////////////////// -->
+
+
+</body>
+</html>

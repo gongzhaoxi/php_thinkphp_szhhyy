@@ -1,0 +1,111 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<!-- <meta http-equiv="refresh" content="5"> -->
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>车间作业看板</title>
+<link href="__STATIC__/theme/index/databoard/gk.css?v=<?php echo time();?>" rel="stylesheet" />
+<script src="__STATIC__/theme/index/databoard/jquery.min.js"></script>
+<script src="__STATIC__/theme/index/databoard/gk.js?v=<?php echo time();?>"></script>
+<!-- ================     电视展示样式方法      ================  -->
+<link href="__STATIC__/theme/index/databoard/{$style}?v=<?php echo time();?>" rel="stylesheet" />
+
+
+</head>
+<body>
+
+<div class=" Work_Pro">
+<style type="text/css">
+.table tr td{line-height: 6vh;}
+.table tr td.ysuj div{ float: left; width: 100%; }
+.table tr td,.table tr td.titleee{font-size: 2vw;}
+.table tr td.ysuj div#lkqvn,.table tr td.ysuj div#lkqvn_a,.table tr td.ysuj div#lkqvn_b{ width: 20%; font-size: 1.8vw;line-height: 5vh; padding-right: 0px;}
+.table tr td.ysuj div.xgts{ background-color: #000; height: 2px; overflow: hidden;; }
+.table tr td.ysuj div#lkqvn_b i{color: #00f06b; }
+.table tr td.wygdtd{background-color: #3a3971;}
+</style>
+<div>
+    
+    <table width="100%" border="0" cellspacing="1" cellpadding="0" class="table">
+
+        <div style="font-size: 2vw;" id="dname">工序名称</div>
+
+        <tr>
+            <td id="titleee" width="10%">日期</td>
+            <td id="titleee">订单总量</td>
+            <td id="titleee">已完成量</td>
+            <td id="titleee">未完成量</td>
+            <td id="titleee">达成率</td>
+        </tr>
+        <tr>
+            <td >昨天</td>
+            <td id="titleee" class='yall'>0</td>
+            <td id="titleee" class='ycomplete'>0</td>
+            <td id="titleee" class="yno">0</td>
+            <td id="titleee" class="ypercent">0%</td>
+        </tr>
+        <tr>
+            <td class="wygdtd">今天</td>
+            <td class="wygdtd" id="all">0</td>
+            <td class="wygdtd" id="complete">0</td>
+            <td class="wygdtd" id="no">0</td>
+            <td class="wygdtd" id="percent">0%</td>
+        </tr>
+
+        <tr>
+            <td colspan="5" height="100%" class="ysuj">
+                <div id='before-box'>
+                    
+                </div>
+                <div class="xgts"></div>
+                <div id='today-box'>
+                    
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>
+</div>
+</body>
+    <input name="page" id="page" value="0" type="hidden"/>
+<script>
+$(function(){
+    refresh();
+    setInterval("refresh()",20000); 
+})
+
+function refresh(){
+     var no = "{$no}";
+    $.ajax({
+        url:"{:url('auto_send')}",
+        data: {page:$('#page').val(),no:no},
+        type: 'POST',
+        dataType: 'json',
+        success:function(res){
+              var all = res.all;
+              $('.yall').text(all.yall);
+              $('.ycomplete').text(all.ycomplete);
+              $('.yno').text(all.yno);
+              $('.ypercent').text(all.ypercent);
+              $('#all').text(all.all);
+              $('#complete').text(all.complete);
+              $('#no').text(all.no);
+              $('#percent').text(all.percent);
+            var html = '';
+            $.each(res.before,function(k,v){
+                html += "<div id='lkqvn_b'><i>[往期]</i>"+v+"</div>";
+            })
+            $('#before-box').html(html);
+            var today = '';
+            $.each(res.today_list,function(k,v){
+                today += "<div id='lkqvn_a'>"+v+"</div>";
+            })
+            $('#today-box').html(today);
+            $('#page').val(res.page);
+            $('#dname').text(res.dname);
+        }
+    })
+}
+    
+</script>
+</html>

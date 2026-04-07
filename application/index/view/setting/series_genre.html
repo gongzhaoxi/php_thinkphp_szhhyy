@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+<meta name="referrer" content="never">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>物料类别</title>
+{include file="public/header" /}
+
+</head>
+<style>
+	#genreAddModal .modal-content{width:40%;height:40%}
+	#genreEditModal .modal-content{width:40%;height:40%}
+</style>
+<body>
+	<div class="baogong_parameterSetting popup-box">
+		<div class="popup-body" style="width:100%;height:100%;padding-top:0">
+			<div class="body-center" style="width:100%;height:100%">
+				<!-- 物料管理 -->
+				<div class="body-content-box body-nav-active">
+					<div class="content-header">
+						<div class="content-header-left">
+							<span class="header-left-item" id="addMatter">
+                                <img src="__STATIC__/theme/index/img/icon_wuliao.png">
+                                <span>添加物料类别</span>
+                            </span>
+                        </div>
+					</div>
+					<div class="content-center">
+						<div class="content-center-inner">
+							<table class="layui-table matteriel-table">
+                                <thead>
+                                    <tr>
+                                        <th width="5%">ID</th>
+                                        <th width="85%">类别名称</th>
+                                        <th width="10%">操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {volist name="list" id="la"}
+                                    <tr>
+                                        <td>{$la.id}</td>
+                                        <td class="td-class-group">{$la.name}</td>
+                                        <td class="operate-box">
+                                            <span class="btn-normal btn-edit-materiel edit" data-id="{$la.id}" >修改</span>
+                                            / <span class="btn-normal btn-danger del" data-id="{$la.id}" >删除</span>
+                                        </td>
+                                    </tr>
+                                    {/volist}
+                                </tbody>
+                            </table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- 修改物料 -->
+	<div class="modal-box" id="genreEditModal">
+		<div class="modal-content">
+			<div class="modal-header">
+				<div class="modal-header-title">
+					<span>修改物料</span>
+				</div>
+				<div class="modal-header-right">
+					<span class="close-modal-btn"></span>
+				</div>
+			</div>
+			<div class="modal-body">
+				<div class="iframe-box">
+                    <iframe class="myIframe" id="genreEditIframe" frameborder="0"></iframe>
+                </div>
+			</div>
+		</div>
+	</div>
+	<!-- 添加物料 -->
+	<div class="modal-box" id="genreAddModal">
+		<div class="modal-content">
+			<div class="modal-header">
+				<div class="modal-header-left">
+					<div class="modal-header-title">
+						<img src="__STATIC__/theme/index/img/icon_wuliao.png">
+						<span>添加物料</span>
+					</div>
+				</div>
+				<div class="modal-header-right">
+					<span class="close-modal-btn"></span>
+				</div>
+			</div>
+			<div class="modal-body">
+				<div class="iframe-box">
+                    <iframe class="myIframe" id="genreAddIframe" frameborder="0"></iframe>
+                </div>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+		$('#addMatter').click(function(e){
+			e.preventDefault();
+			e.stopPropagation();
+	        $('#genreAddModal').fadeIn();
+	        $('#genreAddIframe').attr('src','series_genre_edit');
+	    });
+		//编辑
+	    $('.edit').click(function(e){
+			e.preventDefault();
+			e.stopPropagation();
+	        var id = $(this).data('id');
+			$('#genreEditModal').fadeIn();
+	        $('#genreEditIframe').attr('src','series_genre_edit?id=' + id);
+	    });
+	  //删除
+	    $('.del').click(function(){
+	        var id = $(this).data('id');
+	        layer.confirm('是否删除',{icon:3,title:'提示'},function(index){
+	            $.ajax({
+	                url: "{:Url('Setting/series_genre_del')}",
+	                data: {"id":id},
+	                dataType:"json",
+	                success:function(obj){
+	                    if(obj.code==0){
+	                        layer.msg('<span style="color:#fff;">删除成功</span>');	
+	                    }
+	                    setTimeout(function(){
+	                        window.location.reload();	
+	                    },1500);
+	                }
+	            })
+	            layer.close(index);
+	        })
+	    });
+	  	
+	    $(window).click(function(){
+	        $('.modal-box').fadeOut();
+	        var elem = event.srcElement ? event.srcElement : event.target;
+	        while (elem) { //循环判断至跟节点，防止点击的是div子元素 
+	            if (elem.id && elem.id == 'orderScreenBox') {
+	                return;
+	            }
+	            elem = elem.parentNode;
+	        }
+	        $('.imitate-select').removeAttr('data-sign').children('ul').hide();
+	        $('.content-header-left').removeAttr('data-click').css({
+	            top: '0',
+	        }).children('.filter-orders').removeClass('filter-orders-active');
+	        $('.content-header-left').siblings('.order-screen-box').css({
+	            height: '0',
+	            overflow: 'hidden'
+	        })
+	    });
+</script>
+</body>
+</html>

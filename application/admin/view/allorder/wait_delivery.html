@@ -1,0 +1,138 @@
+{include file="public/header"/}
+    
+    <body>
+         <div class="x-nav">
+            <span class="layui-breadcrumb">
+               <a href="javascript:void(0)">待发货订单</a>
+            </span> 
+            
+            <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" onclick="location.reload()" title="刷新">
+                <i class="layui-icon layui-icon-refresh" style="line-height:30px"></i>
+            </a>
+        </div>
+        <div class="layui-fluid">
+            <div class="layui-row layui-col-space15">
+                <div class="layui-col-md12">
+                    <div class="layui-card">
+                        <div class="layui-card-body ">
+                            
+                        </div>
+                        <div class="layui-card-header">
+                            <form class="layui-form layui-col-space5" >
+                                
+                                <div class="layui-input-inline layui-show-xs-block">
+                                    <input type="text" name="keyword" id="keyword" placeholder="请输入名称/编号" autocomplete="off" class="layui-input" value="{$search.keyword}">
+                                </div>
+                                <div class="layui-input-inline layui-show-xs-block">
+                                    <input type="text" name="starttime" id="starttime" placeholder="下单开始时间" autocomplete="off" class="layui-input" value="{$search.starttime}">
+                                </div>
+                                <div class="layui-input-inline layui-show-xs-block">
+                                    <input type="text" name="endtime" id="endtime" placeholder="下单结束时间" autocomplete="off" class="layui-input" value="{$search.endtime}">
+                                </div>
+                                <div class="layui-input-inline layui-show-xs-block">
+                                    <button class="layui-btn" lay-submit="" lay-filter="sreach">
+                                        <i class="layui-icon">&#xe615;</i>
+                                    </button>
+                                </div>
+                                 <div class="layui-input-inline layui-show-xs-block">
+                                    <button class="layui-btn layui-btn-normal" type='button' id='export_price2'>
+                                        导出数据
+                                    </button>
+                                </div> 								
+                                <div class="layui-input-inline" style="float: right">
+                                    <button class="layui-btn" onclick="xadmin.open('添加发货单', '{:url('addDelivery')}', 1200, 700)" type='button'>
+                                        <i class="layui-icon"></i>添加配送批次单
+                                    </button>
+									<a class="layui-btn"  href="{:url('printTag')}" target="_blank">
+                                        <i class="layui-icon"></i>打印标签
+                                    </a>
+<!--                                    <button class="layui-btn layui-btn-normal" type='button' onclick="xadmin.open('打印配送批次单', '{:url('printDelivery')}',1200,600)">
+                                        <i class="layui-icon"></i>打印配送批次单
+                                    </button>-->
+                                </div>
+                            </form>
+                        </div>
+                        <div class="layui-card-body ">
+                            <table class="layui-table layui-form">
+                                <thead>
+                                    <tr>                                       
+                                        <th>订单编号</th>
+                                        <th>经销商</th>
+                                        <th>送货地址</th>
+                                        <th>下单时间</th>
+                                        <th>数量</th>
+                                        <th>面积</th>
+                                        <th>要求交货时间</th>
+                                        <th>入库时间</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {volist name="list" id="v"}
+                                    <tr>
+                                        <td>{$v.number}</td>
+                                        <td>{$v.dealer}</td>
+                                        <td>{$v.send_address}</td>
+                                        <td>{$v.addtime|date='Y/m/d',###}</td>
+                                        <td>{$v.count}</td>
+                                        <td>{$v.area}</td>
+                                        <td>{$v.end_time}</td>
+                                        <td>{if condition="$v['intime'] neq ''"}{$v.intime|date='Y-m-d',###}{else/}暂无{/if}</td>
+                                        <td>
+                                        <a title="打印订购清单" onclick="xadmin.open('打印订购清单', '{:url('printBuy',array('id'=>$v['id']))}',1200, 600)" href="javascript:;">
+                                                <i class="icon iconfont">&#xe6c9;</i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                     {/volist}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="layui-card-body ">
+                            <div class="page">
+                                    {$page}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+    <script>layui.use(['laydate', 'form'],
+        function() {
+            var laydate = layui.laydate;
+            var  form = layui.form;
+            $ = layui.jquery;
+            
+            //设置左侧菜单栏的提示数量
+            $(function(){
+                 $.post("{:url('allorder/waitDeliveryCount')}",{id:1},function(obj){                         
+                    $('#wait-delivery-count',parent.document).text(obj.data);                      
+                 },'json');
+                 
+                 $.post("{:url('allorder/deliveryCount')}",{id:1},function(obj){                         
+                    $('#finance-delivery',parent.document).text(obj.data);                      
+                 },'json');
+            })
+            
+            //执行一个laydate实例
+            laydate.render({
+                elem: '#starttime' //指定元素
+            });
+            laydate.render({
+                elem: '#endtime' //指定元素
+            });
+			$('#export_price2').click(function(){
+				var starttime = $('#starttime').val();
+				var endtime = $('#endtime').val();
+				var keyword = $('#keyword').val();
+
+				window.open('{:url('exportWaitDelivery')}?starttime='+starttime+'&endtime='+endtime+'&keyword='+keyword);
+			 })
+        });
+
+    
+        
+    </script>
+
+</html>

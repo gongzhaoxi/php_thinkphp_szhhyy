@@ -1,0 +1,137 @@
+{include file="public/header"/}
+<style>
+    .tips{ position: absolute;left: 40%;bottom: 150px;display: none;font-size: 19px;}
+    .tips span { line-height: 30px;}
+	.bottom-fixed{display:none;}
+</style>   
+    <body>
+        <div class="layui-fluid">
+            <div class="layui-row">
+                <form class="layui-form">
+                    <blockquote class="layui-elem-quote">报价信息</blockquote>
+
+                    {include file="order/common_edit_price"/}
+                    <div id="calculate-box" style="{if condition="$order_type eq 2"}display:none;{/if}">
+                    <blockquote class="layui-elem-quote">算料信息</blockquote> 
+                    {include file="order/common_edit_calculate"}
+                    <div class="layui-form-item" id="structure-box" fixed="">
+                        <label for="username" class="layui-form-label">
+                            <span class="x-red"></span>选择结构</label>
+                        <div class="layui-input-inline">
+                            <button class="layui-btn" type="button" onclick="show_structure()">选择</button>
+                        </div>
+                        <img src="" height="100" id="structure_pic"/>
+                        <input name="structure" id="structure" type="hidden"/>
+                        <input name="structure_id" id="structure_id" type="hidden"/>
+                        <span id="structure_id_box" style="{if condition="$info['structure_id'] eq ''"}display: none{/if}">结构id:{$info.structure_id}</span>
+                    </div>
+                    <div id="fixed-box">
+                    </div>
+<!--                    <div class="layui-form-item">
+                        <label for="username" class="layui-form-label">
+                            <span class="x-red">*</span>上固定高</label>
+                        <div class="layui-input-inline">
+                            <input type="text" id="username" name="username" required="" lay-verify="required" autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-form-mid layui-word-aux">
+                             单位mm
+                        </div>
+                    </div>
+                     <div class="layui-form-item">
+                        <label for="username" class="layui-form-label">
+                            <span class="x-red">*</span>下固定高</label>
+                        <div class="layui-input-inline">
+                            <input type="text" id="username" name="username" required="" lay-verify="required" autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-form-mid layui-word-aux">
+                             单位mm
+                        </div>
+                    </div>-->
+                   
+                          
+                    <div class="tips">
+                        <span class="x-red"><span id="c-min">0</span>≤<span class="fixed-name"></span>≤<span id="c-max">0</span></span></br>
+<!--                        <div class="bottom-fixed">
+                            <span class="x-red"><span>下固定高</span><=<span id="bottom-fixed-height">200</span></span>
+                        </div>-->
+                    </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <input name="window_type" id="window_type" type="hidden"/>
+                        <input name="order_id" type="hidden" value="{$orderid}"/>
+                        <input name="order_type" type="hidden" value="{$order_type}"/>
+                        <input name="og_id" type="hidden" value="{$og_id}"/>
+                        <label for="L_repass" class="layui-form-label"></label>
+                        <button class="layui-btn" lay-filter="add" lay-submit="">保存</button>
+                        {if condition="$order_type eq 3"}
+                        <button class="layui-btn layui-btn-normal" type="button" id="read-pic" onclick="show_pic()">
+                            查看渲染图
+                        </button>
+                        {/if}
+                    </div>
+            </form>
+            </div>
+            </div>
+        {include file='order/common_js'}
+        <script>layui.use(['form', 'layer'],
+            function() {
+                $ = layui.jquery;
+                var form = layui.form,
+                layer = layui.layer;
+               
+                
+                
+                //监听表单提交
+                form.on('submit(add)',
+                function(data) {
+                    var field = data.field;
+                    var yarn_text = $('#yarn').find('option:selected').text(); //纱网text
+                    var hands_text = $('#hands-box').find('option:selected').text(); //把手位text
+                    field.hands_text = hands_text;
+                    field.yarn_text = yarn_text;
+                    field.name = $('#two option:selected').text();
+                    field.tips_min = $('#c-min').text();
+                    field.tips_max = $('#c-max').text();
+                    field.tips_fixed = $('.fixed-name').text();
+                    
+                    var temp = 0;
+                    var cmin = $('#c-min').text(); //上下固定最小值
+                    var cmax = $('#c-max').text(); //上下固定最大值
+                    var fixed = $('.fixed-name').text();//固定名称
+                    $('.sfixed').each(function(){
+                        temp += Number($(this).val());
+                    })
+                    //弹窗提示
+//                  if(temp>cmax || temp<cmin){
+//                      var tips = '固定高值范围:'+cmin+'≤'+fixed+'≤'+cmax+';';
+//                      layer.msg(tips,{icon:2})
+//                      return false;
+//                  }
+                    ajaxform("{:url('addGroupProduct')}",field);
+                    return false;
+                });
+                
+            });
+          function ajaxform(url, data,reload) {
+            var index = layer.load(0,{time: 10*1000,shade:false});
+            $.post(url, data, function (obj) {
+                layer.close(index);
+                if (obj.code == 0) {
+                    layer.msg(obj.msg, {icon: 1,time:1000}, function () {
+                        var index = parent.layer.getFrameIndex(window.name);// 获得frame索引 
+                        //跳转到后台输出的地址
+                            parent.location.href = obj.url;
+                            return;          
+                    });
+                    return;
+                }
+                layer.msg(obj.msg, {icon: 2});
+            }, 'json');
+
+        }
+         
+        </script>
+
+    </body>
+
+</html>

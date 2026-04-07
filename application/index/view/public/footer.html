@@ -1,0 +1,19 @@
+<div style="height: 50px; float: left; background: #333;"></div>
+<div class="foot">
+版所有 © 佛山市微元科技有限公司 | 地址：佛山市禅城区五峰四路弼北工业区西边1号三层D18室（荣浩商务西边楼）| 电话：13336447135（商务部）
+</div>
+<script type="text/javascript">
+	var head=$(".top").height();
+	function addStyle(){
+		$(".list_d").addClass("fixed");
+	}
+	$(window).scroll(function(){
+		$(".nui-condition").hide();
+		var topScr=$(window).scrollTop();
+		if (topScr>head) {
+			$(".list_d").addClass("fixed");
+		}else{
+			$(".list_d").removeClass("fixed");
+		}
+	})
+</script>

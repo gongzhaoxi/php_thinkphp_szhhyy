@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+        <title>微元生产工序报工管理系统,建材行业生产管理系统,门窗生产管理系统,微元科技,佛山市微元科技有限公司</title>
+		<link rel="stylesheet" href="__STATIC__/theme/index/js/selectjs/select.css"> <!--   默认主题CSS   -->
+		{include file="public/header" /}
+		<script src="__STATIC__/theme/index/js/selectjs/select.js"></script>
+	</head>
+	<body>
+		<div class="baogong_scheduling popup-box" id="baogongScheduling">
+			<div class="popup-header">
+				<div>排产</div>
+			</div>
+			<div class="popup-body"  style="padding-bottom: 0;">
+				{include file="schedule/menu" /}
+				<div class="body-center">
+					<!-- 未排产订单 -->
+					<div class="body-content-box body-nav-active">
+						<div class="content-header">
+							<div class="content-header-left positionLeft" id="unscheduingScreen" data-index="0">
+								<div  class="filter-orders">订单筛选</div>
+							</div>
+							<div class="content-header-center">
+								<div class="tab-box summaryTab">
+									<div class="tab-btn gx_total">按工序汇总</div>
+									<div class="tab-btn tab-btn-active group_total">按班组汇总</div>
+									<div class="tab-btn order_total">按订单汇总</div>
+								</div>
+							</div>
+							<div class="content-header-right positionRight" id="unscheduledOrdersRight" style="display: none;">
+								<div class="sort-list">
+									<div>订单排序:</div>
+									<div class="imitate-select" id="orderby">
+										<span class="select-txt" data-value="id_desc">默认排序</span>
+										<span class="icon-arrow triangle-down"></span>
+										<input type="hidden" name="orderby">
+										<ul data-sign="orderby">
+											<li value="id_desc">默认排序</li>
+											{volist name="fieldListOrderby" id="vo"}
+											<li data-value="{$key}"  {if condition="$post['orderby'] eq $key" }{/if}>{$vo}</li>
+											{/volist} 
+											<li data-value="day|asc">订单生产周期 ↑</li>
+											<li data-value="day|desc">订单生产周期 ↓</li>
+										</ul>
+									</div>
+								</div>
+								<div class="select-order">
+									<span>订单全选</span>
+									<div class="imitate-checkbox" id="orderSelectAll">
+										<span></span>
+									</div>
+								</div>
+							</div>
+							<div class="order-screen-box" id="orderScreenBox">
+								<div class="screen-box-top">
+									<ul class="screen-list">
+										{php}
+											$time_field=array();
+											foreach($searchData as $value){
+											if($value['type']=='date'){
+												$time_field[]=$value['fieldname'];
+											}
+											}
+										{/php}
+										{volist name="searchData" id="vo"}
+										<li class="screen-group">
+											<div class="screen-group-left">{$vo['explains']}：</div>
+											<div class="screen-group-right">
+											<input name="{$key}" id="{$key}" type="text" placeholder="请填写{$vo['explains']}" autocomplete="off" value="{$searchpost[$key]}">
+											</div>
+										</li>
+										{php}
+											if(in_array($key,$time_field)){
+										{/php}
+										<script type="text/javascript">
+										var laydate;
+										layui.use(['laydate'],function(){
+											laydate = layui.laydate;
+											laydate.render({
+											elem: '#{$key}'
+											});
+										})
+										</script>
+										{php}
+											}
+										{/php}
+										{/volist}
+									</ul>
+									<div class="screen-hint-txt">以上筛选内容，可用“，”符号多词搜索，如：XX，XX</div>
+								</div>
+								<div class="screen-box-center">
+									<ul class="screen-list">
+										<li class="screen-group">
+											<div class="screen-group-left">下单时间：</div>
+											<div class="screen-group-right">
+												<input type="text" name="s_date" id="s_date" placeholder="开始时间">
+												<span>-</span>
+												<input type="text" name="e_date" id="e_date" placeholder="结束时间">
+											</div>
+										</li>
+										<li class="screen-group">
+											<div class="screen-group-left">交货时间：</div>
+											<div class="screen-group-right">
+												<input type="text" name="xs_date" id="xs_date" placeholder="开始时间">
+												<span>-</span>
+												<input type="text" name="xe_date" id="xe_date" placeholder="结束时间">
+											</div>
+										</li>
+									</ul>
+									<ul class="screen-list">
+										<li class="screen-group">
+											<div class="screen-group-left">未开始工序：</div>
+											<div id="select1" class="selectPickerWrapper"> 
+												<select name="gname" id="gname" multiple="multiple" style="display:none;">
+													{foreach($gx_list as $li)}
+													<option  value="{$li.dname}"><?php echo htmlspecialchars_decode($li['dname']) ?></option>
+												{/foreach}
+												</select>
+											</div>
+										</li>
+										<li class="screen-group" style="display: none;">
+											<div class="screen-group-left">工序排产状态：</div>
+											<div class="screen-group-right">
+												<select name="gx_status" class="select-common" id="gx_status">
+												<option value="1" selected="selected">未开始</option>
+												<option value="2" {if condition="$post['gx_status'] eq 2"}selected="selected"{/if}>进行中</option>
+												<option value="3" {if condition="$post['gx_status'] eq 3"}selected="selected"{/if}>已完成</option>
+												<option value="4" {if condition="$post['gx_status'] eq 4"}selected="selected"{/if}>已超时</option>
+												<option value="5" {if condition="$post['gx_status'] eq 5"}selected="selected"{/if}>有异常</option>
+												</select>
+											</div>
+										</li>
+										<li class="screen-group">
+											<div class="screen-group-left">已完成工序：</div>
+											<div id="select2" class="selectPickerWrapper"> 
+												<select name="finishGx" id="finishGx" multiple="multiple" style="display:none;">
+													{foreach($gx_list as $li)}
+													<option  value="{$li.dname}"><?php echo htmlspecialchars_decode($li['dname']) ?></option>
+												{/foreach}
+												</select>
+											</div>
+										</li>
+										<li class="screen-group">
+											<div class="screen-group-left">订单状态：</div>
+											<div class="screen-group-right">
+												<div class="imitate-select" id="order_status">
+													<span class="select-txt" data-value="">点击选择订单状态</span>
+													<span class="triangle-down"></span>
+													<ul dta-sign="orderStataus">
+														<li data-value="">请选择订单状态</li>
+														<li data-value="1">正常</li>
+														<li data-value="2">暂停</li>
+														<li data-value="3">作废</li>
+													</ul>
+												</div>
+											</div>
+										</li>
+										<li class="screen-group">
+											<div class="screen-group-left">颜色：</div>
+											<div class="screen-group-right">
+												<div class="imitate-select" id="color">
+													<span class="select-txt" data-value="">点击选择颜色</span>
+													<span class="triangle-down"></span>
+													<ul data-sign="color">
+														{present name="color"}
+														{volist name="color" id="vo"}
+														<li data-value="{$vo['color']}">{$vo['color']}</li>
+														{/volist}
+														{/present}
+													</ul>
+												</div>
+											</div>
+										</li>
+									</ul>
+								</div>
+								<div class="screen-box-center">
+									<div class="imitate-select" style="width: 200px;height: 25px;">
+										<span class="select-txt">按相同提交时间归类</span>
+										<span class="triangle-down"></span>
+										<input type="hidden" name="groupby" value="addtime" id="groupby" >
+										<ul data-sign="groupby">
+											<li data-value="addtime">按相同提交时间归类</li>
+											<li data-value="ordertime">按相同单据时间归类</li>
+											<li data-value="endtime">按相同需求时间归类</li>
+										</ul>
+									</div>
+								</div>
+								<div class="screen-box-bottom">
+									<div class="screenSureBtn" onclick="ResearchData()">立即筛选</div>
+								</div>
+							</div>
+						</div>
+						<!-- 按工序汇总 -->
+						<div class="content-center tab-content summaryContent tab-content-active" style="height:calc(100% - 35px)">
+							<div class="content-center-inner">
+								<div class="gx_nav"></div>
+								<table class="layui-table summary-table" id="orderListTableGX" border="1">
+									<thead>
+										<tr>
+											<th>班组</th>
+											<th>工序</th>
+											<th>单号</th>
+											<th>订单数</th>
+											<th>总面积	</th>
+											<th>总扇数</th>
+											<th>操作</th>
+										</tr>
+									</thead>
+									<tbody></tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- 创建排产单 -->
+		<div class="modal-box" id="addSchedulingModal">
+			<div class="modal-content">
+				<div class="modal-header">
+					<div class="modal-header-left">
+						<div class="modal-header-title">
+							<span>添加日排产单</span>
+						</div>
+					</div>
+					<div class="modal-header-right">
+						<span class="close-modal-btn"></span>
+					</div>
+				</div>
+				<div class="modal-body">
+					<div class="iframe-box">
+						<iframe class="myIframe" id="myIframe_order" frameborder="0"></iframe>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+	<!-- 未排产订单 -->
+	<script type="text/javascript">
+		var page = 1; //分页页数
+		var list_loading = false;
+		var orderbyTarget = 0; // 0: 班组汇总 , 1: 工序汇总
+		function ResearchData() {
+			page = 1;
+			searchData();
+		}
+		$(".gx_total").click(function(e){
+			window.location.href = "index";
+		})
+		$(".order_total").click(function(e){
+			window.location.href = "index?schedule_order=1";
+		})
+		// 滚动加载
+		function load_more() {
+			var listform = $('#orderListTable');
+			var _scrollHeight = $('#orderListTable').parent().scrollTop();
+			var _boxHeight = listform.parent().height();
+			var _contentHeight = listform.height();
+			if (_scrollHeight + _boxHeight >= _contentHeight) {
+				list_loading = true;
+				searchData();
+			}
+		}
+		var layer, laydate;
+		layui.use(['layer','laydate'],function(){
+			laydate = layui.laydate;
+			layer = layui.layer;
+			$("#select1").mySelect();
+			$("#select2").mySelect();
+			$('#orderListTable').parent().scroll(function () {
+				if (!list_loading) {
+					load_more();
+				}
+			})
+			//显示默认未排产订单
+			searchData();
+			//日历插件
+			laydate.render({
+				elem: '#s_date'
+			});
+			laydate.render({
+				elem: '#e_date'
+			});
+			laydate.render({
+				elem: '#xs_date'
+			});
+			laydate.render({
+				elem: '#xe_date'
+			});
+		})
+		var isLock = true;
+		var fields = new Array(
+			{php}$fields=array();
+			foreach($fieldList as $field=>$name){
+				$fields[]="'".$field."'";
+			}
+			echo implode(",",$fields);
+			{/php}
+		);
+		function searchData() {
+			{volist name = "searchField" id = "vo"}
+			var {$key} = $("#{$key}").val();
+			{/volist}
+			var s_date = $("#s_date").val();
+			var e_date = $("#e_date").val();
+			var xs_date = $("#xs_date").val();
+			var xe_date = $("#xe_date").val();
+			var order_status = $("#order_status").find(".select-txt").attr('data-value');
+			var gname = $("#select1").find(".select-picker-search-checked").html();
+			var gx_status=$("#gx_status").find("option:selected").val();
+			var color = $("#color").find(".select-txt").attr('data-value');
+			var orderby = $("#orderby").find(".select-txt").attr('data-value');
+			var finishGx = $("#select2").find(".select-picker-search-checked").html();
+			if (gname == '请选择') {
+				gname = "";
+			}
+
+			if (finishGx == '请选择') {
+				finishGx = "";
+			}
+			var	groupby = $("#groupby").val() == '' ? 'addtime' : $("#groupby").val();
+			var _data = {
+				{volist name="searchField" id="vo"}
+				'{$key}': {$key},
+				{/volist}
+				's_date': s_date,
+				'e_date': e_date,
+				'xs_date': xs_date,
+				'xe_date': xe_date,
+				'order_status': order_status,
+				'gname': gname,
+				'gx_status': gx_status,
+				'finishGx': finishGx,
+				'color': color,
+				'orderby': orderby,
+				'groupby': groupby,
+				'page': page
+			};
+			layer.load(0);
+			var dataUrl = orderbyTarget == 0 ? "{:Url('Schedule/ajax_list_group')}" : "{:Url('Schedule/ajax_listgx')}";
+			$.ajax({
+				url: dataUrl,
+				data: _data,
+				dataType: "json",
+				type: 'POST',
+				success: function (obj) {
+					layer.closeAll();
+					list_loading = false;
+					isLock = false;
+					if (obj.status == 2) {
+						if (page == 1) {
+							$("#orderListTable tbody").empty();
+							layer.msg("无搜索结果");
+						}
+						return;
+					}
+					//显示结果HTML
+					if(orderbyTarget == 0 ){
+						show_result_group(obj.list);
+					} else{
+						show_result_GX(obj.list);
+					}
+				},
+				error: function () {
+					layer.closeAll();
+				}
+			})
+		}
+		
+		function show_result_group(result){
+			unbindEvent();
+			var _html = '';
+			var classindex=0;
+			var _text = "";
+			for(var i in result){
+				classindex++;
+				var team = i;
+				var orders = result[i];
+				var len =  orders.length;
+				if(orders.length <= 0){
+					continue;
+				}
+				// _text += "<a href='#gx" + classindex + "'>" + team + "</a>";
+				_text += "<a href='javascript:;' data-target='gx" + classindex + "'>" + team + "</a>";
+				for(var s in orders){
+						if(s == 0){
+							_html += '<tr class="team-rowspan">';
+							_html += '<td class="w-150 team-group" rowspan="' + len + '"><div><a name="gx' + classindex + '"></a>'+team+'</div><div class="imitate-checkbox-all team-all"><span></span></div></td>';
+						} else{
+							_html += '<tr>';
+						}
+						_html += '<td class="w-150 gxname-group"><div>' + orders[s].gxname + '</div><div class="imitate-checkbox-all gxname-all"><span></span></div></td>';
+						_html += '<td class="td-list-outer checkboxContent unset-width">';
+						var in_index=1;
+						var gxList = orders[s].gx_list;
+						for (var j in gxList) {
+								_html += '<div class="td-list-inner">';
+								_html += '<div class="td-list-inner-top">';
+								_html += '<div class="imitate-checkbox-all"><span></span></div>';
+								_html += '<span>全选</span><div class="order-time">时间：' + j + '</div></div>';
+								_html += '<ul class="td-list-inner-bottom">';
+								var in_index=1;
+								for(var k in gxList[j]){
+									var order = gxList[j][k];
+									_html += '<li>';
+									_html += '<div class="imitate-checkbox-small ckbox' +  classindex + ' inchk' + classindex +'_' + in_index + '" data-groupid="'+orders[s]['group_id']+'" data-gxid="'+orders[s]['gxid']+'" data-value="'+order['id']+'"><span></span></div>';
+									_html += '<div class="order-txt">' + order['unique_sn'] + '</div>';
+									_html += '</li>';
+									in_index++;
+								}
+								_html += '</ul></div>';
+							}
+						_html += '</td>';
+						_html += '<td class="w-60">' + orders[s]['num'] + '</td>'
+						_html += '<td class="w-60">' + orders[s]['area'] + '</td>'
+						_html += '<td class="w-60">' + orders[s]['snum'] + '</td>'
+						if(s==0){
+							_html += '<td class="operate-box w-60" rowspan="'+len+'"><div class="operate-ben"><span onClick="add_schedule_GX('+classindex+',\''+orders[s]['gxname']+'\')">点击排产</span></div></td>';
+						}
+						_html += '</tr>';
+					}
+			}
+			// 工序名称
+			_text += "<a  href='javascript:;' data-target='all'>显示全部</a>"
+			$(".gx_nav").html(_text);
+			$("#orderListTableGX tbody").empty().html(_html);
+		}
+		// 只显示对应的工序
+		$('.gx_nav').delegate('a', 'click', function(){
+			var _this = $(this);
+			var gxTarget = _this.attr('data-target');
+			if(gxTarget == 'all'){
+				$("#orderListTableGX tbody").children('tr').show();
+			} else{
+				// 合并的行数
+				var _target = $("#orderListTableGX tbody tr").find('a[name=' + gxTarget + ']');
+				var rowSpan = _target.parent().parent().attr('rowspan') == undefined || _target.parent().parent().attr('rowspan') == null ? 0 : _target.parent().parent().attr('rowspan');
+				var index =  _target.parent().parent().parent().index();
+				var max = Number(index) + Number(rowSpan);
+				$("#orderListTableGX tbody").children('tr').hide();
+				for (let i = index; i < max; i++) {
+					$('#orderListTableGX tbody tr').eq(i).show();
+				}
+			}
+		})
+		//解除绑定
+		function unbindEvent(){
+			$(".chkall").unbind("click");
+		}
+		// 添加工序汇总排产订单
+		function add_schedule_GX(_index,dname,e){
+			var e = window.event || e;
+			e.preventDefault();
+			e.stopPropagation();
+			//获取勾选的ID
+			var ids=[];
+			$(".ckbox"+ _index).each(function(){
+				var ischeck = $(this).attr("data-sign");
+				if(ischeck == "true"){
+					var index = $(this).attr("data-groupid");
+					var gxid = $(this).attr("data-gxid");
+					var orderid = $(this).attr('data-value');
+					if(ids[gxid]==undefined){
+						ids[gxid] = {};
+					}
+					if(ids[gxid]['orderid']==undefined){
+						ids[gxid]['orderid'] = '';
+						ids[gxid]['group_id'] = index;
+					}
+					ids[gxid]['orderid'] += orderid+',';
+				}
+			})
+			if(ids.length == 0){
+				layer.msg("请选择要排产的订单");
+				return;	
+			}
+			var data = [];
+			for(var s in ids){
+				ids[s]['gxid'] = s;
+				data.push(ids[s]);
+			}
+			var new_data = JSON.stringify(data);
+			// 显示排产框
+			$('#addSchedulingModal').fadeIn();
+			$('#myIframe_order').attr('src',"{:url('Schedule/add_schedule_group')}?data="+new_data);
+		}
+	</script>
+	<script type="text/javascript">
+		$('.close-modal-btn').click(function(){
+			$('.modal-box').fadeOut();
+			$(this).closest('.modal-box').find('iframe').contents().find("body").html("");
+		})
+		// 选择订单排序
+		$('.imitate-select').click(function(e) {
+			e.preventDefault();
+			e.stopPropagation();
+			var _this = $(this);
+			var clickSign = _this.attr('data-sign');
+			$('.imitate-select').removeAttr('data-sign').children('ul').hide();
+			if (clickSign == 'true') {
+				_this.children('ul').hide();
+				_this.removeAttr('data-sign');
+			} else {
+				_this.children('ul').show();
+				_this.attr('data-sign', 'true');
+			}
+		});
+		$(window).click(function(){
+			var elem = event.srcElement ? event.srcElement : event.target;
+			while (elem) { //循环判断至跟节点，防止点击的是div子元素 
+				if (elem.id && elem.id == 'orderScreenBox') {
+					return;
+				}
+				if($(elem).hasClass('modal-content')){
+					return;
+				}
+				elem = elem.parentNode;
+			}
+			$('.modal-box').fadeOut();
+			$('.imitate-select').removeAttr('data-sign').children('ul').hide();
+			$('.content-header-left').removeAttr('data-click').css({
+				top: '0',
+			}).children('.filter-orders').removeClass('filter-orders-active');
+			$('.content-header-left').siblings('.order-screen-box').css({
+				height: '0',
+				overflow: 'hidden'
+			})
+		});
+		$('.imitate-select ul').delegate('li','click',function(e){
+			e.preventDefault();
+			e.stopPropagation();
+			var _this = $(this);
+			var tempTxt = _this.html();
+			var _thisValue = _this.attr('data-value');
+			_this.parent().parent().children('.select-txt').attr('data-value',_thisValue).html(tempTxt);
+			_this.parent().hide();
+			_this.parent().parent().removeAttr('data-sign');
+			_this.parent().siblings('input[type=hidden]').val(_thisValue);
+			var _clickTarget = _this.parent().attr('data-sign');
+			switch (_clickTarget) {
+				case 'orderby':	// 数据排列
+					ResearchData();
+					break;
+				case 'groupby':	// 数据归类
+					searchData();
+					$('.content-header-left').css('top',0);
+					$('.content-header-left').removeAttr('data-click').siblings('.order-screen-box').css({
+						height: '0',
+						overflow: 'hidden'
+					})
+					break;
+				default:
+					break;
+			}
+		});
+		// 订单全选
+		$('#orderSelectAll').click(function(e) {
+			e.preventDefault();
+			e.stopPropagation();
+			var _this = $(this);
+			var clickSign = _this.attr('data-sign');
+			if (clickSign == 'true') {
+				_this.children('span').hide();
+				_this.removeAttr('data-sign');
+				$('.checkBoxBtn').removeAttr('data-sign').children('span').hide();
+			} else {
+				_this.children('span').show();
+				_this.attr('data-sign', 'true');
+				$('.checkBoxBtn').attr('data-sign','true').children('span').show();
+			}
+		});
+		// 单选框
+		$('#orderListTable tbody').delegate('tr .checkBox .checkBoxBtn', 'click',function(e){
+			e.preventDefault();
+			e.stopPropagation();
+			var _this = $(this);
+			var clickSign = _this.attr('data-sign');
+			if (clickSign == 'true') {	// 取消选中
+				_this.children('span').hide();
+				_this.removeAttr('data-sign');
+			} else {	// 选中
+				_this.children('span').show();
+				_this.attr('data-sign', 'true');
+			}
+			// 当前全部订单
+			var tempLength = $('.checkBoxBtn').length;
+			var selectLength = $('.checkBoxBtn[data-sign="true"]').length;
+			if(tempLength == selectLength){	// 全部选中
+				$('.imitate-checkbox').attr('data-sign', 'true').children('span').show();
+			} else{
+				$('.imitate-checkbox').removeAttr('data-sign').children('span').hide();
+			}
+		});
+		$('.categoryList').delegate('li','click',function(e){
+			e.preventDefault();
+			e.stopPropagation();
+			$(this).addClass('li-active').siblings().removeClass('li-active');
+		});
+		
+		// 新版排产
+		$('.date-txt').click(function(e){
+			e.preventDefault();
+			e.stopPropagation();
+			let _this = $(this);
+			_this.children('.icon-point').addClass('icon-point-active');
+			_this.siblings('.date-txt').children('.icon-point').removeClass('icon-point-active');
+		})
+		
+		// 班组全选
+		$('#orderListTableGX tbody').delegate('tr .team-group .team-all', 'click', function(e){
+			e.preventDefault();
+			e.stopPropagation();
+			let _this = $(this);
+			var clickSign = _this.attr('data-sign');
+			// 合并的行数
+			var rowSpan = _this.parent().attr('rowspan') == undefined || _this.parent().attr('rowspan') == null ? 0 : _this.parent().attr('rowspan');
+			if (clickSign == 'true') {
+				_this.children('span').hide();
+				_this.removeClass('checkBoxSmall-active').removeAttr('data-sign');
+				if(rowSpan > 0){
+					var index =  _this.parent().parent().index();
+					var max = Number(index) + Number(rowSpan);
+					for (let i = index; i < max; i++) {
+						$('#orderListTableGX tbody tr').eq(i).find('.gxname-group').find('.gxname-all').removeClass('checkBoxSmall-active').removeAttr('data-sign').children('span').hide();
+					// 单号全选
+						$('#orderListTableGX tbody tr').eq(i).find('.td-list-outer').find('.imitate-checkbox-all').removeClass('checkBoxSmall-active').removeAttr('data-sign').children('span').hide();
+						$('#orderListTableGX tbody tr').eq(i).find('.td-list-outer').find('.imitate-checkbox-small').removeClass('checkBoxSmall-active').removeAttr('data-sign').children('span').hide();
+						$('#orderListTableGX tbody tr').eq(i).find('.td-list-outer').find('.order-txt').removeClass('order-txt-active');
+					}
+				} else{
+					_this.parent().siblings('.gxname-group').find('.gxname-all').removeClass('checkBoxSmall-active').removeAttr('data-sign').children('span').hide();
+					// 单号全选
+					_this.parent().siblings('.td-list-outer').find('.imitate-checkbox-all').removeClass('checkBoxSmall-active').removeAttr('data-sign').children('span').hide();
+					_this.parent().siblings('.td-list-outer').find('.imitate-checkbox-small').removeClass('checkBoxSmall-active').removeAttr('data-sign').children('span').hide();
+					_this.parent().siblings('.td-list-outer').find('.order-txt').removeClass('order-txt-active');
+				}
+
+			} else {	// 选中
+				_this.children('span').show();
+				_this.addClass('checkBoxSmall-active').attr('data-sign', 'true');
+				if(rowSpan > 0){
+					var index =  _this.parent().parent().index();
+					var max = Number(index) + Number(rowSpan);
+					for (let i = index; i < max; i++) {
+						$('#orderListTableGX tbody tr').eq(i).find('.gxname-group').find('.gxname-all').addClass('checkBoxSmall-active').attr('data-sign','true').children('span').show();
+					// 单号全选
+						$('#orderListTableGX tbody tr').eq(i).find('.td-list-outer').find('.imitate-checkbox-all').addClass('checkBoxSmall-active').attr('data-sign','true').children('span').show();
+						$('#orderListTableGX tbody tr').eq(i).find('.td-list-outer').find('.imitate-checkbox-small').addClass('checkBoxSmall-active').attr('data-sign','true').children('span').show();
+						$('#orderListTableGX tbody tr').eq(i).find('.td-list-outer').find('.order-txt').addClass('order-txt-active');
+					}
+				} else{
+					_this.parent().siblings('.gxname-group').find('.gxname-all').addClass('checkBoxSmall-active').attr('data-sign', 'true').children('span').show();
+					_this.parent().siblings('.td-list-outer').find('.imitate-checkbox-all').addClass('checkBoxSmall-active').attr('data-sign','true').children('span').show();
+					_this.parent().siblings('.td-list-outer').find('.imitate-checkbox-small').addClass('checkBoxSmall-active').attr('data-sign','true').children('span').show();
+					_this.parent().siblings('.td-list-outer').find('.order-txt').addClass('order-txt-active');
+				}
+			}
+		})
+		// 工序全选
+		$('#orderListTableGX tbody').delegate('tr .gxname-group .gxname-all', 'click', function(e){
+			e.preventDefault();
+			e.stopPropagation();
+			let _this = $(this);
+			var clickSign = _this.attr('data-sign');
+			if (clickSign == 'true') {
+				_this.children('span').hide();
+				_this.removeClass('checkBoxSmall-active').removeAttr('data-sign');
+				_this.children('.imitate-checkbox-small').removeAttr('data-sign');
+				if(_this.closest('tr').hasClass('team-rowspan')){
+					_this.closest('tr').find('.team-group').children('.team-all').removeClass('checkBoxSmall-active').removeAttr('data-sign').children('span').hide();
+				} else{
+					_this.closest('tr').prevAll().each(function(){
+						var _that =  $(this)
+						if(_that.hasClass('team-rowspan')){
+							_that.find('.team-group').children('.team-all').removeClass('checkBoxSmall-active').removeAttr('data-sign').children('span').hide();
+							return false;
+						}
+					})
+				}
+				_this.parent().siblings('.td-list-outer').find('.imitate-checkbox-all').removeClass('checkBoxSmall-active').removeAttr('data-sign').children('span').hide();
+				_this.parent().siblings('.td-list-outer').find('.imitate-checkbox-small').removeClass('checkBoxSmall-active').removeAttr('data-sign').children('span').hide();
+				_this.parent().siblings('.td-list-outer').find('.order-txt').removeClass('order-txt-active');
+			} else {	// 选中
+				_this.children('span').show();
+				_this.addClass('checkBoxSmall-active').attr('data-sign', 'true');
+				// 判断班组数
+				_this.parent().siblings('.td-list-outer').find('.imitate-checkbox-all').addClass('checkBoxSmall-active').attr('data-sign','true').children('span').show();
+				_this.parent().siblings('.td-list-outer').find('.imitate-checkbox-small').addClass('checkBoxSmall-active').attr('data-sign','true').children('span').show();
+				_this.parent().siblings('.td-list-outer').find('.order-txt').addClass('order-txt-active');
+			}
+		})
+		// 工序汇总table 选中工序排产
+		$('#orderListTableGX tbody').delegate('tr .checkboxContent .td-list-inner .td-list-inner-top .imitate-checkbox-all','click',function(e){
+			e.preventDefault();
+			e.stopPropagation();
+			let _this = $(this);
+			var clickSign = _this.attr('data-sign');
+			if (clickSign == 'true') {
+				_this.children('span').hide();
+				_this.removeClass('checkBoxSmall-active').removeAttr('data-sign');
+				_this.parent().siblings('.td-list-inner-bottom').children().children('.imitate-checkbox-small').removeClass('checkBoxSmall-active').removeAttr('data-sign','true').children().hide();
+				_this.parent().siblings('.td-list-inner-bottom').children().children('.order-txt').removeClass('order-txt-active');
+			} else {	// 选中
+				_this.children('span').show();
+				_this.addClass('checkBoxSmall-active').attr('data-sign', 'true');
+				_this.parent().siblings('.td-list-inner-bottom').children().children('.imitate-checkbox-small').addClass('checkBoxSmall-active').attr('data-sign','true').children().show();
+				_this.parent().siblings('.td-list-inner-bottom').children().children('.order-txt').addClass('order-txt-active');
+			}
+		})
+
+		// 生产单号选择
+		$('#orderListTableGX tbody').delegate('tr .checkboxContent .td-list-inner .td-list-inner-bottom li','click',function(e){
+			e.preventDefault();
+			e.stopPropagation();
+			let _this = $(this);
+			let clickSign = _this.children('.imitate-checkbox-small').attr('data-sign');
+			if (clickSign == 'true') {
+				_this.children('.imitate-checkbox-small').removeAttr('data-sign');
+				if(_this.closest('tr').hasClass('team-rowspan')){
+					_this.closest('tr').find('.team-group').children('.team-all').removeClass('checkBoxSmall-active').removeAttr('data-sign').children('span').hide();
+				} else{
+					_this.closest('tr').prevAll().each(function(){
+						var _that =  $(this)
+						if(_that.hasClass('team-rowspan')){
+							_that.find('.team-group').children('.team-all').removeClass('checkBoxSmall-active').removeAttr('data-sign').children('span').hide();
+							return false;
+						}
+					})
+				}
+				_this.closest('tr').find('.gxname-group').children('.gxname-all').removeClass('checkBoxSmall-active').removeAttr('data-sign').children('span').hide();
+				_this.children('.imitate-checkbox-small').removeClass('checkBoxSmall-active').children('span').hide();
+				_this.children('.order-txt').removeClass('order-txt-active');
+			} else {
+				_this.children('.imitate-checkbox-small').addClass('checkBoxSmall-active').children('span').show();
+				_this.children('.order-txt').addClass('order-txt-active');
+				_this.children('.imitate-checkbox-small').attr('data-sign', 'true');
+			}
+			let allCheckBoxSmallLength = _this.parent().parent().find('.imitate-checkbox-small').length;
+			let selectCheckBoxSmallLength = _this.parent().parent().find('.imitate-checkbox-small[data-sign=true]').length;
+			if(allCheckBoxSmallLength == selectCheckBoxSmallLength){
+				_this.parent().siblings('.td-list-inner-top').children('.imitate-checkbox-all').addClass('checkBoxSmall-active').attr('data-sign','true').children().show();
+			} else{
+				_this.parent().siblings('.td-list-inner-top').children('.imitate-checkbox-all').removeClass('checkBoxSmall-active').removeAttr('data-sign','true').children().hide();
+			}
+		})
+		// 加急订单和打印订单切换
+		$('.urgentPrintingTab .tab-btn').click(function(e){
+			e.preventDefault();
+			e.stopPropagation();
+			let _this = $(this);
+			let _thisIndex = _this.index();
+			_this.addClass('tab-btn-active').siblings('.tab-btn').removeClass('tab-btn-active');
+			$('.urgentPrintingContent').eq(_thisIndex).addClass('tab-content-active').siblings('.urgentPrintingContent').removeClass('tab-content-active');
+		})
+
+		// 未排产订单筛选
+		$('.content-header-left').click(function(e){
+			e.preventDefault();
+			e.stopPropagation();
+			let _this = $(this);
+			let clickIndex = _this.attr('data-index');
+			let clickSign = _this.attr('data-click');
+			if(clickSign == 'true'){
+				_this.removeAttr('data-click').css({
+					top: '0',
+				}).children('.filter-orders').removeClass('filter-orders-active');
+				_this.siblings('.order-screen-box').css({
+					height: '0',
+					overflow: 'hidden'
+				})
+			} else{
+				_this.siblings('.order-screen-box').css({
+					height: 'auto',
+					overflow: 'unset'
+				});
+				var _top = _this.siblings('.order-screen-box').css('height');
+				_this.attr('data-click', 'true').css({
+					top: _top,
+				}).children('.filter-orders').addClass('filter-orders-active');
+			}
+		});
+	</script>
+</html>

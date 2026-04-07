@@ -1,0 +1,899 @@
+<?php $current='5'; ?>
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>预警订单</title>
+	<link rel="stylesheet" href="__STATIC__/theme/index/js/selectjs/select.css"> <!--   默认主题CSS   -->
+	{include file="public/header" /}
+	<script src="__STATIC__/theme/index/js/selectjs/select.js"></script>
+</head>
+<style>
+	#search-box{background-color: #fff;z-index: 9999;width:100%;margin: 0;height: 80px; overflow-y: auto;}
+	#search-box div{margin-top: 0;height: 20px;line-height: 20px;text-align: left;padding: 0 3%; color: #666;cursor: pointer;}
+	.delcopyorder-operate{
+		margin-left: 20px;
+	}
+	.delcopyorder{
+		margin: 5px 0;
+		cursor: pointer;
+	}
+</style>
+<body>
+	<div class="baogong_warm popup-box">
+		<div class="popup-header">
+			<div>预警订单</div>
+		</div>
+		{include file="public/menu" /}
+		<div class="popup-body">
+			<div class="body-center">
+				<div class="body-content-box body-nav-active">
+					<div class="content-header">
+						<div class="content-header-left positionLeft">
+							<div class="filter-orders">订单筛选</div>
+						</div>
+						<form id="searchForm" action="{:url($current_position)}" method="get" class="content-header-right positionRight">
+							<div class="search-box">
+								{php}
+								if($action=='orders'||$action=='warm'||$action=='export'||$action=='them'||$action=='out'){
+								{/php}
+								<input type="text"  class="se01" name="xordersn" value="{$post['xordersn']}" placeholder="请输入{$fieldList[$unique_field]['explains']}/{$fieldList['uname']['explains']}/{$fieldList['ordernum']['explains']}" autocomplete="off">
+								<span id="searchBtn_order" class="search-btn se02">搜索</span>
+								{php} } {/php}
+							</div>
+						</form>
+						{include file="public/search" /}
+					</div>
+					<div class="content-center">
+						<div class="content-center-inner urgentPrintBox">
+							<table class="layui-table urgent-table" id="t_title" border="1" cellpadding="0"
+								cellspacing="0">
+								<thead>
+									<tr>
+										{volist name="fieldList" id="vo"}
+										<th data="{$vo['fieldname']}">
+											{$vo['explains']}
+											<div class="bg_mask">
+												<div class="search-icon layui-icon layui-icon-search"></div>
+											</div>
+										</th>
+										{/volist}
+										<th>操作</th>
+									</tr>
+								</thead>
+								<tbody>
+									{php}
+									$today=timezone_get(1);
+									$begin=$today['begin'];
+									{/php}
+									{volist name="orderl" id="or"}
+									<tr> {php}
+										foreach($fieldList as $field=>$name){
+										{/php}
+										<td>{php} echo $or[$field]!=''?$or[$field]:'&nbsp;';{/php}</td>
+										{php}
+										}
+										{/php}
+										<td style="width: 150px;" class="operate-box">
+											<div class="operate-btn">
+												<a class="btn-normal edit" href="#{$or.gid}" data-id="{$or.id}">编辑</a>/
+												<a class="btn-normal del" data-id="{$or.id}">删除</a>/
+												<a class="btn-normal qrcode" href="javascript:void(0);"
+													onclick="isurgent({$or.id});">二维码</a>
+											</div>
+											<div class="operate-btn">
+												<span class="btn-normal pause" data-id="{$or.id}">{if
+													$or.pause==0}暂停{else/}取消暂停{/if}</span>/
+												<span class="btn-normal btn-danger repeal" data-id="{$or.id}">{if
+													$or.repeal==0}作废{else/}取消作废{/if}</span>
+
+												{if condition="$systemset['repeatorder']"}
+												/ <a class="btn-normal" href="javascript:void(0);"
+													onclick="javascript:showRepeatWin({$or['id']});">重报</a>
+												{/if}
+											</div>
+										</td>
+									</tr>
+									<tr class="unset-border-top">
+										<td colspan="{php}echo count($fieldList)+1;{/php}">
+											<div class="process-box datatable{$or['id']}">
+												<div class="process-box-inner">
+													{volist name="$or.dname" id="li"}
+													{foreach $li as $ke=>$a}
+													<?php 
+														$gpstatus='inx_3';
+														foreach ($a as $b){
+															if($b['inouts']!=2){ 
+																if($b['endtime']!==0){	
+																	$gpstatus='inx_1';
+																}else if($b['endtime']== 0&&$b['starttime']!==0&&$b['state']==1){
+																	$gpstatus='inx_2';
+																	break;
+																}else if($b['endtime']== 0&&$b['starttime']!==0&&$b['state']==2){
+																	$gpstatus='inx_2';
+																	break;
+																}else if($b['isbad']== 1){	
+																	$gpstatus='inx_2';
+																	break;
+																}else if ($b['isover']==1){ 				
+																	$gpstatus='inx_2';
+																	break;
+																}
+															}else{
+																if ($b['outstatus']==2)
+																{
+																	$gpstatus='inx_2';
+																	break;
+																}else if($b['outstatus']==1){
+																	$gpstatus='inx_1';
+																}
+															} 
+														}
+													?>
+													<ul>
+														{foreach $a as $b}
+														{php}
+														$dname=htmlspecialchars_decode($b['dname']);
+														$dtime='';
+														if($b['starttime']>0){
+														$dtime=date('Y-m-d',$b['starttime']);
+														}
+														if (($b['state']==1&&$b['endtime']>0)||($b['starttime']
+														>0&&$b['endtime']>0)){
+														$dtime.=" - ";
+														}
+														if($b['endtime']>0){
+														$dtime.=date('Y-m-d',$b['endtime']);
+														}
+														{/php}
+
+														{php} if($b['inouts']!=2){ {/php}
+														{php}
+														$status='';
+														$move_class='';
+
+														$b_data=$b['gxid'];
+														$b_data_id=$b['orderid'];
+														$b_data_inout=$b['inouts'];
+														$b_data_content=$b['text'];
+														$b_data_name=$b['name'];
+
+														if($b['starttime']== 0&& $b['endtime']==0){
+														$status.='未开始';
+														$classname="li-unstart";
+														$move_class='no3';
+														}
+														if($b['endtime']== 0&&$b['starttime']>0&&$b['state']==1){
+														$status.='进行中';
+														$classname="li-ongoing";
+														$move_class='no2';
+														}
+														if($b['endtime']== 0&&$b['starttime']>0&&$b['state']==2){
+														$status.='进行中';
+														$classname="li-ongoing";
+														$move_class='no2';
+														}
+														if($b['endtime']>0){
+														$status.='完成';
+														$move_class='no5';
+														$classname="li-finish";
+														}
+
+														if($b['isbad']== 1){
+														$status.='|异常';
+														$classname="li-error";
+														$move_class='diff';
+														$b_data_id=$b['fid'];
+														}
+														if ($b['isover']==1)
+														{
+														$status.='|超时';
+														$classname="li-overtime";
+														}
+														{/php}
+														<li class="{$classname} {$move_class}" data="{$b_data}" data-id="{$b_data_id}"
+															data-inout={$b_data_inout} data-content="{$b_data_content}"
+															data-name="{$b_data_name}">{$dname}({$status}) {if
+															$dtime!=''} &nbsp;|&nbsp;{$dtime}{/if}</li>
+														{php} }else{ {/php}
+														{php}
+															$status='';
+															if ($b['outstatus']==2)
+															{ 
+																$status='部分发货';
+																$classname='li-ongoing';
+															}else if($b['outstatus']==1){
+																$status='全部发货';
+																$classname='li-finish';
+															}else{
+																$status='未发货';
+																$classname='li-unstart';
+															}
+														{/php}
+														<li class="{$classname}">{$dname}({$status}) {if $dtime!=''}|
+															&nbsp;{$dtime}{/if}</li>
+
+														{php} } {/php}
+														{/foreach}
+													</ul>
+													{/foreach}
+													{/volist}
+												</div>
+												<div class="process-box-btn">
+													<div onclick="javascript:show_note({$or.id});" {if condition="$or['note'] neq '' || $or['note'] neq null"}title="{$or['note']}"{/if}>订单备注{if condition="$or['note'] neq '' || $or['note'] neq null"}<span class="layui-badge layui-bg-danger">!</span>{/if}</div>
+													<div onclick="javascript:overtime_cause({$or.id});" {if condition="$or['cause'] neq '' || $or['cause'] neq null"}title="{$or['cause']}"{/if}>超时原因{if condition="$or['cause'] neq '' || $or['cause'] neq null"}<span class="layui-badge layui-bg-danger">!</span>{/if}</div>
+												</div>
+											</div>
+										</td>
+									</tr>
+									{/volist}
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- 修改订单 -->
+	<div class="modal-box" id="editOrderModal">
+		<div class="modal-content">
+			<div class="modal-header">
+				<div class="modal-header-left">
+					<div class="modal-header-title">
+						<img src="__STATIC__/theme/index/img/icon_add.png">
+						<span>修改订单</span>
+					</div>
+				</div>
+				<div class="modal-header-right">
+					<span class="close-modal-btn"></span>
+				</div>
+			</div>
+			<div class="modal-body">
+				<div class="modal-body-middle">
+					<div class="iframe-box">
+						<iframe class="myIframe" id="myIframe_editOrder"></iframe>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	{include file="public/popup" /}
+</body>
+<!-- 订单操作 -->
+<script type="text/javascript">
+	//订单编辑
+	$('.edit').click(function (e) {
+		e.preventDefault();
+		e.stopPropagation();
+		var id = $(this).data("id");
+		$('#editOrderModal').fadeIn();
+		$('#myIframe_editOrder').attr('src',"{:url('Index/edit')}?id="+ id);
+	});
+
+	//订单删除
+	$('.del').click(function () {
+		var id = $(this).data('id');
+		layer.confirm('是否删除', {
+			icon: 3,
+			title: '提示',
+			move: false,
+		}, function (index) {
+			$.ajax({
+				url: "{:Url('Index/del')}",
+				data: {
+					kid: id
+				},
+				dataType: "json",
+				success: function (obj) {
+
+					if (obj.code == 0) {
+						layer.msg('删除成功');
+					} else {
+						layer.msg(obj.msg);
+					}
+					setTimeout(function () {
+						window.location.reload();
+					}, 1500);
+				}
+			})
+			layer.close(index);
+		})
+	});
+
+	//订单暂停
+	$('.pause').click(function () {
+		var id = $(this).data('id');
+		var _text = $(this).text();
+
+		layer.confirm('是否执行' + _text + "操作", {
+			icon: 3,
+			title: '提示',
+			move: false,
+		}, function (index) {
+			$.ajax({
+				url: "{:Url('Index/pause')}",
+				data: {
+					kid: id
+				},
+				dataType: "json",
+				success: function (obj) {
+					if (obj.code == 0) {
+						layer.msg(_text + '成功');
+					} else {
+						layer.msg(obj.msg);
+					}
+					setTimeout(function () {
+						window.location.reload();
+					}, 1500);
+				}
+			})
+			layer.close(index);
+		})
+	});
+
+	//订单作废
+	$('.repeal').click(function () {
+		var id = $(this).data('id');
+		var _text = $(this).text();
+
+		layer.confirm('是否执行' + _text + "操作", {
+			icon: 3,
+			title: '提示',
+			move: false,
+		}, function (index) {
+			$.ajax({
+				url: "{:Url('Index/repeal')}",
+				data: {
+					kid: id
+				},
+				dataType: "json",
+				success: function (obj) {
+
+					if (obj.code == 0) {
+						layer.msg( _text + '成功');
+					} else {
+						layer.msg(obj.msg);
+					}
+					setTimeout(function () {
+						window.location.reload();
+					}, 1500);
+				}
+			})
+			layer.close(index);
+		})
+	});
+
+</script>
+<script type="text/javascript">
+	// 排序筛选
+	function changeListOrderby(value) {
+		var _val = value;
+		if (_val == '') return;
+		if (_val != '') {
+			$("#formorderby").val(_val);
+		}
+		var formData = $('#orderScreenBox').serialize();
+		$("#formsenior").val(0);
+		$("#orderScreenBox").submit();
+		$("#searchForm").submit();
+	}
+	$(".diff").click(function () {
+		var fid = $(this).attr("data-id");
+		layer.open({
+			type: 2,
+			title: '工序异常',
+			shadeClose: true,
+			move: false,
+			shade: 0.8,
+			area: ['420px', '400px'],
+			content: "{:url('Index/exception')}?fid=" + fid
+		});
+	});
+
+	
+	//------------------------------------------报工事件开始---------------------------------------
+	//刷新窗口
+	function reload_window() {
+		window.location.reload();
+	}
+	// 订单备注
+	function show_note(orderid){
+		
+		<?php if(!$can_bg){ echo 'return false;';} ?>
+		
+		layer.open({
+			type: 2,
+			title: '订单备注',
+			shadeClose: true,
+			shade: 0,
+			area: ['450px', '350px'],
+			content: "{:url('Index/show_note')}?orderid="+orderid
+		  }); 
+	}
+
+	// 超时原因
+	function overtime_cause(orderid){
+	  layer.open({
+		  type: 2,
+		  title: '订单超时原因',
+		  shadeClose: true,
+		  shade: 0,
+		  area: ['450px', '350px'],
+		  content: "{:url('Index/overtime_cause')}?orderid="+orderid
+		}); 
+  	}
+	function show_gx(gxid, orderid, oag_id) {
+		<?php
+			if (!$can_bg) {
+				echo 'return false;';
+			} 
+		?>
+		layer.open({
+			type: 2,
+			title: '工序报工',
+			shadeClose: true,
+			move: false,
+			shade: 0.3,
+			area: ['450px', '350px'],
+			content: "{:url('Index/show_gx')}?id=" + gxid + "&orderid=" + orderid + "&oag=" + oag_id
+		});
+	}
+	//显示发货窗口
+	function show_send(orderid) {
+		<?php
+		if (!$can_bg) {
+			echo 'return false;';
+		} 
+		?>
+		layer.open({
+			type: 2,
+			title: '订单出库',
+			shadeClose: true,
+			move: false,
+			shade: 0.3,
+			area: ['450px', '350px'],
+			content: "{:url('Index/show_send')}?orderid=" + orderid,
+		});
+	}
+
+	//报工详细调用放大图片
+	function zoom_img(imagesArr, _index) {
+		layer.closeAll();
+		$.pictureViewer({
+			images: imagesArr, //需要查看的图片，数据类型为数组
+			initImageIndex: _index, //初始查看第几张图片，默认1
+			scrollSwitch: true //是否使用鼠标滚轮切换图片，默认false
+		});
+	}
+
+	//工序点击后触发报工事件绑定
+	function bindReportEvent() {
+		unbindReportEvent();
+		//进行中
+		$("li.no2").click(function () {
+			var gxid = $(this).attr("data");
+			var orderid = $(this).attr("data-id");
+			var oag = $(this).attr("data-oag");
+			var class_id = $(this).attr("data-class");
+			$('.process-box').css('background','#9cbcc9');
+			$('.' + class_id).css('background','rgb(249, 251, 206)');
+			show_gx(gxid, orderid, oag);
+		});
+
+		//未开始按钮
+		$("li.no3").click(function () {
+			var gxid = $(this).attr("data");
+			var orderid = $(this).attr("data-id");
+			var oag = $(this).attr("data-oag");
+			var inouts = $(this).attr("data-inout");
+			var class_id = $(this).attr("data-class");
+			$('.process-box').css('background','#9cbcc9');
+			$('.' + class_id).css('background','rgb(249, 251, 206)');
+			if (Number(inouts) == 2) {
+				return;
+			}
+			show_gx(gxid, orderid, oag);
+		});
+
+		//发货组按钮
+		$("li.no4").click(function () {
+			var orderid = $(this).attr("data-id");
+			show_send(orderid);
+		});
+
+		//已完成
+		$("li.no5").click(function () {
+			var gxid = $(this).attr("data");
+			var orderid = $(this).attr("data-id");
+			var oag = $(this).attr("data-oag");
+			var class_id = $(this).attr("data-class");
+			$('.process-box').css('background','#9cbcc9');
+			$('.' + class_id).css('background','rgb(249, 251, 206)');
+			show_gx(gxid, orderid, oag);
+		});
+
+	}
+
+	//取消点击事件
+	function unbindReportEvent() {
+		$("li.no2").unbind("click");
+		$("li.no3").unbind("click");
+		$("li.no4").unbind("click");
+		$("li.no5").unbind("click");
+	}
+
+	$(document).ready(function () {
+		bindReportEvent();
+	})
+
+	//------------------------------------------报工事件结束---------------------------------------
+
+	//------------------------------------------重新选择工序报工------------------------------------
+	var addOrderLock = false;
+	var addOrderId = 0;
+	var addedId = 0; //成功添加重报工的id
+	function showRepeatWin(orderid) {
+		if (addOrderLock) {
+			layer.msg('请先完成正在设置的订单');
+			return;
+		}
+		unbindEvent();
+		addOrderId = orderid;
+		$.ajax({
+			url: "{:Url('Index/repeat_order')}",
+			data: {
+				"id": orderid
+			},
+			dataType: "html",
+			success: function (_html) {
+				$(_html).insertAfter(".datatable" + orderid);
+				GxBindEvent();
+				addOrderLock = true;
+			}
+		})
+	}
+	//删除虚拟新增工序
+	function deleteCopyline(_obj) {
+		addOrderLock = false;
+		$(_obj).closest('.setbacks').remove();
+
+	}
+
+	//删除实质的已创建的重报工
+	function deleteComfirmline(id, _obj) {
+		layer.confirm('确认删除?', {
+			icon: 3,
+			title: '提示'
+		}, function (index) {
+			layer.load();
+			$.ajax({
+				url: "{:Url('Index/del_order_report')}",
+				data: {
+					"id": id
+				},
+				dataType: "json",
+				success: function (result) {
+					layer.closeAll();
+					layer.msg(result.msg);
+					if (result.status == 1) {
+						unbindEvent();
+						addOrderLock = false;
+						$(_obj).closest('.setbacks').remove();
+					}
+				}
+			})
+		})
+	}
+
+	//小工序绑定点击事件
+	function GxBindEvent() {
+		$(".unstart").click(function () {
+			if ($(this).hasClass("unstart_on")) {
+				$(this).removeClass("unstart_on");
+			} else {
+				$(this).addClass("unstart_on");
+			}
+		})
+	}
+
+	//小工序解除绑定点击事件
+	function unbindEvent() {
+		$(".unstart").unbind("click");
+	}
+
+	//保存新的报工
+	function saveCopyOrder(_obj) {
+		var selectedGx = $(_obj).parent().parent().find("li.unstart_on").length;
+		if (selectedGx <= 0) {
+			layer.msg('请选择重新报工的工序');
+			return;
+		}
+
+		if (addOrderId == 0) {
+			layer.msg('参数错误，请选择要重新报工的订单');
+			return;
+		}
+		var gxid = [];
+		$(_obj).parent().parent().find("li.unstart_on").each(function () {
+			gxid.push($(this).attr("data-value"));
+		})
+		layer.load();
+
+		$.ajax({
+			url: "{:Url('Index/save_order_report')}",
+			data: {
+				"orderid": addOrderId,
+				"gxid": gxid
+			},
+			dataType: "json",
+			success: function (result) {
+				layer.closeAll();
+				layer.msg(result.msg);
+				if (result.status == 1) {
+					$("#notsave").hide();
+					$("#issave").show();
+					unbindEvent();
+					addOrderLock = false;
+					$("#delcopyorder").attr("onclick", "deleteComfirmline(" + result.id + ",this)");
+					setTimeout(function () {
+						window.location.reload();
+					}, 1500);
+				}
+			}
+		})
+
+	}
+
+	var attachs = new Array(); 
+	{present name = "jstr"}
+	attachs = {$jstr};
+	{/present}
+
+	var successed = 0;
+	//获取副工艺线和报工记录
+	function getCopyOrder() {
+		if (attachs.length > 0) {
+			for (var i in attachs) {
+				var oag = attachs[i]['oag_id'];
+				var id = attachs[i]['orderid'];
+				if (oag != '') {
+					getShowLine(id, oag);
+				}
+			}
+		}
+	}
+
+	function getShowLine(orderid, oag) {
+		$.ajax({
+			url: "{:Url('Index/order_attach_gx')}",
+			data: {
+				'id': orderid,
+				"oag": oag
+			},
+			dataType: "html",
+			type: 'POST',
+			success: function (obj) {
+				layer.closeAll();
+				if (obj != 'null') {
+					$(obj).insertAfter(".datatable" + orderid);
+				}
+			},
+			complete: function () {
+				successed++;
+				if (successed == attachs.length) {
+					bindReportEvent();
+				}
+			}
+		})
+	}
+
+	layui.use(function(){
+		getCopyOrder();
+		var select_gx = "<?php echo $post['gname'];?>";
+		var finish_gx = "<?php echo $post['finishgx'];?>";
+		var doing_gx = "<?php echo $post['dogx'];?>";
+		select_gx == '' ? select_gx = '请选择' : '';
+		finish_gx == '' ? finish_gx = '请选择' : '';
+		doing_gx == '' ? doing_gx = '请选择' : '';
+		$("#select1").mySelect();
+		$("#select2").mySelect();
+		$("#select3").mySelect();
+		$("#select1").find(".select-picker-search-checked").html(select_gx);
+		$("#select2").find(".select-picker-search-checked").html(finish_gx);
+		$("#select3").find(".select-picker-search-checked").html(doing_gx);
+	})
+
+	//------------------------------------------重新选择工序报工结束------------------------------------
+
+	// 显示二维码
+	// isurgent
+	function isurgent(ordersn){
+		var data = {};
+		data['id'] = ordersn;
+		$.ajax({
+			type: "POST",
+			url: "{:Url('Index/qrcode')}",
+			data: data,
+			dataType: "json",
+			success: function(r){
+				if (r.code==200) {
+					var path = 'data:image/png;base64,'+r.data; //给img的src赋值。
+					layer.open({
+						type: 1,
+						title: '二维码',
+						shadeClose: true,
+						move: false,
+						shade: 0.8,
+						area: ['500px', '500px'],
+						content: "<img style='margin:0 auto;margin-top:30px;display:block;' src='" + path + "'>"
+					});
+				} else{
+					console.log('错了')	                            
+				}
+			}
+		});
+	}
+</script>
+
+<script type="text/javascript">
+	// 搜索
+	$('#searchBtn_order').click(function(e){
+		e.preventDefault();
+		e.stopPropagation();
+		$('#searchForm').submit();
+	})
+	// 表头搜索
+	$('.searchBtn').click(function(e){
+		e.preventDefault();
+		e.stopPropagation();
+		$('#tdFindForm').submit();
+	})
+	$('.close-modal-btn').click(function(e){
+		e.preventDefault();
+		e.stopPropagation();
+		$('.modal-box').fadeOut();
+	})
+	// 选择订单排序
+	$('.imitate-select').click(function(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		var _this = $(this);
+		var clickSign = _this.attr('data-sign');
+		$('.imitate-select').removeAttr('data-sign').children('ul').hide();
+		if (clickSign == 'true') {
+			_this.children('ul').hide();
+			_this.removeAttr('data-sign');
+		} else {
+			_this.children('ul').show();
+			_this.attr('data-sign', 'true');
+		}
+	});
+	$(window).click(function(){	
+		var elem = event.srcElement ? event.srcElement : event.target;
+		while (elem) { //循环判断至跟节点，防止点击的是div子元素 
+			if (elem.id && elem.id == 'orderScreenBox') {
+				return;
+			}
+			if($(elem).hasClass('modal-content')){
+				return;
+			}
+			elem = elem.parentNode;
+		}
+		$('.modal-box').fadeOut();
+		$('.imitate-select').removeAttr('data-sign').children('ul').hide();
+		$('.content-header-left').removeAttr('data-click').css({
+			top: '0',
+		}).children('.filter-orders').removeClass('filter-orders-active');
+		$('.content-header-left').siblings('.order-screen-box').css({
+			height: '0',
+			overflow: 'hidden'
+		})
+	});
+	$('.imitate-select ul').delegate('li','click',function(e){
+		e.preventDefault();
+		e.stopPropagation();
+		var _this = $(this);
+		var tempTxt = _this.html();
+		var _thisValue = _this.attr('data-value');
+		_this.parent().parent().children('.select-txt').attr('data-value',_thisValue).html(tempTxt);
+		_this.parent().hide();
+		_this.parent().parent().removeAttr('data-sign');
+		var _clickTarget = _this.parent().attr('data-sign');
+
+		_this.parent().siblings('input[type=hidden]').val(_thisValue);
+		switch (_clickTarget) {
+			case 'rating':	// 列表排序
+				changeListOrderby(_thisValue);
+				break;
+			default:
+				break;
+		}
+	});
+
+	//  更新同一销售单编码的交货日期				
+	$('.imitate-checkbox-all').click(function(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		let _this = $(this);
+		let clickSign = _this.attr('data-sign');
+		if (clickSign == 'true') {
+			_this.removeAttr('data-sign');
+			_this.children('span').hide();
+			_this.siblings('input[type=hidden]').val(0);
+		} else {
+			_this.children('span').show();
+			_this.attr('data-sign', 'true');
+			_this.siblings('input[type=hidden]').val(1);
+		}
+	});
+	// 订单筛选
+	$('.content-header-left').click(function(e){
+		e.preventDefault();
+		e.stopPropagation();
+		let _this = $(this);
+		let clickIndex = _this.attr('data-index');
+		let clickSign = _this.attr('data-click');
+		if(clickSign == 'true'){
+			_this.removeAttr('data-click').css({
+				top: '0',
+			}).children('.filter-orders').removeClass('filter-orders-active');
+			_this.siblings('.order-screen-box').css({
+				height: '0',
+				overflow: 'hidden'
+			})
+		} else{
+			_this.siblings('.order-screen-box').css({
+				height: 'auto',
+				overflow: 'unset'
+			});
+			var _top = _this.siblings('.order-screen-box').css('height');
+			_this.attr('data-click', 'true').css({
+				top: _top,
+			}).children('.filter-orders').addClass('filter-orders-active');
+		}
+	});
+	// 点击表格标题时 , 显示内容显示框
+	$('table thead').delegate('tr th .bg_mask', 'click', function (e) {
+		e.preventDefault();
+		e.stopPropagation();
+		var _this = $(this);
+		var clickTarget = _this.parent().attr('data');	// 对应字段名字
+		$('#td_field').val(clickTarget);
+		$('#searchDataModal').fadeIn();
+		$('#td_keyword').val('');
+	});
+	//点击搜索框数据显示在搜索框上
+	$('#search-box').on('click','div',function(){
+		$('#td_keyword').val($(this).text());
+		$('#search-box').hide();
+	})
+	//点击表头搜索异步查找
+	$('#td_keyword').keyup(function(){
+		console.log('keyup');
+		var data = {td_keyword:$('#td_keyword').val(),td_field:$('#td_field').val()}
+		console.log(data);
+		$.ajax({
+			url:"{:url('td_find')}",
+			data: {td_keyword:$('#td_keyword').val(),td_field:$('#td_field').val()},
+			type: 'POST',
+			dataType: 'json',
+			success:function(res){
+				console.log(res);
+				if(res!=''){
+					$("#search-box").show();
+					$("#search-box").html('');
+					var html = '';
+					$.each(res,function(k,v){
+						html += "<div>"+v.value+"</div>"
+					})
+					$('#search-box').append(html);
+				}else{
+					$("#search-box").hide();
+				}
+			}
+		})
+	});
+</script>
+
+</html>

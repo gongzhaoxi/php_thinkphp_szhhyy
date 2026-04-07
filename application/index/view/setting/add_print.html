@@ -1,0 +1,211 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>微元生产工序报工管理系统,建材行业生产管理系统,门窗生产管理系统,微元科技,佛山市微元科技有限公司</title>
+    {include file="public/header" /}
+</head>
+<style>
+    .radio-list{
+        display: flex;
+        align-items: center;
+        height: 30px;
+    }
+    .radio-list-item{
+        display: flex;
+        margin-right: 20px;
+    }
+    .radio-list-item .imitate-radio{
+        margin-right: 5px;
+    }
+</style>
+<body class="add_field_rule">
+    <div class="content">
+        <form class="layui-form" id="form" method="post">
+            <!-- <div class="layui-form-item">
+                <label for="username" class="layui-form-label">
+                    选择工序：
+                </label>
+                <div class="layui-input-inline" style="width: 250px">
+                    <div class="imitate-select">
+                        <span class="select-txt">请选择工序</span>
+                        <span class="triangle-down"></span>
+                        <input type="hidden" name="gxid" id="gxid" value="0">
+                        <ul data-sign="style">
+                            {volist name='into_gx' id='vo'}
+                            <li data-value="{$key}" {if condition="$one['gxid'] eq $vo['id']"} data-selected="true" {/if}>{$vo['title']}--{$vo['dname']}</li>
+                            {/volist}
+                        </ul>
+                    </div>
+                </div>
+            </div> -->
+            <div class="layui-form-item">
+                <label for="username" class="layui-form-label">
+                    名称：
+                </label>
+                <div class="layui-input-inline" style="width: 250px">
+                    <input name="name" id="name" type="text" class="layui-input" value="{$one['name']}" placeholder="请输入打印机名称" autocomplete="off" />
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label for="username" class="layui-form-label">
+                    机器码：
+                </label>
+                <div class="layui-input-inline" style="width: 250px">
+                    <input type="text" id="machine_code" class="layui-input" value="{$one['machine_code']}" placeholder="请输入机器码" autocomplete="off">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label for="username" class="layui-form-label">
+                    机器密钥：
+                </label>
+                <div class="layui-input-inline" style="width: 250px">
+                    <input type="text" id="secret" class="layui-input" value="{$one['secret']}" placeholder="请输入密钥" autocomplete="off" >
+                </div>
+            </div>
+            <div class="layui-form-item" style="display: none;">
+                <label for="username" class="layui-form-label">
+                    样式：
+                </label>
+                <div class="layui-input-inline" style="width: 250px;">
+                    <div class="imitate-select">
+                        <span class="select-txt">选择样式</span>
+                        <span class="triangle-down"></span>
+                        <input type="hidden" name="style" id="style">
+                        <ul data-sign="style">
+                            {volist name='print_style' id='v'}
+                            <li data-value="{$key}" {if condition="$one['style'] eq $key"} data-selected="true" {/if}>{$v}</li>
+                            {/volist}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label for="username" class="layui-form-label">
+                    类型：
+                </label>
+                <div class="layui-input-inline" style="width: auto">
+                    <div class="radio-list">
+                        <div class="radio-list-item">
+                            <div class="imitate-radio  {if condition="$one['type'] eq 1"}imitate-radio-active{/if}" >
+                                <span></span>
+                                <input type="hidden" name="type" value="1">
+                            </div>
+                            <span>入库打印机</span>
+                        </div>
+                        <div class="radio-list-item">
+                            <div class="imitate-radio  {if condition="$one['type'] eq 2"}imitate-radio-active{/if}" >
+                                <span></span>
+                                <input type="hidden" name="type" value="2">
+                            </div>
+                            <span>切割方案打印机</span>
+                        </div>
+                        <div class="radio-list-item">
+                            <div class="imitate-radio  {if condition="$one['type'] eq 3"}imitate-radio-active{/if}" >
+                                <span></span>
+                                <input type="hidden" name="type" value="3">
+                            </div>
+                            <span>半成品打印机</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">&nbsp;</label>
+                <div class="layui-input-inline" style="width: 250px">
+                    <input id="id" name="id" type="hidden" value="{$one['id']}" />
+                    <button type="button" class="layui-btn layui-btn-sm" onclick="javascript:addPrint();">确认无误！并提交资料</button>
+                </div>
+            </div>
+        </form>
+    </div>
+	<script type="text/javascript">
+		//添加打印机
+		function addPrint(){
+			var machine_code = $('#machine_code').val();
+            var secret = $('#secret').val();
+            var style = $('#style').val();
+			var id= $('#id').val();
+            var gxid = $('#gxid').val();
+            var type = $('.imitate-radio-active input[name=type]').val();
+//			if(gxid==0){
+//				layer.msg("请选择工序");
+//				return false;
+//			}
+			if(machine_code==''){
+				layer.msg("请输入机器码");
+				return false;
+			}
+			if(secret==''){
+				layer.msg("请输入机器密钥");
+				return false;
+			}
+            if(type==''){
+				layer.msg("请选择类型");
+				return false;
+			}
+			
+			var name = $('#name').val();
+			$.ajax({
+				url: "{:Url('Setting/add_print')}",
+                type:'post',
+				data: {
+                    machine_code: machine_code,
+                    secret: secret,
+                    id: id,
+                    style: style,
+                    gxid: gxid,
+                    type: type,
+                    name: name
+                },
+				dataType: 'json',
+				success:function(obj){
+					if(obj.status==1){
+						layer.msg(obj.msg,function(){
+                            window.parent.location.reload();
+                        });				
+					}else{
+						layer.msg(obj.msg);
+					}
+				}
+			},'json');
+		}
+
+        $('.imitate-select').click(function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            var _this = $(this);
+            var clickSign = _this.attr('data-sign');
+            $('.imitate-select').removeAttr('data-sign').children('ul').hide();
+            if (clickSign == 'true') {
+                _this.children('ul').hide();
+                _this.removeAttr('data-sign');
+            } else {
+                _this.children('ul').show();
+                _this.attr('data-sign', 'true');
+            }
+        });
+
+        $('.imitate-select ul').delegate('li','click',function(e){
+            e.preventDefault();
+            e.stopPropagation();
+            var _this = $(this);
+            var tempTxt = _this.html();
+            var _thisValue = _this.attr('data-value');
+            _this.parent().parent().children('.select-txt').attr('data-value',_thisValue).html(tempTxt);
+            _this.parent().hide();
+            _this.parent().parent().removeAttr('data-sign');
+            var _clickTarget = _this.parent().attr('data-sign');
+            _this.parent().siblings('input[type=hidden]').val(_thisValue);
+        });
+        $(window).click(function(){
+            $('.imitate-select').removeAttr('data-sign').children('ul').hide();
+        })
+        $('.imitate-radio').click(function(){
+            var _this = $(this);
+            _this.addClass('imitate-radio-active').parent().siblings('.radio-list-item').children('.imitate-radio').removeClass('imitate-radio-active');
+        })
+	</script>
+</body>
+</html>

@@ -1,0 +1,230 @@
+<?php $current='6'; ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>微元生产工序报工管理系统,建材行业生产管理系统,门窗生产管理系统,微元科技,佛山市微元科技有限公司</title>
+<script src="__STATIC__/theme/index/js/jquery-1.10.2.js"></script>
+<link href="__STATIC__/theme/index/css/index.css" rel="stylesheet" />
+<link href="__STATIC__/theme/index/css/bootstrap.css" rel="stylesheet">
+<link href="__STATIC__/theme/index/css/font-awesome.min.css" rel="stylesheet">
+</head>
+<style type="text/css">
+.user{display:none;width:500px;height:auto;background:#E3E3E3;position:absolute;z-index:9999;left:36%;top:30%;border-radius:8px;}
+.user div{width:100%;text-align:center;height:40px;line-height:40px;margin-top:20px;font-size:14px;}
+.user div input{padding-left:4px;width:70%;height:40px;line-height:40px;border-radius:4px;border:0;margin-bottom:6px;}
+.user div .spa{letter-spacing:8px;}
+.btne{width:200px;height:40px;line-height:40px;background:#FF4040;color:#fff;border:0;outline:none;border-radius:8px;margin-left:25%;margin-top:18px;margin-bottom:10px;}
+.role{width: 70%;height: 40px;border-radius: 6px;border: none;}
+.ser{width: 70%;height: 40px;border-radius: 6px;border: none;}
+.mb{display:none;width:100%;height:100%;background:black;opacity:0.6;position:fixed;z-index:1000;}
+.mwpw_bg{margin-top:0px;}
+.me_r_1,.me_r_2{float:left;width:auto;}
+.me_r_1 select{border: 1px solid #e2e2e2;}
+.me_r_2{width:122px;}
+.me_r_2 input{border: 1px solid #e2e2e2;border-radius:4px;width:122px}
+.button{width: 50px;height: 25px;color: #FFFFFF;font: 12px/25px "微软雅黑";background: #0aad20;text-align: center;border: none;float: left;display:inline-block;border-radius:4px;}
+.button:hover{text-decoration:none;color:white;}
+.pages{width:100%;height:50px;line-height:50px;background:#EAEAEA;display:flex;	align-items: center;margin-bottom: 1px;}
+.me_r_2 select{border:none;border-radius:4px;font-size:11px;height:26px;line-height:26px;padding:0 4px;}
+.me_r_2 select option{font: 12px/25px "微软雅黑";color:#333333}
+.second-menu{background:#c0c8cb;width:100%;line-height:40px;height:40px;display:flex;align-items: center;}
+.second-menu div{width:80px;height:26px;line-height:26px;background:#3A5FCD;color:#FFFFFF;text-align:center;border-radius:4px;margin-left:12px}
+.second-menu div a{color:#fff;font-size:12px;text-decoration: none;}
+.second-menu div a:active{text-decoration: none;}
+.outdata button{color: #fff;border: none;width: 90px;line-height: 26px; height: 26px;background: #CD0000;font-size: 12px;border-radius: 4px;margin-left:20px}
+.check-salary-num{width: 20%;position: absolute;right: 91px;background: #CD5C5C;color: #fff;text-align: center;font-size: 14px;}    
+.add-gs{font-size: 12px;position: absolute;right: 20px;}
+.add-info{position:fixed;width:34%;height:auto;z-index:9999;background:#fff;left:33%;top:80px}
+.info-title{line-height: 44px;background: #EAEAEA;padding: 0 10px;font-size: 14px;display:flex}
+.close{position:absolute;right:10px;margin-top:10px}
+.close img{width:24px;height:24px}
+.info-text{padding:16px;font-size:12px}
+.info-text-li{display:flex;margin:16px 0;align-items: center;}
+.info-text-li input{line-height:36px;padding-left:8px;width:72%;border-radius:4px;margin-left:22px;border-width:1px}
+.info-text-li select{line-height:26px;height:36px;border-radius:4px;margin-left:22px}
+.info-text-li textarea{line-height:18px;padding:8px;margin-left:22px}
+.info-text button{width: 100%;line-height: 44px;font-size: 16px;background: #008B8B;border: none;color: #fff;}
+</style>
+<body>
+{include file="public/header" /}
+<style type="text/css">
+img[Attributes Style] {width:auto;}
+</style>
+<div class="second-menu">
+	<div ><a href="{:url('Index/salary')}" >员工提成</a></div>
+	<div class="gs" style="background:#0aad20"><a href="#">计件公式</a></div>
+	<div class="add-gs" style="background:#B22222;">添加公式</div>
+</div>
+<div class="parameter">
+<table width="100%" border="0" cellspacing="1" cellpadding="1" class="mwpw_bg" >
+
+<tr class="title">
+<td width="5%">ID</td>
+<td width="10%">工序</td>
+<td width="45%">数据判断内容</td>
+<td width="15%">计件单位（对应字段）</td>
+<td width="10%">计价公式</td>
+<td width="5%">单价</td>
+<td width="10%">操作</td>
+</tr>
+<!-- 一级系列 -->
+{volist name="list" id="la"}
+	<tr>
+	<td>{$la.id}</td>
+	<td>{$la.dname}</td>
+	<td>{$la.text}</td>
+	<td>{$la.unitname}&nbsp;|&nbsp;{$la.fieldname}</td>
+	<td>{$la.formula_text}</td>
+	<td>{$la.price}</td>
+	<td>
+		<a class="edit" data-id="{$la.id}" href="#" onclick="revise()">修改</a> 
+		/ <a class="del" data-id="{$la.id}" href="#" onclick="del()">删除</a>
+	</td>
+	</tr>
+{/volist}
+
+</table>
+</div>
+
+<div class="pages">
+	{$page|raw}
+</div>
+
+<!-- 添加公式页面 -->
+<div class="add-info" style="display:none">
+	<div class="info-title">
+		<div>添加/修改计件公式</div>
+		<div class="close">
+			<img src="__STATIC__theme/index/images/close.png" alt=""></img>
+		</div>
+	</div>
+	<div class="info-text">
+			<div class="info-text-li" style="padding-left:24px">
+				<p>工序</p>
+				<select id="gx">
+					{volist name="gxList" id="eg"}
+					<option value="{$eg.id}">工艺路线：{$eg.title}&nbsp;|&nbsp;工序：{$eg.dname}</option>
+					{/volist}
+				</select>
+			</div>
+			<div class="info-text-li">
+				<p>判断内容</p>
+				<textarea id="content" rows="8" cols="52" placeholder="请输入判断内容：
+注：每个数据中间请加‘|’竖杠区分，最后一个数据后不用加竖杠。
+
+
+如无需判断直接为空" value=""></textarea>
+			</div>
+			<div class="info-text-li">
+				<p>计件单位</p>
+				<select id="field">
+					{volist name="qrcodeList" id="ql"}
+					<option value="{$ql.fieldname}">{$ql.explains}</option>
+					{/volist}
+				</select>
+			</div>
+			<div class="info-text-li">
+				<p>计件公式</p>
+				<input type="text" id="gs-inp" value="" placeholder="如：$area*$num"/>
+			</div>
+			<div><a href="{:url('Index/fieldexcel')}">数据对应字段表下载</a></div>
+			<div class="info-text-li" style="padding-left:24px">
+				<p>单价</p>
+				<input type="text" id="price" value="" placeholder="如：2.5" style="width:16%"/>
+				<p style="margin-left:10px">单位：元</p>
+			</div>
+			<button onclick="sub()">确认填写内容无误，并提交！</button>
+	</div>
+</div>
+<script src="__STATIC__index/js/jquery.min.js"></script>
+<script src="__STATIC__index/js/layer/layer.js"></script>
+<script type="text/javascript">
+	$('.add-gs').click(function(){
+		$('.mb').fadeIn();
+		$('.add-info').fadeIn();
+	})
+	$('.close').click(function(){
+		$('.mb').fadeOut();
+		$('.add-info').fadeOut();
+	})
+	
+	//添加计件公式
+	function sub(){
+		var data = {};
+		data['gid'] = $('#gx').val();
+		data['content'] = $('#content').val();
+		data['field'] = $('#field').val();
+		data['price'] = $('#price').val();
+		data['gongshi'] = $('#gs-inp').val();
+		console.log(data);
+		if(data['gongshi']==''){
+			layer.msg('请填写计件公式');
+			return false;
+		}
+		if(data['price']==''){
+			layer.msg('请填写单价');
+			return false;
+		}
+		layer.confirm('是否添加',{icon:3,title:'提示'},function(index){
+			$.ajax({
+				url:"{:url('Index/addformula')}",
+				data:data,
+				dataType: 'json',
+				success:function(res){
+					console.log(res)
+					if(res.code==0){
+						$('.mb').fadeOut();
+						$('.add-info').fadeOut();
+						layer.msg(res.msg);
+						window.location.reload();
+					}else{
+						layer.msg(res.msg);
+					}
+				}
+				
+			},'json')
+			layer.close(index)
+		})
+		
+	}
+	
+	//修改计件公式
+	function revise(){
+		var id = $('.edit').data('id');
+		layer.open({
+			type: 2,
+			  title: '修改公式',
+			  shadeClose: true,
+			  shade: 0.8,
+			  area: ['560px', '74%'],
+			  content: "editformula?id="+id+"" //iframe的url
+		})
+	}
+	//删除计件公式
+	function del(){
+		var id = $('.del').data('id');
+		layer.confirm('是否删除',{icon:3,title:'提示'},function(index){
+			$.ajax({
+				url: "{:url('Index/delformula')}",
+				data:{id},
+				dataType: 'json',
+				success: obj=>{
+					console.log(obj)
+					if(obj.code==0){
+						layer.msg('删除成功');
+						window.location.reload();
+					}else{
+						layer.msg('删除失败');
+					}
+				}
+			},'json')
+			layer.close(index)
+		})
+	}
+</script>
+	
+{include file="public/footer" /}
+
+</body>
+</html>

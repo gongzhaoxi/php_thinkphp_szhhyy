@@ -1,0 +1,89 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<!-- <meta http-equiv="refresh" content="5"> -->
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<!-- 电视分辨率 抓取 -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, target-densitydpi=device-dpi" />
+<script src="__STATIC__/theme/index/databoard/jquery.min.js"></script>
+<!-- <script type="text/javascript">
+alert($(window).width());
+</script> -->
+<title>车间作业看板</title>
+<style type="text/css">
+*{ margin:0; padding:0;}
+body{background:#0076f3; color: #adffff; overflow: hidden;}
+ul,li{ list-style:none;margin:0px;padding:0px;}
+img{ border:none; display:inline-block; }
+a{ text-decoration:none; color:#333; cursor:pointer;}
+a:hover{ color:#64ab25;}
+i{ font-style:normal;}
+input,textarea,select{ outline:none;}
+h1,h2,h3,h4,h5,h6{ font-style:normal; font-weight:bold; list-style:none;}
+.clear{ clear:both;}
+.classWidth100{ width:98%; padding: 0 1%;}
+.classWidth50{ width:48%; padding: 0 1%;}
+.classWidth33{ width:31%; padding: 0 1%;}
+div{ float: left; }
+iframe{height: calc(100vh);}
+#di_no2{ display: none; }
+#di_no3{ display: none; }
+</style>
+</head>
+
+{php}
+	if($groupNumber==1){
+	 	$classWidth='classWidth100';
+	}
+	if($groupNumber==2){
+	 	$classWidth='classWidth50';
+	}
+	if($groupNumber==3){
+	 	$classWidth='classWidth33';
+	}
+{/php}
+
+<body>
+{present name="error"}
+{php} echo $error; exit();{/php}
+{/present}
+
+{if condition="$groupNumber eq 1"}
+<div class="<?php echo $classWidth?>" id="onediv">
+<iframe src="{:url('Databoard/team_view',array('no'=>$no,'id'=>$team_list[0]['id'],'team'=>1))}" frameborder="0" width="100%" scrolling="no"></iframe>
+</div>
+{/if}
+
+{if condition="$groupNumber eq 2"}
+<div class="<?php echo $classWidth?>">
+<iframe src="{:url('Databoard/team_view',array('no'=>$no,'id'=>$team_list[0]['id'],'team'=>2))}" frameborder="0" width="100%" scrolling="no"></iframe>
+</div>
+
+<div class="<?php echo $classWidth?>">
+<iframe src="{:url('Databoard/team_view',array('no'=>$no,'id'=>$team_list[1]['id'],'team'=>2))}" frameborder="0" width="100%" scrolling="no"></iframe>
+</div>
+{/if}
+
+{if condition="$groupNumber eq 3"}
+<div class="<?php echo $classWidth?>">
+<iframe src="{:url('Databoard/team_view',array('no'=>$no,'id'=>$team_list[0]['id'],'team'=>3))}" frameborder="0" width="100%" scrolling="no"></iframe>
+</div>
+
+<div class="<?php echo $classWidth?>">
+<iframe src="{:url('Databoard/team_view',array('no'=>$no,'id'=>$team_list[1]['id'],'team'=>3))}" frameborder="0" width="100%" scrolling="no"></iframe>
+</div>
+
+<div class="<?php echo $classWidth?>">
+<iframe src="{:url('Databoard/team_view',array('no'=>$no,'id'=>$team_list[2]['id'],'team'=>3))}" frameborder="0" width="100%" scrolling="no"></iframe>
+</div>
+{/if}
+<script>
+function no_padding(){
+	$("#onediv").css({"padding":0,"width":"100%"});
+}
+function has_padding(){
+	$("#onediv").css({"padding":"0 1%","width":"98%"});
+}
+</script>
+</body>
+</html>

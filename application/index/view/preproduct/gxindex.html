@@ -1,0 +1,292 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>微元生产工序报工管理系统,建材行业生产管理系统,门窗生产管理系统,微元科技,佛山市微元科技有限公司</title>
+    <script src="__STATIC__/theme/index/js/jquery-1.10.2.js"></script>
+    <link href="__STATIC__/theme/index/css/index.css" rel="stylesheet" />
+    <link href="__STATIC__/theme/index/css/bootstrap.css" rel="stylesheet">
+    <link href="__STATIC__/theme/index/css/font-awesome.min.css" rel="stylesheet">
+    <link href="__STATIC__/theme/index/js/selectjs/select.css" rel="stylesheet">
+    <script src="__STATIC__/theme/index/js/selectjs/select.js"></script>
+</head>
+<style type="text/css">
+    .nav{padding:8px 0;}
+    .nav a{padding:1px 5px;background:black;color:#fff;border-radius:4px;margin: 0 8px}
+    .nav a:hover,a:active{text-decoration: none;color:inherit;}
+</style>
+<body>
+<style type="text/css">
+    img[Attributes Style] {width:auto;}
+</style>
+
+
+<style type="text/css">
+    .rdut_iauk{width: 98%; padding: 15px 1%; height: 35px;}
+    .rdut_iauk span{ float: left; padding: 0 15px; color: #fff; line-height: 35px; background-color: rgb(41, 85, 182); margin-right: 15px;}
+    .rdut_iauk span#rdut_id{ background-color: #1ea531; }
+    .rdut_iauk span a{ color: #fff; }
+    .list{ width: auto; }
+    .rdut_iauk span{ line-height: 30px;border-radius:8px;border:0; }
+    .rdut_iauk { height: 30px; }
+</style>
+
+<div class="nav">
+
+</div>
+
+<style type="text/css">
+    table#rdut_new_tab tr td{text-align: center;border-right:1px solid #fff; line-height: 30px; background-color: #e9e9e9;border-bottom: 1px solid #fff;}
+    table#rdut_new_tab tr#rdut_title2 td{ background-color: #000; color: #fff; }
+    table#rdut_new_tab tr td#tgutysujkgn{ line-height: 20px; padding: 10px; }
+    table#rdut_new_tab tr td#tgutysujkgn span{ float: left; padding: 0px 10px; background-color: #1ea531; color: #fff; line-height: 20px; margin:0 10px 5px 10px; }
+    table#rdut_new_tab tr td#tgutysujkgn span input{ float: left; margin-right: 5px; width: 13px; height: 13px; }
+</style>
+<div id="orderlist">
+
+
+</div>
+
+
+<script src="__STATIC__index/js/layer/layer.js"></script>
+<script src="__STATIC__index/js/laydate/laydate.js"></script>
+
+<script type="text/javascript">
+    var page=1;//分页页数
+    var list_loading = false;
+
+    function ResearchData(){
+        page=1;
+        searchData();
+    }
+
+    function load_more() {
+        var listform = $(window);
+        var _height=listform.height() + listform.scrollTop();
+        var _scrollHeight=document.body.scrollHeight;
+        if (listform.height() + listform.scrollTop() >= _scrollHeight-500) {
+            //console.log("加载第二页");
+            //console.log(_scrollHeight);
+            list_loading = true;
+            searchData();
+        }
+    }
+
+    $(document).ready(function(){
+        $("#allselect").change(function(){
+            var ischecked = $(this).prop("checked");
+
+            $("input.orderid").each(function(){
+                $(this).prop("checked",ischecked);
+            })
+        });
+
+        $("#select1").mySelect();
+        $("#select2").mySelect();
+
+        //显示默认未排产订单
+        searchData();
+
+        //日历插件
+        laydate.render({
+            elem: '#s_date'
+        });
+
+        laydate.render({
+            elem: '#e_date'
+        });
+
+        laydate.render({
+            elem: '#xs_date'
+        });
+
+        laydate.render({
+            elem: '#xe_date'
+        });
+    })
+
+
+    var isLock=false;
+    //查询未排除订单
+    function searchData(){
+        if(isLock){
+            //防止重复点击
+            return false;
+        }
+        isLock=true;
+
+            var s_date=$("#s_date").val();
+            var e_date=$("#e_date").val();
+            var xs_date=$("#xs_date").val();
+            var xe_date=$("#xe_date").val();
+            var order_status=$("#order_status").find("option:selected").val();
+            var gname=$("#select1").find(".select-picker-search-checked").html();
+            var gx_status=1;
+            var color=$("#color").find("option:selected").val();
+            var orderby=$("#orderby").find("option:selected").val();
+            var finishGx=$("#select2").find(".select-picker-search-checked").html();
+            if(gname=='请选择'){
+                gname="";
+            }
+
+            if(finishGx=='请选择'){
+                finishGx="";
+            }
+
+            var	groupby='addtime';
+
+            var _data={
+
+                's_date':s_date,
+                'e_date':e_date,
+                'xs_date':xs_date,
+                'xe_date':xe_date,
+                'order_status':order_status,
+                'gname':gname,
+                'gx_status':gx_status,
+                'finishGx':finishGx,
+                'color':color,
+                'orderby':orderby,
+                'groupby':groupby,
+                'page':page
+            };
+
+            layer.load(0, {
+                shade: [0.1,'#fff']
+            });
+
+            $.ajax({
+                url: "{:Url('ajax_listgx')}",
+                data:_data,
+                dataType:"json",
+                type:'POST',
+                success:function(obj){
+
+                    layer.closeAll();
+                    list_loading = false;
+                    isLock=false;
+                    //console.log(obj);
+                    if(obj.status==2){
+                        if(page==1){
+                            $("#orderlist").empty();
+                            layer.msg("无搜索结果");
+                        }
+                        return;
+                    }
+
+                    //显示结果HTML
+                    show_result(obj.list);
+                },error:function(){
+                    layer.closeAll();
+                }
+            })
+        }
+
+
+//显示查询结果
+            function show_result(result){
+                unbindEvent();
+                var _html='<table width="100%" id="rdut_new_tab">'
+                    +'<tr id="rdut_title2">'
+                    +'<td width="5%">工序名称</td>'
+                    +'<td width="75%">生产单号</td>'
+                    +'<td width="5%">订单数</td>'
+                    +'<td width="5%">汇总面积</td>'
+                    +'<td width="5%">汇总扇数</td>'
+                    +'<td width="5%">操作</td>'
+                    +'</tr>';
+                var classindex=0;
+                var _text="";
+                for(var i in result){
+                    classindex++;
+                    var dname=i;
+                    var one=result[i];
+                    var orders=one['orders'];
+                    if(orders.length<=0){
+                        continue;
+                    }
+                    _text+="<a href='#gx"+classindex+"'>"+dname+"</a>";
+                    _html+='<tr>'
+                        +'<td><div><a name="gx'+classindex+'"></a>'+dname+'</div></td>'
+                        +'<td id="tgutysujkgn">';
+
+                    var in_index=1;
+                    for(var k in orders){
+                        var order=orders[k];
+                        _html+='<div>';
+                        _html+='<div style="width: 100%; float: left;">'
+                            +'<span style="background-color: rgb(41, 85, 182); "><input type="checkbox" value="'+classindex+'_'+in_index+'" class="chkall"/>全选</span>'
+                            +"<span style=\"background: none;color:#000000;\">预生产时间:"+k+"</span>"
+                            +'</div>';
+                        for(var j in order){
+                            _html+='<span><input class="ckbox'+classindex+' inchk'+classindex+'_'+in_index+'" type="checkbox" value="'+order[j]['id']+'" />'+order[j]['unique_sn']+'</span>';
+                        }
+                        _html+='</div>';
+                        in_index++;
+                    }
+
+
+                    _html+='</td>'
+                        +'<td>'+one['num']+'</td>'
+                        +'<td>'+one['area']+'</td>'
+                        +'<td>'+one['snum']+'</td>'
+                        +'<td onClick="add_schedule('+classindex+',\''+dname+'\')" style="cursor: pointer;">点击排产</td>'
+                        +'</tr>';
+                }
+
+                _html+='</table>';
+
+                $("#allselect").attr("checked",false);
+                $(".nav").html(_text);
+                $("#orderlist").empty().html(_html);
+
+                $(".chkall").click(function(){
+                    var hascheck=$(this).prop("checked");
+                    var _index=$(this).val();
+                    if(hascheck){
+                        $(".inchk"+_index).prop("checked",true);
+                    }else{
+                        $(".inchk"+_index).prop("checked",false);
+                    }
+                });
+
+            }
+
+//解除绑定
+            function unbindEvent(){
+                $(".chkall").unbind("click");
+            }
+
+            function add_schedule(_index,dname){
+
+                //获取勾选的ID
+                var ids=new Array();
+                $(".ckbox"+_index).each(function(){
+                    //console.log($(this).prop("checked"));
+                    var ischeck=$(this).prop("checked");
+                    if(ischeck=="checked"||ischeck){
+                        ids.push($(this).val());
+                    }
+                })
+
+                if(ids.length==0){
+                    layer.msg("请选择要排产的订单");
+                    return;
+                }
+
+                var orderid=ids.join(",");
+                layer.open({
+                    type: 2,
+                    title: '添加日排产单',
+                    shadeClose: true,
+                    shade: 0.8,
+                    area: ['1050px', '600px'],
+                    content: "{:url('Schedule/add_schedule')}?orderid="+orderid+"&dname="+dname
+                });
+            }
+
+</script>
+
+
+</body>
+</html>

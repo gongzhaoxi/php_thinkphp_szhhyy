@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+        <title>微元生产工序报工管理系统,建材行业生产管理系统,门窗生产管理系统,微元科技,佛山市微元科技有限公司</title>
+        {include file="public/header" /}
+		<link rel="stylesheet" href="__STATIC__index/lib/layui/css/layui.css">
+        <script src="__STATIC__index/js/erp.js"></script>
+		<script src="__STATIC__index/lib/layui/layui.js" charset="utf-8"></script>
+	</head>
+    <style>
+        .search-box input{
+            margin: 0 5px !important;
+        }
+        .search-box .search-btn{
+            width: 60px !important;
+        }
+    </style>
+	<body>
+		<div class="baogong_scheduling popup-box" id="baogongScheduling">
+			<div class="popup-header">
+				<div>排产</div>
+            </div>
+            <div class="popup-nav" style="padding-left: 110px;">
+                <li class="header-left-item"  id="set_plan">
+                    <img src="/static//theme/index/img/icon_setting.png">
+                    <span>添加预生产计划</span>
+                </li>
+                <li class="header-left-item" id="export_data">
+                    <img src="/static//theme/index/img/icon_export.png">
+                    <span>导出当前数据</span>
+                </li>
+<!--                <li class="header-left-item" id="edit_plan">-->
+<!--                    <img src="/static//theme/index/img/icon_batch.png">-->
+<!--                    <span>编辑生产单节点时间</span>-->
+<!--                </li>-->
+                <li class="header-left-item" id="converted_plan">
+                    <img src="/static//theme/index/img/icon_wuliao.png">
+                    <span>有效排产列表</span>
+                </li>
+                <li class="header-left-item" id="collect_btn">
+                    <img src="/static//theme/index/img/icon_wuliao.png">
+                    <span>已排产汇总</span>
+                </li> 
+            </div>
+			<div class="popup-body">
+				{include file="schedule/menu" /}
+				<div class="body-center">
+					<div class="body-content-box body-nav-active">
+						<div class="content-header">
+							<form id="form1" class="content-header-right positionRight layui-form">
+                                <div class="search-box" style="margin-top: 10px;">
+<!--                                    <div class="imitate-select" style="width:168px;height:25px;">-->
+<!--                                        <span class="select-txt" data-value="id_desc">请选择是否完成</span>-->
+<!--                                        <span class="icon-arrow triangle-down"></span>-->
+<!--                                        <input type="hidden" name="gxid">-->
+<!--                                        <ul data-sign="gxid">-->
+<!--                                            <li data-value="">全部工序</li>-->
+<!--                                            {volist name='gx_list' id='v'}-->
+<!--                                                <li data-value='{$v.id}'>{$v.dname}</li>-->
+<!--                                            {/volist}-->
+<!--                                        </ul>-->
+<!--                                    </div>-->
+									<select name="gxid" style="width:168px;height:25px;" lay-search="">
+										<option value>选择或输入工序</option>
+										{volist name='gx_list' id='v'}
+										<option value="{$v.id}">{$v.dname}</option>
+										{/volist}
+									</select>
+
+                                    <input type="text" name="endtime" id="endtime"  placeholder="选择工序预生产日期" autocomplete="off" value="{$search.addtime}">
+                                    <input type="text" name="unique_sn" placeholder="输入生产单号筛选" autocomplete="off" value="{$search.batch}">
+                                    <input type="text" name="uname"  placeholder="输入客户名称" autocomplete="off" value="{$search.product_no}">
+                                    <span  class="search-btn se02">立即查找</span>
+                                </div>
+							</form>
+						</div>
+						<div class="content-center tab-content-active">
+							<div class="content-center-inner">
+                                <div style="font-size: 16px;margin-bottom: 20px;padding: 0 10px;">
+                                    总单数：{$allorder} &nbsp;| &nbsp;已排数：{$scheduled} &nbsp;|&nbsp; 未排数：{$allorder-$scheduled}<a class="layui-btn layui-btn-normal layui-btn-xs" style="margin-left: 10px;" onclick="noscheduleFn()">详细</a>
+                                </div>
+								<table class="layui-table" border="1" cellspacing="0" cellpadding="0">
+									<thead>
+                                        <tr>
+                                            <th width="10%">预生产日期</th>
+                                            <th width="14%">工序</th>
+                                            <th width="8%">预生产单数</th>
+                                            <th width="10%">完成数</th>
+                                            <th width="10%">上报异常</th>
+                                            <th width="10%">面积</th>
+                                            <th width="8%">扇数</th>
+                                            <th width="8%">达成率</th>
+                                            <th width="12%">操作</th>
+                                        </tr>
+									</thead>
+									<tbody>
+                                        {volist name='today' id='v'}
+                                        <tr>
+                                            <td>{$v.endtime}</td>
+                                            <td>{$v.dname}</td>
+                                            <td>{$v.pre_count}</td>
+                                            <td>{$v.finished}</td>
+                                            <td>{$v.badnum}</td>
+                                            <td>{$v.area}</td>
+                                            <td>{$v.snum}</td>
+                                            <td>{$v['percent']}</td>
+                                            <td class="operate-box">
+                                                <div class="operate-btn">
+                                                    <a href="#" class="btn-normal" onclick="showDetailFn('{:url('detail',array('endtime'=>$v['endtime'],'gxid'=>$v['gxid']))}')">明细</a>
+                                                    <input type="hidden" value="{$v.orderid}"/>
+                                                    <!--<a href="" class="btn-normal btn-danger">删除</a>-->
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {/volist}
+                                        {volist name='tomorrow' id='v'}
+                                        <tr>
+                                            <td>{$v.endtime}</td>
+                                            <td>{$v.dname}</td>
+                                            <td>{$v.pre_count}</td>
+                                            <td>{$v.finished}</td>
+                                            <td>{$v.badnum}</td>
+                                            <td>{$v.area}</td>
+                                            <td>{$v.snum}</td>
+                                            <td>{$v['percent']}</td>
+                                            <td class="operate-box">
+                                                <div class="operate-btn">
+                                                    <a href="#" class="btn-normal" onclick="showDetailFn('{:url('detail',array('endtime'=>$v['endtime'],'gxid'=>$v['gxid']))}')">明细</a>
+                                                    <input type="hidden" value="{$v.orderid}"/>
+                                                    <!--<a href="" class="btn-normal btn-danger">删除</a>-->
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {/volist}
+                                        {volist name='yesterday' id='v'}
+                                        <tr>
+                                            <td>{$v.endtime}</td>
+                                            <td>{$v.dname}</td>
+                                            <td>{$v.pre_count}</td>
+                                            <td>{$v.finished}</td>
+                                            <td>{$v.badnum}</td>
+                                            <td>{$v.area}</td>
+                                            <td>{$v.snum}</td>
+                                            <td>{$v['percent']}</td>
+                                            <td class="operate-box">
+                                                <div class="operate-btn">
+                                                    <a href="#" class="btn-normal" onclick="showDetailFn('{:url('detail',array('endtime'=>$v['endtime'],'gxid'=>$v['gxid']))}')">明细</a>
+                                                    <input type="hidden" value="{$v.orderid}"/>
+                                                    <!--<a href="" class="btn-normal btn-danger">删除</a>-->
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {/volist}
+                                    </tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- 未排订单明细 -->
+		<div class="modal-box" id="noscheduleModal">
+			<div class="modal-content" style="width: 99%; height: 85%">
+				<div class="modal-header">
+					<div class="modal-header-left">
+						<div class="modal-header-title" style="padding-left: 20px;">
+							<span>未排订单明细</span>
+						</div>
+					</div>
+					<div class="modal-header-right">
+						<span class="close-modal-btn"></span>
+					</div>
+				</div>
+				<div class="modal-body">
+					<div class="iframe-box">
+						<iframe class="myIframe" id="myIframe_noschedule" frameborder="0"></iframe>
+					</div>
+				</div>
+			</div>
+        </div>
+        <!-- 查看详情 -->
+		<div class="modal-box" id="glassplanDetailModal">
+			<div class="modal-content" style="width: 99%; height: 85%">
+				<div class="modal-header">
+					<div class="modal-header-left">
+						<div class="modal-header-title" style="padding-left: 20px;">
+							<span>查看明细</span>
+						</div>
+					</div>
+					<div class="modal-header-right">
+						<span class="close-modal-btn"></span>
+					</div>
+				</div>
+				<div class="modal-body">
+					<div class="iframe-box">
+						<iframe class="myIframe" id="myIframe_detail" frameborder="0"></iframe>
+					</div>
+				</div>
+			</div>
+        </div>
+        <!-- 编辑生产单节点时间 -->
+        <div class="modal-box" id="editPlanModal">
+			<div class="modal-content" style="width: 99%; height: 85%">
+				<div class="modal-header">
+					<div class="modal-header-left">
+						<div class="modal-header-title" style="padding-left: 20px;">
+							<span>编辑生产单节点时间</span>
+						</div>
+					</div>
+					<div class="modal-header-right">
+						<span class="close-modal-btn"></span>
+					</div>
+				</div>
+				<div class="modal-body">
+					<div class="iframe-box">
+						<iframe class="myIframe" id="myIframe_editPlan" frameborder="0"></iframe>
+					</div>
+				</div>
+			</div>
+        </div>
+        <!-- 有效排产列表 -->
+        <div class="modal-box" id="convertedPlanModal">
+			<div class="modal-content" style="width: 99%; height: 85%">
+				<div class="modal-header">
+					<div class="modal-header-left">
+						<div class="modal-header-title" style="padding-left: 20px;">
+							<span>有效排产列表</span>
+						</div>
+					</div>
+					<div class="modal-header-right">
+						<span class="close-modal-btn"></span>
+					</div>
+				</div>
+				<div class="modal-body">
+					<div class="iframe-box">
+						<iframe class="myIframe" id="myIframe_convertedPlan" frameborder="0"></iframe>
+					</div>
+				</div>
+			</div>
+        </div>
+        <!-- 已排产汇总 -->
+        <div class="modal-box" id="collectBtnModal">
+			<div class="modal-content" style="width: 99%; height: 85%">
+				<div class="modal-header">
+					<div class="modal-header-left">
+						<div class="modal-header-title" style="padding-left: 20px;">
+							<span>已排产汇总</span>
+						</div>
+					</div>
+					<div class="modal-header-right">
+						<span class="close-modal-btn"></span>
+					</div>
+				</div>
+				<div class="modal-body">
+					<div class="iframe-box">
+						<iframe class="myIframe" id="myIframe_collectBtn" frameborder="0"></iframe>
+					</div>
+				</div>
+			</div>
+        </div>
+        <!-- 添加预生产计划 -->
+		<div class="modal-box" id="setPlanModal">
+			<div class="modal-content" style="width: 99%; height: 85%">
+				<div class="modal-header">
+					<div class="modal-header-left">
+						<div class="modal-header-title" style="padding-left: 20px;">
+							<span>添加预生产计划</span>
+						</div>
+					</div>
+					<div class="modal-header-right">
+						<span class="close-modal-btn"></span>
+					</div>
+				</div>
+				<div class="modal-body">
+					<div class="iframe-box">
+						<iframe class="myIframe" id="myIframe_setPlan" frameborder="0"></iframe>
+					</div>
+				</div>
+			</div>
+        </div>
+    </body>
+	<script>layui.use(['form', 'laydate','layer','upload','table'],
+			function() {
+				$ = layui.jquery;
+			});
+
+	</script>
+    <script>
+        var layer, laydate;
+        layui.use(['layer','laydate'],function(){
+            laydate = layui.laydate;
+            layer = layui.layer;
+            laydate.render({
+                elem: '#endtime' //指定元素
+            });
+        })
+        function del(batch) {
+            layer.confirm('确认要通过删除吗？将会删除此批次号的全部订单',
+            function(index) {
+                //发异步删除数据
+                ajaxform("{:url('del')}", {batch:batch},1);
+            });
+        }
+        // 提交表单
+        $('.search-btn').click(function(){
+            $('#form1').submit();
+        })
+        // 导出数据
+        $('#export_data').click(function(){
+            window.location.href = '{:url('export')}?{$search_str}';
+        })
+
+        // 查看明细
+        function showDetailFn(url){
+            var e = window.event;
+            e.preventDefault();
+            e.stopPropagation();
+            $('#glassplanDetailModal').fadeIn();
+            $('#myIframe_detail').attr('src',url);
+        }
+        // 查看未排产明细
+        function noscheduleFn(){
+            var e = window.event;
+            e.preventDefault();
+            e.stopPropagation();
+            $('#noscheduleModal').fadeIn();
+            $('#myIframe_noschedule').attr('src','{:url('noschedule')}');
+        }
+        // 编辑生产单节点时间
+        $('#edit_plan').click(function(e){
+            e.preventDefault();
+            e.stopPropagation();
+            $('#editPlanModal').fadeIn();
+            $('#myIframe_editPlan').attr('src','{:url('edit')}');
+        });
+        // 有效排产列表
+        $('#converted_plan').click(function(e){
+            e.preventDefault();
+            e.stopPropagation();
+            $('#convertedPlanModal').fadeIn();
+            $('#myIframe_convertedPlan').attr('src','{:url('edit',array('status'=>1))}');
+        });
+        // 已排产汇总
+        $('#collect_btn').click(function(e){
+            e.preventDefault();
+            e.stopPropagation();
+            $('#collectBtnModal').fadeIn();
+            $('#myIframe_collectBtn').attr('src','{:url('collect_list')}');
+        });
+        
+        // 添加预生产计划
+        $('#set_plan').click(function(e){
+            e.preventDefault();
+            e.stopPropagation();
+            $('#setPlanModal').fadeIn();
+            $('#myIframe_setPlan').attr('src','{:url('add_preproduct_plan')}');
+        })
+    </script>
+    <script type="text/javascript">
+        $('#form1').find('.imitate-select').each(function(){
+            var _this = $(this);
+            if(_this.children('ul').children('li[data-selected=true]')){
+                var tempTxt = _this.children('ul').children('li[data-selected=true]').html();
+                var tempVal = _this.children('ul').children('li[data-selected=true]').attr('data-value');
+                if(tempTxt != null && tempVal != null){
+                    _this.children('.select-txt').attr('data-value',tempVal).html(tempTxt);
+                    _this.children('input[type=hidden]').val(tempVal);
+                }
+            }
+        })
+		$('.close-modal-btn').click(function(){
+			$('.modal-box').fadeOut();
+		})
+		// 选择订单排序
+		$('.imitate-select').click(function(e) {
+			e.preventDefault();
+			e.stopPropagation();
+			var _this = $(this);
+			var clickSign = _this.attr('data-sign');
+			$('.imitate-select').removeAttr('data-sign').children('ul').hide();
+			if (clickSign == 'true') {
+				_this.children('ul').hide();
+				_this.removeAttr('data-sign');
+			} else {
+				_this.children('ul').show();
+				_this.attr('data-sign', 'true');
+			}
+		});
+		$(window).click(function(){
+			
+			var elem = event.srcElement ? event.srcElement : event.target;
+			while (elem) { //循环判断至跟节点，防止点击的是div子元素 
+				if (elem.id && elem.id == 'orderScreenBox') {
+					return;
+				}
+                if($(elem).hasClass('modal-content')){
+					return;
+				}
+				elem = elem.parentNode;
+			}
+			$('.imitate-select').removeAttr('data-sign').children('ul').hide();
+			$('.content-header-left').removeAttr('data-click').css({
+				top: '0',
+			}).children('.filter-orders').removeClass('filter-orders-active');
+			$('.content-header-left').siblings('.order-screen-box').css({
+				height: '0',
+				overflow: 'hidden'
+			})
+		});
+        $('.modal-box').fadeOut();
+		$('.imitate-select ul').delegate('li','click',function(e){
+			e.preventDefault();
+			e.stopPropagation();
+			var _this = $(this);
+			var tempTxt = _this.html();
+			var _thisValue = _this.attr('data-value');
+			_this.parent().parent().children('.select-txt').attr('data-value',_thisValue).html(tempTxt);
+			_this.parent().hide();
+			_this.parent().parent().removeAttr('data-sign');
+			_this.parent().siblings('input[type=hidden]').val(_thisValue);
+			var _clickTarget = _this.parent().attr('data-sign');
+		});
+
+
+		
+	</script>
+</html>

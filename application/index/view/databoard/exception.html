@@ -1,0 +1,143 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <!-- <meta http-equiv="refresh" content="5"> -->
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>车间作业看板</title>
+        <link href="__STATIC__/theme/index/databoard/gk.css?v=<?php echo time();?>" rel="stylesheet" />
+        <script src="__STATIC__/theme/index/databoard/jquery.min.js"></script>
+        <script src="__STATIC__/theme/index/databoard/gk.js?v=<?php echo time();?>"></script>
+
+        <!-- ================     电视展示样式方法      ================  -->
+        <link href="__STATIC__/theme/index/databoard/{$style}?v=<?php echo time();?>" rel="stylesheet" />
+        <link href="__STATIC__/theme/index/databoard/total.css?v=<?php echo time();?>" rel="stylesheet" />
+        <style type="text/css">
+
+
+
+            #tr td div{font-weight: bold;width: 25%;}
+
+
+@media (min-width: 1900px) and (max-width: 20000px){
+.table tr td.utwf span{ font-size:0.8vw;}
+.titleaa{font-size:1.8vw;}
+.titleaa div p{font-size:1.3vw; color:#07ff77}
+.table tr td.fonta{ font-size:1.8vw;height: 60px;}
+}
+@media (min-width: 1400px) and (max-width: 1900px){
+.table tr td.utwf span{ font-size:0.8vw;}
+.titleaa{font-size:1.8vw;height: 60px;}
+.titleaa div p{font-size:1.3vw; color:#07ff77}
+.table tr td.fonta{ font-size:1.5vw; height: 60px;}
+}
+@media (min-width: 0px) and (max-width: 1400px){
+.table tr td.utwf span{ font-size:12px;}
+.titleaa{font-size:1.8vw;}
+.titleaa div p{font-size:1.5vw; color:#07ff77}
+.table tr td.fonta{ font-size:1.5vw;height: 45px;}
+}
+
+
+        </style>
+
+    </head>
+    <body>
+
+        <div class="<?=$classWidth?> Work_Pro">
+
+            <div style=" margin-top:10px;">
+                <table width="100%" border="0" cellspacing="1" cellpadding="0" class="table" id='table1'>
+                    <tr id="tr">
+                    {if PRO_DOMAIN!='kloz0611.ecloudm.com'}
+                        <td colspan="7" class="titleaa">
+                            <div>上月总异常数：<i id="last">0</i></div>
+                            <div>本月总异常数：<i id="current">0</i></div>
+                            <div>本年总异常数：<i id='year'>0</i></div>
+                            <div style="color: #ff0000">未处理总异常数：<i id='no_handle'>0</i></div>
+                        </td>
+                    {/if}
+                    {if PRO_DOMAIN=='kloz0611.ecloudm.com'}
+                        <td colspan="7" class="titleaa" style="">
+                            <div style="width: 100%">异常汇总统计</div>
+                        </td>
+                    {/if}
+                    </tr>
+                    <tr id="th_head">
+                        <td width=16%;>生产单号</td>
+                        <td width=16%;>产品名称</td>
+                        <td width=12%;>客户名称</td>
+                        <td width=10%;>发现时间</td>
+                        <td width=10%>异常工序</td>
+                        <td width=26%>异常问题</td>
+                        <td width=10%>预处理时间</td>
+                    </tr>
+
+                    
+                   
+
+
+                </table>
+            </div>
+        </div>
+<input name="page" id="page" value="1" type="hidden"/>
+<script>
+$(function(){
+    var window_height = $(window).height();
+    var pagesize = Math.round((window_height-$('#tr').height()-$('#th_head').height()-20)/41)-1;
+    refresh(pagesize);
+    setInterval("refresh("+pagesize+")",20000); 
+})
+
+function refresh(pagesize){
+	var no='{$no}';
+    $.ajax({
+        url:"{:url('exception')}",
+        data: {pagesize:pagesize,page:$('#page').val(),no:no},
+        type: 'POST',
+        dataType: 'json',
+        success:function(res){
+            $('#last').text(res.last);
+            $('#current').text(res.current);
+            $('#year').text(res.year);
+            $('#no_handle').text(res.no_handle);
+            var html = '';
+            $.each(res.list,function(k,v){
+            	var date = '';
+            	if(v['handle_time']>0){
+            		date=changedate(v['handle_time']);
+            	}
+                v['pname']==''?v['pname']=v['series']:'';
+                html += "<tr>";
+                html += "<td class='gaou fonta'>"+v['value']+"</td>";
+                html += "<td class='gaou fonta'>"+v['pname']+"</td>";
+                html += "<td class='cofff fonta'>"+v['uname']+"</td>";
+                html += "<td class='wtov cofff fonta'>"+v['error_time']+"</td>";
+                html += "<td class='cofff fonta utwf'>"+v['dname']+"</td>";
+                html += "<td class='cofff fonta'>"+v['stext']+"</td>";
+                html += "<td class='cofff fonta'>"+date+"</td>";
+                html += "</tr>";
+            })
+            $('#page').val(res.page+1);
+            $('#th_head').nextAll().remove();
+            $('#table1').append(html);
+        }
+    })
+}
+//时间戳转换日期
+function changedate(time){
+	var date = new Date(time*1000);
+	var year = date.getFullYear();
+	var month = date.getMonth()+1;
+	var day = date.getDate();
+	return new_date=year+'/'+add0(month)+'/'+add0(day);
+}
+//加0
+function add0(num){
+	return num<10? '0'+num:num;
+}
+</script>
+
+
+    </body>
+</html>

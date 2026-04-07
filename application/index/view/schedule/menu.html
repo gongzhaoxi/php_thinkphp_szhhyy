@@ -1,0 +1,11 @@
+<div class="body-nav">
+    <ul class="body-nav-list">
+        <li <?php if($current_position=='Schedule/index'){echo 'class="li-active"' ;}?>><a href="{:url('Schedule/index')}">未排产订单</a></li>
+        <li <?php if($current_position=='Schedule/scheduled'){echo 'class="li-active"' ;}?>><a href="{:url('Schedule/scheduled')}">已排产订单</a></li>
+        <!-- <li <?php if($current_position=='Schedule/scheduled_new'){echo 'class="li-active"' ;}?>><a href="{:url('Schedule/scheduled_new')}">新版已排产列表</a></li>
+        <li <?php if($current_position=='Schedule/finished'){echo 'class="li-active"' ;}?>><a href="{:url('Schedule/finished')}">新版完成排产列表</a></li>
+        <li <?php if($current_position=='Schedule/seturgent'){echo 'class="li-active"' ;}?>><a href="{:url('Schedule/seturgent')}">固定作业流水汇总</a></li> -->
+        {if condition="GLASS_PLAN eq 1"}<li <?php if($current_position=='Glassplan/index'){echo 'class="li-active"' ;}?>><a href="{:url('Glassplan/index')}">玻璃计划</a></li>{/if}
+        {if condition="PREPRODUCT eq 1"}<li <?php if($current_position=='Preproduct/index'){echo 'class="li-active"' ;}?>><a href="{:url('Preproduct/index')}">预生产计划</a></li>{/if}
+    </ul>
+</div>

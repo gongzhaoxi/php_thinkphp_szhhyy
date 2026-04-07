@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+<meta name="referrer" content="never">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>生产进度扫码报工系统</title>
+<script src="__STATIC__index/js/jquery-1.8.3.min.js"></script>
+<link href="__STATIC__index/css/index.css" rel="stylesheet" />
+</head> 
+<style>
+table tr td{line-height:20px;border:solid 1px #000000;}
+.qrtxt{text-align:left;}
+.qrtxt b{color:red;}
+</style>
+<body >
+<div class="top">
+<div class="t_01"><a style="float: right; margin-top: 21px; color: #fff; width: 100px; height: 40px;background-color: #00b348; line-height: 40px; text-align: center;" href="#" onClick="javascript:history.go(-1);" title="返回上一页">返回上一页</a></div>
+
+</div>
+
+<div class="qr" id="div1">
+
+<div id="qr">
+	<table id="t_title" border="0" cellspacing="0" cellpadding="0" class="t_title"  style="table-layout:fixed;word-break:break-all;">
+		<tr>
+		{volist name="fieldList" id="vo"}
+			<th width="100">{$vo['explains']}</th>
+		{/volist}
+		</tr>
+		
+		<tr>
+		{volist name="fieldList" id="vo"}
+			<td width="100" height="20">{$order[$vo['fieldname']]}</td>
+		{/volist}
+		</tr>
+	</table>
+</div>
+
+<div class="qrtxt">
+所属系列:  <b>{$series['xname']}</b>  ID:  <b>{$series['id']}</b>
+</div>
+<div class="qrtxt">
+工艺路线名称:  <b>{$doclass['title']}</b>  ID: <b>{$doclass['id']}</b>
+</div>
+
+<div class="qrtxt">
+<table>
+		<tr>
+		{volist name="group" id="vo"}
+			<th width="100">{$vo['name']}</th>
+		{/volist}
+		</tr>
+		
+		<tr>
+		{volist name="group" id="vo"}
+			{php} $cache_id=$key;{/php}
+			<td width="150">
+				{volist name="order_gxlist[$cache_id]" id="ol"}
+					{volist name="ol" id="cvo"}
+					<b>{$cvo['dname']} </b>【{$cvo['id']}】<br/>
+					{/volist}
+				{/volist}
+			</td>
+		{/volist}
+		</tr>
+</table>
+</div>
+</div>
+</body>
+</html>

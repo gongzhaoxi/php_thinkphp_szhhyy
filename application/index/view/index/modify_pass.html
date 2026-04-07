@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+<meta name="referrer" content="never">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>修改密码</title>
+<link href="__STATIC__index/css/index.css" rel="stylesheet" />
+<style type="text/css">
+.user{display:block;width:90%;height:auto;background:#E3E3E3;padding:10px 10px;margin:0 16px;border-radius:8px;}
+.user div{width:100%;text-align:center;height:40px;line-height:40px;margin-top:20px;font-size:14px;}
+.user div input{padding-left:4px;width:70%;height:40px;line-height:40px;border-radius:4px;border:0;margin-bottom:6px;}
+.user div .spa{letter-spacing:8px;}
+.btne{width:200px;height:40px;line-height:40px;background:#FF4040;color:#fff;border:0;outline:none;border-radius:8px;cursor:pointer; margin-top:20px; margin-right:10px; float:right;}
+.role{width: 70%;height: 40px;border-radius: 6px;border: none;}
+.mb{display:none;width:100%;height:100%;background:black;opacity:0.6;position:fixed;z-index:1000;}
+#menu{ min-width: 460px;}
+.menu{height:40px;}
+</style>
+</head> 
+
+<body>
+<div class="top" id="menu">
+	<button class="btne" data-id="{$list.id?$list.id:''}">确认修改密码</button>
+</div>
+<div class="menu" id="menu">
+</div>
+<div class="user">
+	<form action="#" id="form" method="post">
+		<div><span>&nbsp;&nbsp;&nbsp;&nbsp;新密码：</span><input type="password" name="passwd" id="passwd" autocomplete="off" placeholder="请输入新密码" value=""/></div>
+		<div><span>确认密码：</span><input type="password" name="passwdc" id="passwdc" autocomplete="off" placeholder="请输入确认密码" value=""/></div>	
+	</form>
+	
+</div>
+	<!-- 用户录入end -->
+	<script src="__STATIC__index/js/jquery.min.js"></script>
+	<script src="__STATIC__index/js/layer/layer.js"></script>
+	<script type="text/javascript">
+	
+		$('.btne').click(function(){
+			var passwd = $("#passwd").val();
+			var passwdc = $("#passwdc").val();
+			
+			if(passwd==''){
+				layer.msg("请输入新密码");
+				return false;
+			}
+			
+			if(passwdc==''){
+				layer.msg("请输入确认密码");
+				return false;
+			}
+			
+			
+			if(passwd!=passwdc){
+				layer.msg("两次输入密码不一致");
+				return false;
+			}
+			
+			$.ajax({
+				url: "{:Url('Index/modify_pass')}",
+				data: {"passwd":passwd,"passwdc":passwdc},
+				dataType: 'json',
+				success:function(obj){
+					if(obj.status==1){
+						layer.msg('设置成功');
+						setTimeout(function(){
+							parent.layer.closeAll();
+						},1500);	
+					}else{
+						layer.msg(obj.msg);
+					}
+				}
+			})
+		});
+		
+		
+	</script>
+
+</body>
+</html>

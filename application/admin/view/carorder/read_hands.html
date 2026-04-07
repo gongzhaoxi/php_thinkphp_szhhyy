@@ -1,0 +1,82 @@
+{include file="public/header"/}
+<script type="text/javascript" src="__STATIC__/js/jquery.min.js"></script>
+<style>
+
+</style>
+
+<body>
+    <div class="layui-fluid">
+        <div class="layui-row">
+            <form class="layui-form" target="imgiframe" action="{:url('Carorder/iframeImg')}" method="post" id="calform">
+                <blockquote class="layui-elem-quote">报价信息</blockquote> 
+                <table class="layui-table layui-form">
+                    <thead>
+                        <tr>
+                            <th>名称</th>
+                            <th>材质</th>
+                            <th>型号</th>
+                            <th>铝材/花件颜色</th>
+                            <th>单位</th>
+                            <th>宽</th>
+                            <th>高</th>
+                            <th>个数</th>
+                            <th>面积</th>
+                            <th>纱网</th>
+                            <th>弧高/深</th>
+                            <th>备注</th>
+                        </tr>
+                        
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{$info.name}</td>
+                            <td>{$info.material}</td>
+                            <td>{$info.flower_type}</td>
+                            <td>{$info.color_name}</td>
+                            <td>㎡</td>
+                            <td>{$info.all_width}</td>
+                            <td>{$info.all_height}</td>
+                            <td>{$info.count}</td>
+                            <td>{$info.area}</td>
+                            <td>纱网</td>
+                            <td>{$info.arc_height}</td>
+                            <td>{$info.note}</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+                
+                <blockquote class="layui-elem-quote">产品物料清单</blockquote> 
+                <div id="clone-box">
+                    {volist name='result' id='v'}
+                    <div class="layui-form-item" id="clone">
+                        <div class="input-field layui-inline ">
+                            <input type="text" name="c_name[]" required="" lay-verify="required" class="layui-input" placeholder="名称" value="{$v.c_name}" readonly="true">
+                        </div>
+                        <div class="layui-inline input-formula">
+                            <input type="text" name="c_material[]" required="" lay-verify="required" class="layui-input material" placeholder="材质/型号" value="{$v.c_material}" readonly="true">
+                            <div class="material-div" id="material-div"></div>
+                        </div>
+                        <div class="layui-inline input-formula">
+                            <input type="text" name="c_size[]" required="" lay-verify="required" class="layui-input" placeholder="尺寸" value="{$v.c_size}" readonly="true">
+                        </div>
+                        <div class="layui-inline input-formula">
+                            <input type="text" name="c_count[]" required="" lay-verify="required" class="layui-input" placeholder="数量" value="{$v.c_count}" readonly="true">
+                        </div>
+                    </div>
+                    {/volist}
+                </div>
+                <div class='layui-col-md12'>
+                    <blockquote class="layui-elem-quote">上传结构</blockquote> 
+                    <img src="/upload/{$info.structure}" style="max-height: 150px;"/>
+                </div>
+
+                
+            </form>
+        </div>
+    </div>
+	
+
+</body>
+
+</html>

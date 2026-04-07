@@ -1,0 +1,270 @@
+{include file="public/header"/}
+<style>
+    .color-box{width: 49%;float: left}
+</style>
+        <div class="layui-fluid">
+            <div class="layui-row">
+                <form class="layui-form">
+                    <div class="color-box">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label" style="line-height: 15px;">铝型颜色</label>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline" style="width: 18%">
+                                <select name="name" id="bone" class="one" lay-filter="one">
+                                  <option value="">请选择颜色</option>
+                                  {volist name="list" id="v"}
+                                  <option value="{$v.id}">{$v.name}</option>
+                                  {/volist}
+                                </select>
+                            </div>
+                            <div class="layui-inline two-box" style="width: 17%;display: none;">
+                                <select name="name" id="btwo" class="two" lay-filter="two">
+                                 
+                                </select>
+                            </div>
+                            <div class="layui-inline three-box" style="width: 17%;display: none;">
+                                <select name="name" id="bthree" class="three">
+                                  
+                                  
+                                </select>
+                            </div>
+                            <div class="layui-inline" style="width:15%">
+                                 <input type="text" id="price" name="price" class="layui-input" placeholder="请填写价格">
+                            </div>
+                            <div class="layui-inline" style="width:15%">
+                                 <a href="javascript:;" class="layui-btn" id="add"><i class='icon iconfont'>&#xe6b9;</i>添加颜色</a>
+                            </div>
+                        </div>
+                        <table class="layui-table layui-form">
+                                <thead>
+                                    <tr>
+                                        <th>名称</th>
+                                        <th>价格</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="table1">
+                                    {volist name='frame' id='v'}
+                                    <tr>
+                                        <td>{$v.name}<input name='info[{$key}][color_id]' type='hidden' value='{$v.color_id}'/></td>
+                                        <td>{$v.price}<input name='info[{$key}][price]' type='hidden' value='{$v.price}'/></td>
+                                        <td><button class='layui-btn-danger layui-btn layui-btn-xs' type='button' onclick='member_del(this)' ><i class='layui-icon'>&#xe640;</i>删除</button></td>
+                                        <input name='info[{$key}][level]' type='hidden' value='{$v.level}'/>
+                                        <input name='info[{$key}][relation]' type='hidden' value='{$v.relation}'/>
+                                    </tr>
+                                    {/volist}
+                                </tbody>
+                        </table>
+                    </div>
+                    <div class="color-box" style="margin-left: 1%;">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label" style="line-height: 15px;">花件颜色</label>
+                        </div>
+                        <div class="layui-form-item">                            
+                             <div class="layui-inline" style="width: 18%">
+                                <select name="name" id="hone" class="one" lay-filter="one">
+                                  <option value="">请选择颜色</option>
+                                  {volist name="list" id="v"}
+                                  <option value="{$v.id}">{$v.name}</option>
+                                  {/volist}
+                                </select>
+                            </div>
+                            <div class="layui-inline two-box" style="width: 17%;display: none;">
+                                <select name="name" id="htwo" class="two" lay-filter="two">
+                                 
+                                </select>
+                            </div>
+                            <div class="layui-inline three-box" style="width: 17%;display: none;">
+                                <select name="name" id="hthree" class="three">
+                                  
+                                  
+                                </select>
+                            </div>
+                            <div class="layui-inline" style="width:15%">
+                                 <input type="text" id="hprice" name="hprice" class="layui-input" placeholder="请填写价格">
+                            </div>
+                            <div class="layui-inline" style="width:15%">
+                                 <a href="javascript:;" class="layui-btn" id="hadd"><i class='icon iconfont'>&#xe6b9;</i>添加颜色</a>
+                            </div>
+                        </div>
+                        <table class="layui-table layui-form">
+                                <thead>
+                                    <tr>
+                                        <th>名称</th>
+                                        <th>价格</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="table2">
+                                    {volist name='flower' id='v'}
+                                    <tr>
+                                        <td>{$v.name}<input name='hinfo[{$key}][color_id]' type='hidden' value='{$v.color_id}'/></td>
+                                        <td>{$v.price}<input name='hinfo[{$key}][price]' type='hidden' value='{$v.price}'/></td>
+                                        <td><button class='layui-btn-danger layui-btn layui-btn-xs' type='button' onclick='member_del(this)' ><i class='layui-icon'>&#xe640;</i>删除</button></td>
+                                        <input name='hinfo[{$key}][level]' type='hidden' value='{$v.level}'/>
+                                        <input name='hinfo[{$key}][relation]' type='hidden' value='{$v.relation}'/>
+                                    </tr>
+                                    {/volist}
+                                </tbody>
+                        </table>
+                    </div>
+                    <div class="layui-form-item">
+                        <label for="L_repass" class="layui-form-label"></label>
+                        <input name="series_id" type="hidden" value="{$id}"/>
+                        <button class="layui-btn layui-btn-lg" lay-filter="add" lay-submit="" style="margin: 20px 0 0 38%">保存</button>
+                    </div>
+        </form>
+        </div>
+        </div>
+        <script>layui.use(['form', 'layer'],
+            function() {
+                $ = layui.jquery;
+                var form = layui.form,
+                layer = layui.layer;
+                
+                
+                //监听select,二级联动
+                form.on('select(one)',function(data){
+                    $.post("{:url('findcolor')}",{pid:data.value},function(obj){                            
+                            var html = ' <option value="">请选择颜色</option>';  
+                            //二级，三级先隐藏
+                            $(data.elem).parent().next().css('display','none'); 
+                            $(data.elem).parent().next().next().css('display','none');
+                            var array = obj.data;     
+                            for(i=0;i<array.length;i++){
+                                html += "<option value="+array[i]['id']+">"+array[i]['name']+"</option>";
+                            }
+                            if(array.length>0){
+                                $(data.elem).parent().next().css('display','inline-block');                               
+                            }
+                            $(data.elem).parent().next().find('select').html(html);
+                            $(data.elem).parent().next().next().find('select').html(html);
+                            form.render('select');  //更新渲染
+                    },'json');
+                });
+                
+                //监听select,三级联动
+                form.on('select(two)',function(data){
+                    $.post("{:url('findcolor')}",{pid:data.value,two:2},function(obj){
+                            var html = ' <option value="">请选择颜色</option>';  
+                            //三级先隐藏
+                            $(data.elem).parent().next().css('display','none'); 
+                            var array = obj.data;     
+                            for(i=0;i<array.length;i++){
+                                html += "<option value="+array[i]['id']+">"+array[i]['name']+"</option>";
+                            }
+                            if(array.length>0){
+                                $(data.elem).parent().next().css('display','inline-block');                               
+                            }
+                            $(data.elem).parent().next().find('select').html(html);
+                            form.render('select');  //更新渲染
+                    },'json');
+                });
+                
+                //边框颜色，js添加
+                $('#add').click(function(){
+                    var price = $('#price').val();
+                    var one = $('#bone option:selected');
+                    var two = $('#btwo option:selected');
+                    var three = $('#bthree option:selected');
+                    var row = $('#table1').find('tr').length; //tr的行数
+                    if(one == ''){
+                        layer.msg('请选择名称',{icon:2});
+                        return;
+                    }
+                    if(price == ''){
+                        layer.msg('请输入价格',{icon:2});
+                        return;
+                    }
+                    var current = '';//当前选中的option
+                    var level = 0; //层级
+                    var relation = []; //父子关系
+                    var textd = ''; //显示文字
+                    if(one.val() != ''){
+                        current = one;
+                        level = 1;
+                        textd = one.text();
+                    }
+                    if(two.val() != ''){
+                        current = two;
+                        level = 2;
+                        relation = [one.val()];
+                        textd = one.text()+'--'+two.text();
+                    }
+                    if(three.val() != ''){
+                        current = three;
+                        level = 3;
+                        relation = [one.val(),two.val()];
+                        textd = one.text()+'--'+two.text()+'--'+three.text();
+                    }
+                   
+                    var html = "<tr><td>"+textd+"<input name='info["+row+"][color_id]' type='hidden' value="+current.val()+"></td>\n\
+                                <td>"+price+"<input name='info["+row+"][price]' type='hidden' value="+price+"></td>\n\
+                               <td><button class='layui-btn-danger layui-btn layui-btn-xs' type='button' onclick='member_del(this)' ><i class='layui-icon'>&#xe640;</i>删除</button></td>\n\
+                                <input name='info["+row+"][level]' type='hidden' value="+level+"><input name='info["+row+"][relation]' type='hidden' value="+relation+"></tr>";
+                    
+                    $('#table1').append(html);
+                })
+                
+                //花件颜色,js添加
+                $('#hadd').click(function(){
+                    var price = $('#hprice').val();
+                    var one = $('#hone option:selected');
+                    var two = $('#htwo option:selected');
+                    var three = $('#hthree option:selected');
+                    var row = $('#table2').find('tr').length; //tr的行数
+                    if(one == ''){
+                        layer.msg('请选择名称',{icon:2});
+                        return;
+                    }
+                    if(price == ''){
+                        layer.msg('请输入价格',{icon:2});
+                        return;
+                    }
+                    var current = '';//当前选中的option
+                    var level = 0; //层级
+                    var relation = []; //父子关系
+                    var textd = ''; //显示文字
+                    if(one.val() != ''){
+                        current = one;
+                        level = 1;
+                        textd = one.text();
+                    }
+                    if(two.val() != ''){
+                        current = two;
+                        level = 2;
+                        relation = [one.val()];
+                        textd = one.text()+'--'+two.text();
+                    }
+                    if(three.val() != ''){
+                        current = three;
+                        level = 3;
+                        relation = [one.val(),two.val()];
+                        textd = one.text()+'--'+two.text()+'--'+three.text();
+                    }
+                    var html = "<tr><td>"+textd+"<input name='hinfo["+row+"][color_id]' type='hidden' value="+current.val()+"></td>\n\
+                                <td>"+price+"<input name='hinfo["+row+"][price]' type='hidden' value="+price+"></td>\n\
+                               <td><button class='layui-btn-danger layui-btn layui-btn-xs' type='button' onclick='member_del(this)' ><i class='layui-icon'>&#xe640;</i>删除</button></td>\n\
+                                <input name='hinfo["+row+"][level]' type='hidden' value="+level+"><input name='hinfo["+row+"][relation]' type='hidden' value="+relation+"></tr>";
+                    
+                    $('#table2').append(html);
+                })
+                //监听提交
+                form.on('submit(add)',
+                function(data) {
+                   
+                    ajaxform("{:url('series/colorAdd')}",data.field,2);
+                    return false;
+                });
+
+            });
+        /*删除*/
+        function member_del(obj) {
+            $(obj).parents("tr").remove();
+        }
+        </script>
+
+    </body>
+
+</html>

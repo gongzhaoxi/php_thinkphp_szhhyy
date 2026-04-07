@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>微元生产工序报工管理系统,建材行业生产管理系统,门窗生产管理系统,微元科技,佛山市微元科技有限公司</title>
+		{include file="public/header" /}
+	</head>
+	<body>
+		<div class="baogong_scheduling popup-box">
+			<div class="popup-header">
+				<div>排产</div>
+			</div>
+			<div class="popup-body" style="padding-bottom: 0;">
+				{include file="schedule/menu" /}
+				<div class="body-center">
+					<!-- 已排产订单 -->
+					<div class="body-content-box body-nav-active">
+						<div class="content-header">
+							<div class="content-header-left positionLeft" data-index="1">
+								<div class="filter-orders">订单筛选</div>
+							</div>
+							<div class="order-screen-box" id="orderScreenBox">
+								<form action="{:url('Schedule/scheduled')}" method="post" id="senior_form">
+									<input name="senior" value="1" type="hidden">
+									<div class="screen-box-top unset-border-bottom">
+										<ul class="screen-list">
+											<li class="screen-group">
+												<div class="screen-group-left">生产日期：</div>
+												<div class="screen-group-right">
+													<input type="text" id="s_date1" name="s_date" placeholder="开始时间" autocomplete="off">
+													<span>-</span>
+													<input type="text" id="e_date1" name="e_date" placeholder="结束时间" autocomplete="off">
+												</div>
+											</li>
+											<li class="screen-group">
+												<div class="screen-group-left">工序班组：</div>
+												<div class="screen-group-right">
+													<div class="imitate-select" id="team_scheduled">
+														<span class="select-txt" data-value="0">点击选择</span>
+														<span class="triangle-down"></span>
+														<input type="hidden" name="team">
+														<ul data-sign="team_scheduled">
+															<li data-value="0">默认班组</li>
+															{volist name="team[0]" id="e"}
+															<li data-value="{$e.id}" {if condition="$post['team'] eq $e['id']" } data-selected="true" {/if}>+{$e.team_name}</li>
+															{php} if(isset($team[$e['id']])){ $childs=$team[$e['id']]; foreach($childs as $val){ {/php}
+															<li data-value="{$val.id}" {if condition="$post['team'] eq $val['id']" } data-selected="true" {/if}>
+																&nbsp;&nbsp;&nbsp;-{$val.team_name}
+															</li> {php} } } {/php} {/volist}
+														</ul>
+													</div>
+												</div>
+											</li>
+											<li class="screen-group">
+												<div class="screen-group-left">订单状态：</div>
+												<div class="screen-group-right">
+													<div class="imitate-select">
+														<span class="select-txt" data-value="0">点击选择</span>
+														<span class="triangle-down"></span>
+														<input type="hidden" name="order_status">
+														<ul data-sign="order_status">
+															<li data-value="1" {if condition="$post['order_status'] eq 1"}data-selected="true"{/if}>已完成</li>
+															<li data-value="2" {if condition="$post['order_status'] eq 2"}data-selected="true"{/if}>未完成</li>
+														</ul>
+													</div>
+												</div>
+											</li>
+											<li class="screen-group">
+												<div class="screen-group-left">生产单号：</div>
+												<div class="screen-group-right">
+													<input type="text" name="ordersn" value="{$post['ordersn']}" placeholder="输入生产单号" autocomplete="off">
+												</div>
+											</li>
+										</ul>
+									</div>
+									<div class="screen-box-bottom">
+										<div class="screenSureBtn" onclick="searchData()">立即筛选</div>
+									</div>
+								</form>
+							</div>
+						</div>
+						<div class="content-center">
+							<div class="content-center-inner">
+								<table class="layui-table order-table">
+									<thead>
+										<tr>
+											<th>安排生产日期</th>
+											<th>班组</th>
+											<th>工序名称</th>
+											<th>订单总面积</th>
+											<th>订单总扇数</th>
+											<th>订单总数</th>
+											<th>已完成数</th>
+											<th>剩余数量</th>
+											<th>操作</th>
+										</tr>
+									</thead>
+									<tbody>
+										{volist name="list" id="vo"}
+										<tr>
+											<td>
+												<?php echo (date("Y-m-d",$vo['do_time'])); ?>
+											</td>
+											<td>{$vo['team']}</td>
+											<td>{$vo['gx_name']}</td>
+											<td>{$vo['square']}㎡</td>
+											<td>{$vo['fans']}</td>
+											<td class="f_W_b f_S_20">{$vo['ordernum']}</td>
+											<td class="f_S_20 c_Blue">{$vo['finished']}</td>
+											<td class="c_Red f_W_b f_S_20">{$vo['unfinished']}</td>
+											<td class="operate-box">
+												<div class="operate-btn">
+													<span class="btn-normal btn-detail" onclick="sview({$vo['id']})">查看明细</span>
+													<span class="btn-normal btn-printing" onclick="sprint({$vo['id']})">打印排产单</span>
+													<span class="btn-danger btn-delete" onclick="deletprint({$vo['id']})">删除排产单</span>
+												</div>
+											</td>
+										</tr>
+										{php} if(count($vo['list'])>0){ {/php}
+										<tr>
+											<td colspan="9" class="tr-unset-color td-list-outer">
+												<div class="td-list-inner">
+													<div class="td-list-inner-left">未完成订单</div>
+													<ul class="td-list-inner-right">
+														{volist name="vo['list']" id="cvo"}
+														<li class="li-operation">
+															<span class="li-operation-txt">{$cvo['ordernum']} </span>
+															<span class="li-operation-change" onClick="change_team({$cvo['id']});">修改</span>
+															<span class="li-operation-del" onClick="deleteItem({$cvo['id']},this);">删除</span>
+														</li>
+														{/volist}
+													</ul>
+												</div>
+											</td>
+										</tr>
+										{php} } {/php}
+										{/volist}
+									</tbody>
+								</table>
+								<div class="page-box">
+									<div class="pages">
+										{$page|raw}
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="contentText4" class="exporta" style="padding:15px;height:150px;">
+			<div>
+				工序班组：
+				<select name="team" class="team select-common">
+					<option value="0">请选择班组</option>
+
+					{volist name="team[0]" id="e"}
+					<option value="{$e.id}">+ {$e.team_name}</option>
+					{php}
+					if(isset($team[$e['id']])){
+					$childs=$team[$e['id']];
+					foreach($childs as $val){
+					{/php}
+					<option value="{$val.id}">&nbsp;&nbsp;&nbsp;- {$val.team_name}</option>
+					{php}
+					}
+					}
+					{/php}
+					{/volist}
+					{/volist}
+
+				</select>
+			</div>
+
+			<div style="margin-top: 5px;">
+				生产日期：<input type="text" class="do_time" id="do_time" value="" placeholder="点击选择生产日期" autocomplete="off" />
+			</div>
+
+			<div style="width:100%;margin-top:15px;text-align:center;float:right;">
+				<button class="btne" onclick="sure_change();">确认无误，转班组</button>
+			</div>
+
+			<div>
+	</body>
+	<!-- 已排产订单 -->
+	<script type="text/javascript">
+		// 当前选择转班组的id
+		var schedule_id = 0;
+		var isLock = false;
+		var layer, laydate;
+		layui.use(['layer','laydate'],function(){
+			laydate = layui.laydate;
+			layer = layui.layer;
+			laydate.render({
+				elem: '#s_date1'
+			});
+			laydate.render({
+				elem: '#e_date1'
+			});
+			laydate.render({
+				elem: '.do_time'
+			});
+		})
+
+		function searchData() {
+			$('#senior_form').submit();
+		}
+		//删除排产单
+		function deletprint(id) {
+			layer.confirm('是否删除', {
+				icon: 3,
+				title: '提示'
+			}, function(index) {
+				$.ajax({
+					url: "{:Url('Schedule/del_schedual')}",
+					data: {
+						"id": id
+					},
+					dataType: "json",
+					success: function(obj) {
+						if (obj.status == 1) {
+							layer.msg('删除成功');
+						} else {
+							layer.msg('删除失败');
+						}
+						setTimeout(function() {
+							window.location.reload();
+						}, 1500);
+					}
+				})
+				layer.close(index);
+			})
+		}
+		// 删除工序
+		function deleteItem(id,_obj){
+			layer.confirm('是否删除排产项目',{icon:3,title:'提示'},function(index){
+				$.ajax({
+					url: "{:Url('Schedule/del_schedual_item')}",
+					data: {"id":id},
+					dataType:"json",
+					success:function(obj){
+						if(obj.status==1){
+							layer.msg('删除成功');
+							$(_obj).parent().remove();
+						}else{
+							layer.msg(obj.msg);
+						}
+						
+					}
+				})
+				layer.close(index);
+			})
+		}
+		//修改
+		function change_team(id) {
+			schedule_id = id;
+			layer.open({
+				type: 1,
+				title: '转班组',
+				shadeClose: true,
+				move: false,
+				shade: 0.1,
+				area: ['350px', '230px'],
+				content: $("#contentText4"),
+				success: function() {
+					laydate.render({
+						elem: '#do_time'
+					});
+				}
+			});
+		}
+		//查看详细
+		function sview(id) {
+			layer.open({
+				type: 2,
+				title: '订单完成情况',
+				shadeClose: true,
+				move: false,
+				shade: 0.1,
+				area: ['768px', '80%'],
+				content: "schedule_view?id=" + id
+			});
+
+		}
+		//打印详细
+		function sprint(id) {
+			layer.open({
+				type: 2,
+				title: '打印排产单',
+				shadeClose: true,
+				move: false,
+				shade: 0.1,
+				area: ['1280px', '80%'],
+				content: "schedule_print?id=" + id
+			});
+		}
+		//转班组
+		function sure_change() {
+			if (isLock) {
+				return;
+			}
+			var tid = $(".layui-layer-content").find(".team").find("option:selected").val(); //新班组的id
+			var do_time = $(".layui-layer-content").find(".do_time").val();
+
+			if (tid == null || tid == 0 || tid == undefined) {
+				layer.msg("请选择工序班组");
+				return;
+			}
+			if (do_time == null || do_time == '' || do_time == undefined) {
+				layer.msg("请选择生产日期");
+				return;
+			}
+			//锁定不准重复提交
+			isLock = true;
+			layer.load(0, {
+				shade: [0.1, '#fff']
+			});
+
+			$.ajax({
+				url: "{:Url('Schedule/save_change')}",
+				data: {
+					"schedule_id": schedule_id,
+					'tid': tid,
+					'do_time': do_time
+				},
+				dataType: "json",
+				type: 'POST',
+				success: function(obj) {
+					isLock = false;
+					layer.closeAll();
+					if (obj.status == 2) {
+						layer.msg(obj.msg);
+						return;
+					}
+					layer.msg('转班组成功');
+					setTimeout(function() {
+						window.location.reload();
+					}, 1500)
+				},
+				error: function() {
+					layer.closeAll();
+					layer.msg('网络错误,请重试');
+				}
+			})
+		}
+	</script>
+	<script type="text/javascript">
+		// 显示当前选中的筛选条件
+		$('#senior_form').find('.imitate-select').each(function(){
+			var _this = $(this);
+			if(_this.children('ul').children('li[data-selected=true]')){
+				var tempTxt = _this.children('ul').children('li[data-selected=true]').html();
+				var tempVal = _this.children('ul').children('li[data-selected=true]').attr('data-value');
+				if(tempTxt != null && tempVal != null){
+					_this.children('.select-txt').attr('data-value',tempVal).html(tempTxt);
+					_this.children('input[type=hidden]').val(tempVal);
+				}
+			}
+		})
+
+
+		// 选择订单排序
+		$('.imitate-select').click(function(e) {
+			e.preventDefault();
+			e.stopPropagation();
+			var _this = $(this);
+			var clickSign = _this.attr('data-sign');
+			$('.imitate-select').removeAttr('data-sign').children('ul').hide();
+			if (clickSign == 'true') {
+				_this.children('ul').hide();
+				_this.removeAttr('data-sign');
+			} else {
+				_this.children('ul').show();
+				_this.attr('data-sign', 'true');
+			}
+		});
+		$(window).click(function(){
+			
+			var elem = event.srcElement ? event.srcElement : event.target;
+			while (elem) { //循环判断至跟节点，防止点击的是div子元素 
+				if (elem.id && elem.id == 'orderScreenBox') {
+					return;
+				}
+				if($(elem).hasClass('modal-content')){
+					return;
+				}
+				elem = elem.parentNode;
+			}
+			$('.modal-box').fadeOut();
+			$('.imitate-select').removeAttr('data-sign').children('ul').hide();
+			$('.content-header-left').removeAttr('data-click').css({
+				top: '0',
+			}).children('.filter-orders').removeClass('filter-orders-active');
+			$('.content-header-left').siblings('.order-screen-box').css({
+				height: '0',
+				overflow: 'hidden'
+			})
+		});
+		$('.imitate-select ul').delegate('li', 'click', function(e) {
+			e.preventDefault();
+			e.stopPropagation();
+			var _this = $(this);
+			var tempTxt = _this.html();
+			var _thisValue = _this.attr('data-value');
+			_this.parent().parent().children('.select-txt').attr('data-value', _thisValue).html(tempTxt);
+			_this.parent().hide();
+			_this.parent().parent().removeAttr('data-sign');
+			var _clickTarget = _this.parent().attr('data-sign');
+			_this.parent().siblings('input[type=hidden]').val(_thisValue);
+		});
+		// 订单全选
+		$('#orderSelectAll').click(function(e) {
+			e.preventDefault();
+			e.stopPropagation();
+			var _this = $(this);
+			var clickSign = _this.attr('data-sign');
+			if (clickSign == 'true') {
+				_this.children('span').hide();
+				_this.removeAttr('data-sign');
+				$('.checkBoxBtn').removeAttr('data-sign').children('span').hide();
+			} else {
+				_this.children('span').show();
+				_this.attr('data-sign', 'true');
+				$('.checkBoxBtn').attr('data-sign', 'true').children('span').show();
+			}
+		});
+		// 单选框
+		$('#orderListTable tbody').delegate('tr .checkBox .checkBoxBtn', 'click', function(e) {
+			e.preventDefault();
+			e.stopPropagation();
+			var _this = $(this);
+			var clickSign = _this.attr('data-sign');
+			if (clickSign == 'true') { // 取消选中
+				_this.children('span').hide();
+				_this.removeAttr('data-sign');
+			} else { // 选中
+				_this.children('span').show();
+				_this.attr('data-sign', 'true');
+			}
+			// 当前全部订单
+			var tempLength = $('.checkBoxBtn').length;
+			var selectLength = $('.checkBoxBtn[data-sign="true"]').length;
+			if (tempLength == selectLength) { // 全部选中
+				$('.imitate-checkbox').attr('data-sign', 'true').children('span').show();
+			} else {
+				$('.imitate-checkbox').removeAttr('data-sign').children('span').hide();
+			}
+		});
+		$('.categoryList').delegate('li', 'click', function(e) {
+			e.preventDefault();
+			e.stopPropagation();
+			$(this).addClass('li-active').siblings().removeClass('li-active');
+		});
+
+		// 新版排产
+		$('.date-txt').click(function(e) {
+			e.preventDefault();
+			e.stopPropagation();
+			let _this = $(this);
+			_this.children('.icon-point').addClass('icon-point-active');
+			_this.siblings('.date-txt').children('.icon-point').removeClass('icon-point-active');
+		})
+
+		// 按订单汇总和按工序汇总
+		$('.summaryTab .tab-btn').click(function(e) {
+			e.preventDefault();
+			e.stopPropagation();
+			let _this = $(this);
+			let _thisIndex = _this.index();
+			orderbyTarget = _thisIndex;
+			if (_thisIndex == 1) {
+				$('#unscheduledOrdersRight').hide();
+				$('#createSchedueBtn').parent().hide();
+			} else {
+				$('#unscheduledOrdersRight').css({
+					'display': 'flex'
+				});
+				$('#createSchedueBtn').parent().show();
+			}
+			_this.addClass('tab-btn-active').siblings('.tab-btn').removeClass('tab-btn-active');
+			$('.summaryContent').eq(_thisIndex).addClass('tab-content-active').siblings('.summaryContent').removeClass(
+				'tab-content-active');
+			ResearchData();
+		});
+		// 工序汇总table 选中工序排产
+		$('#orderListTableGX tbody').delegate('tr .checkboxContent .td-list-inner .td-list-inner-top .imitate-checkbox-all',
+			'click',
+			function(e) {
+				e.preventDefault();
+				e.stopPropagation();
+				let _this = $(this);
+				var clickSign = _this.attr('data-sign');
+				if (clickSign == 'true') {
+					_this.children('span').hide();
+					_this.removeAttr('data-sign');
+					_this.parent().siblings('.td-list-inner-bottom').children().children('.imitate-checkbox-small').removeAttr(
+						'data-sign', 'true').children().hide();
+				} else { // 选中
+					_this.children('span').show();
+					_this.attr('data-sign', 'true');
+					_this.parent().siblings('.td-list-inner-bottom').children().children('.imitate-checkbox-small').attr('data-sign',
+						'true').children().show();
+				}
+			})
+		// 生产单号选择
+		$('#orderListTableGX tbody').delegate(
+			'tr .checkboxContent .td-list-inner .td-list-inner-bottom li .imitate-checkbox-small', 'click',
+			function(e) {
+				e.preventDefault();
+				e.stopPropagation();
+				let _this = $(this);
+				let clickSign = _this.attr('data-sign');
+				if (clickSign == 'true') {
+					_this.removeAttr('data-sign');
+					_this.children('span').hide();
+				} else {
+					_this.children('span').show();
+					_this.attr('data-sign', 'true');
+				}
+				let allCheckBoxSmallLength = _this.parent().parent().find('.imitate-checkbox-small').length;
+				let selectCheckBoxSmallLength = _this.parent().parent().find('.imitate-checkbox-small[data-sign=true]').length;
+				if (allCheckBoxSmallLength == selectCheckBoxSmallLength) {
+					_this.parent().parent().siblings('.td-list-inner-top').children('.imitate-checkbox-all').attr('data-sign', 'true')
+						.children().show();
+				} else {
+					_this.parent().parent().siblings('.td-list-inner-top').children('.imitate-checkbox-all').removeAttr('data-sign',
+						'true').children().hide();
+				}
+			})
+		// 加急订单和打印订单切换
+		$('.urgentPrintingTab .tab-btn').click(function(e) {
+			e.preventDefault();
+			e.stopPropagation();
+			let _this = $(this);
+			let _thisIndex = _this.index();
+			_this.addClass('tab-btn-active').siblings('.tab-btn').removeClass('tab-btn-active');
+			$('.urgentPrintingContent').eq(_thisIndex).addClass('tab-content-active').siblings('.urgentPrintingContent').removeClass(
+				'tab-content-active');
+		})
+
+		// 创建排产单
+		$('#createSchedueBtn').click(function(e) {
+			e.preventDefault();
+			e.stopPropagation();
+			add_schedule();
+		})
+
+		// 未排产订单筛选
+		
+		$('.content-header-left').click(function(e){
+			e.preventDefault();
+			e.stopPropagation();
+			let _this = $(this);
+			let clickIndex = _this.attr('data-index');
+			let clickSign = _this.attr('data-click');
+			if(clickSign == 'true'){
+				_this.removeAttr('data-click').css({
+					top: '0',
+				}).children('.filter-orders').removeClass('filter-orders-active');
+				_this.siblings('.order-screen-box').css({
+					height: '0',
+					overflow: 'hidden'
+				})
+			} else{
+				_this.siblings('.order-screen-box').css({
+					height: 'auto',
+					overflow: 'unset'
+				});
+				var _top = _this.siblings('.order-screen-box').css('height');
+				_this.attr('data-click', 'true').css({
+					top: _top,
+				}).children('.filter-orders').addClass('filter-orders-active');
+			}
+		});
+	</script>
+</html>

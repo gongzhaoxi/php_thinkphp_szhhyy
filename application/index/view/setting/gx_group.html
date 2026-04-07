@@ -1,0 +1,72 @@
+{include file="public/header2"/}
+<style>
+	body{
+		background-color: transparent;
+	}
+</style>
+<div class="layui-fluid gx_group">
+	<div class="layui-row">
+		<form class="layui-form">
+			<div id="box">
+				{volist name='list' id='v'}
+				<div class="layui-form-item">
+					<label class="layui-form-label">
+						工序组名称
+					</label>
+					<div class="layui-input-inline" style="width: 100px">
+						<input name="group_name[]" type="text" class="layui-input" value="{$v.name}" {if condition="$v['inouts'] neq 0"}readonly="true"{/if}>
+					</div>
+					<label class="layui-form-label">
+						显示排序
+					</label>
+					<div class="layui-input-inline" style="width: 100px">
+						<input name="inouts[]" type="hidden" class="layui-input" value="{$v.inouts}">
+						<input name="order[]" type="text" class="layui-input" value="{$v.order}">
+					</div>
+					{if condition="!in_array($key,[1,2,3,4])"}
+					<button type="button" class="layui-btn layui-btn-danger layui-btn-sm" onclick="del(this)">删除</button>
+					{/if}
+				</div>
+				{/volist}
+			</div>
+			<button type="button" id="add-btn" class="layui-btn layui-btn-sm" style="margin: 25px">添加新工序组</button>
+			<div class="layui-form-item">
+				<label class="layui-form-label">&nbsp;</label>
+				<button class="layui-btn" lay-filter="add" lay-submit="">保存</button>
+			</div>
+		</form>
+	</div>
+</div>
+<script>
+layui.use(['form', 'laydate','layer','upload'], function() {
+	$ = layui.jquery;
+	var form = layui.form;
+	var layer = layui.layer;
+
+	$(function(){
+		$('#add-btn').click(function () {
+			var html = "<div class='layui-form-item'><label class='layui-form-label'>工序组名称</label>";
+			html += "<div class='layui-input-inline' style='width: 100px'><input name='group_name[]' type='text' class='layui-input'></div>";
+			html += "<label class='layui-form-label'>显示排序</label>";
+			html += "<div class='layui-input-inline' style='width: 100px'><input name='inouts[]' type='hidden' class='layui-input' value='0'><input name='order[]' type='text' class='layui-input'></div>";
+			html += "<button type='button' class='layui-btn layui-btn-danger layui-btn-sm' onclick='del(this)'>删除</button>";
+			$('#box').append(html);
+		});
+	})
+
+	//监听提交
+	form.on('submit(add)', function(data) {
+		ajaxform("{:url('gx_group')}",data.field);
+		return false;
+	});
+
+});
+// 删除
+function del(obj){
+	$(obj).parent().remove();
+}
+</script>
+
+</body>
+
+</html>

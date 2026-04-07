@@ -1,0 +1,107 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<!-- <meta http-equiv="refresh" content="5"> -->
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>车间作业看板</title>
+<link href="__STATIC__/theme/index/databoard/gk.css?v=<?php echo time();?>" rel="stylesheet" />
+<script src="__STATIC__/theme/index/databoard/jquery.min.js"></script>
+<script src="__STATIC__/theme/index/databoard/gk.js?v=<?php echo time();?>"></script>
+
+<!-- ================     电视展示样式方法      ================  -->
+<link href="__STATIC__/theme/index/databoard/{$style}?v=<?php echo time();?>" rel="stylesheet" />
+
+
+</head>
+<body>
+
+    <div class="<?=$classWidth?> Work_Pro">
+
+        <div style=" margin-top:10px;">
+            <table width="100%" border="0" cellspacing="1" cellpadding="0" class="table" id="table1">
+                <tr id="total">
+                {if PRO_DOMAIN!='kloz0611.ecloudm.com'}
+                    <td colspan="7" class="titleaa">
+                        <div>
+                            上月总订单量/完成量：<span id="last_no">5300</span>/<span id="last_count">5320</span>
+                            <p>人均数：<span id="last_people">50</span>人 | 产均值：<span id="last_area">2.9</span>m²</p>
+                        </div>
+                        <div>
+                            本月总订单量/完成量：<span id="month_no">7860</span>/<span id="month_count">7520</span>
+                            <p>人均数：<span id="month_people">50</span>人 | 产均值：<span id="month_area">3.2</span>m²</p>
+                        </div>
+                        <div>
+                            本年总订单量/完成量：<span id="year_no">7860</span>/<span id="year_count">7520</span>
+                            <p>人均数：<span id="year_people">58</span>人 | 产均值：<span id="year_area">3.7</span>m²</p>
+                        </div>
+                    </td>
+                    {/if}
+                </tr>
+                <tr id="th_head">
+                    <td>工序名称</td>
+                    <td>昨天订单量</td>
+                    <td>昨天完成量</td>
+                    <td>人均产值</td>
+                    <td>今天订单量</td>
+                    <td>今天完成量</td>
+                    <td>当前人均产值</td>
+
+                </tr>
+
+                
+            </table>
+        </div>
+    </div>
+<input name="page" id="page" value="1" type="hidden"/>
+<script>
+$(function(){
+    var window_height = $(window).height();
+    var pagesize = Math.round((window_height-$('#total').height()-$('#th_head').height()-20)/41)-1;
+    refresh(pagesize);
+    setInterval("refresh("+pagesize+")",20000); 
+})
+
+function refresh(pagesize){
+   var no = "{$no}";
+    $.ajax({
+        url:"{:url('ajax_all')}",
+        data: {pagesize:pagesize,page:$('#page').val(),no:no},
+        type: 'POST',
+        dataType: 'json',
+        success:function(res){
+            $('#last_no').text(res.last_month_no);
+            $('#last_count').text(res.last_month_count);
+            $('#last_area').text(res.last_area);
+            $('#last_people').text(res.last_people);
+            $('#month_no').text(res.month_no);
+            $('#month_count').text(res.month_count);
+            $('#month_area').text(res.area);
+            $('#month_people').text(res.people);
+            $('#year_no').text(res.year_no);
+            $('#year_count').text(res.year_count);
+            $('#year_area').text(res.year_area);
+            $('#year_people').text(res.year_people);
+            var html = '';
+            $.each(res.list,function(k,v){
+                html += "<tr>";
+                html += "<td class='gaou fonta'>"+v['yname']+"</td>";
+                html += "<td class='cofff fonta'>"+v['yno_complete']+"</td>";
+                html += "<td class='wtov cofff fonta'>"+v['ycomplete']+"</td>";
+                html += "<td class='cofff fonta utwf'>"+v['yarea']+"m²<span>/"+v['ysnum']+"扇</span><span>/"+v['ypeople']+"人</span></td>";
+                html += "<td class='cofff fonta'>"+v['no_complete']+"</td>";
+                html += "<td class='wtov cofff fonta'>"+v['complete']+"</td>";
+                html += "<td class='cofff fonta utwf'>"+v['area']+"m²<span>/"+v['snum']+"扇</span><span>/"+v['people']+"人</span></td>";
+                html += "</tr>";
+            })
+            $('#page').val(res.page+1);
+            $('#th_head').nextAll().remove();
+            $('#table1').append(html);
+        }
+    })
+}
+    
+</script>
+
+</body>
+</html>

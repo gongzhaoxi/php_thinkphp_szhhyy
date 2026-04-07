@@ -1,0 +1,87 @@
+{include file="public/header"/}
+<style>
+    .input-field{ width: 80px}
+    .input-formula{ width: 300px}
+</style>
+<body>
+
+    <div class="layui-fluid">
+        <div class="layui-col-md6">
+            <!--<img src="/upload/{$structure.structure_pic}" style="max-width: 100%;max-height: 500px;"/>-->
+            <img src="/upload/{$structure.ruler_pic}" style="max-width: 100%;max-height: 500px;"/>
+        </div>
+        <div class="layui-col-md6">
+            <form class="layui-form layui-col-space5">
+                <div class="layui-form-item">
+                    
+                    <div class="layui-input-inline">
+                        <input type="text" id="code" name="name" required="" lay-verify="required" class="layui-input" placeholder="请输入公式名称" value="{$name['name']}">
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">
+                        <span class="x-red">*</span>不能为空
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-input-inline">
+                        对应字段
+                    </div>
+                    <div class="layui-input-inline">
+                        计算公式
+                    </div>
+                </div>
+                <div id='box'>
+                {volist name='list' id='v'}
+                <div class="layui-form-item" id="clone">
+                    <div class="input-field layui-inline ">
+                        <input type="text" id="code" name="field[]" required="" lay-verify="required" class="layui-input" value='{$v.field}'>
+                    </div>
+                    <div class="layui-inline input-formula">
+                        <input type="text" id="code" name="formula[]" required="" lay-verify="required" class="layui-input" value="{$v.formula}">
+                    </div>
+                    <button type="button" class="layui-btn layui-btn-radius layui-btn-danger" onclick="del(this)">删除</button>
+                </div>
+                {/volist}
+                </div>
+                <div style="float: right">
+                    
+                    <button type="button" id="add" class="layui-btn layui-btn-radius layui-btn-warm">继续添加</button>
+                     
+                </div>
+                <div class="layui-col-md12">
+                    <input name='srf_id' type='hidden' value='{$srf_id}'/>
+                    <button class="layui-btn" lay-filter="add" lay-submit="" style="margin-left: 40%;">立即保存</button>              
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+<script>layui.use(['laydate', 'form'],
+            function () {
+                var laydate = layui.laydate;
+                var form = layui.form;
+                
+                //监听提交
+                form.on('submit(add)',
+                function(data) {
+                    ajaxform("{:url('editRulerFormula')}",data.field);
+                    return false;
+                });
+            });
+</script>
+<script src="__STATIC__/js/jquery.min.js" charset="utf-8"></script>
+<script>
+    $(function(){
+        $('#add').click(function(){
+            var html = $('#clone').clone();
+            $('#box').append(html);
+        })
+ 
+       
+    })
+    
+    //删除
+    function del(obj){
+        $(obj).parent().remove();
+    }
+</script>
+</html>

@@ -1,0 +1,164 @@
+<?php $current='6'; ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>微元生产工序报工管理系统,建材行业生产管理系统,门窗生产管理系统,微元科技,佛山市微元科技有限公司</title>
+<script src="__STATIC__/theme/index/js/jquery-1.10.2.js"></script>
+<link href="__STATIC__/theme/index/css/index.css" rel="stylesheet" />
+<link href="__STATIC__/theme/index/css/bootstrap.css" rel="stylesheet">
+<link href="__STATIC__/theme/index/css/font-awesome.min.css" rel="stylesheet">
+</head>
+<style type="text/css">
+.user{display:none;width:500px;height:auto;background:#E3E3E3;position:absolute;z-index:9999;left:36%;top:30%;border-radius:8px;}
+.user div{width:100%;text-align:center;height:40px;line-height:40px;margin-top:20px;font-size:14px;}
+.user div input{padding-left:4px;width:70%;height:40px;line-height:40px;border-radius:4px;border:0;margin-bottom:6px;}
+.user div .spa{letter-spacing:8px;}
+.btne{width:200px;height:40px;line-height:40px;background:#FF4040;color:#fff;border:0;outline:none;border-radius:8px;margin-left:25%;margin-top:18px;margin-bottom:10px;}
+.role{width: 70%;height: 40px;border-radius: 6px;border: none;}
+.ser{width: 70%;height: 40px;border-radius: 6px;border: none;}
+.mb{display:none;width:100%;height:100%;background:black;opacity:0.6;position:fixed;z-index:1000;}
+.mwpw_bg{margin-top:0px;}
+.me_r_1,.me_r_2{float:left;width:auto;}
+.me_r_1 select{border: 1px solid #e2e2e2;}
+.me_r_2{width:122px;}
+.me_r_2 input{border: 1px solid #e2e2e2;border-radius:4px;width:122px}
+.button{width: 50px;height: 25px;color: #FFFFFF;font: 12px/25px "微软雅黑";background: #0aad20;text-align: center;border: none;float: left;display:inline-block;border-radius:4px;}
+.button:hover{text-decoration:none;color:white;}
+.pages{width:100%;height:50px;line-height:50px;background:#EAEAEA;display:flex;	align-items: center;margin-bottom: 1px;}
+.me_r_2 select{border:none;border-radius:4px;font-size:11px;height:26px;line-height:26px;padding:0 4px;}
+.me_r_2 select option{font: 12px/25px "微软雅黑";color:#333333}
+.second-menu{background:#c0c8cb;width:100%;line-height:40px;height:40px;display:flex;align-items: center;}
+.second-menu div{width:80px;height:26px;line-height:26px;background:#3A5FCD;color:#FFFFFF;text-align:center;border-radius:4px;margin-left:12px}
+.second-menu div a{color:#fff;font-size:12px;text-decoration: none;}
+.second-menu div a:active{text-decoration: none;}
+.outdata button{color: #fff;border: none;width: 90px;line-height: 26px; height: 26px;background: #CD0000;font-size: 12px;border-radius: 4px;margin-left:14px}
+.check-salary-num{width: 20%;position: absolute;right: 91px;background: #CD5C5C;color: #fff;text-align: center;font-size: 14px;}    
+</style>
+<body>
+{include file="public/header" /}
+<style type="text/css">
+img[Attributes Style] {width:auto;}
+</style>
+<div class="second-menu">
+	<div style="background:#0aad20"><a href="#" >员工提成</a></div>
+	<div class="gs"><a href="{:url('Index/formula')}">计件公式</a></div>
+</div>
+<div class="parameter">
+
+<!-- 搜索 -->
+<div class="pages" style="margin-top:0;">
+<form class="form-horizontal" id="formd" action="{:url('Index/salary')}" method="get">
+<div class="me_r_2">
+<select id="entry" name="entry">
+	<option value="">订单是否全部入库</option>
+	<option value="1" {if condition="$get['entry'] eq 1"} selected {/if}>是</option>
+	<option value="0" {if $get['entry']=='0'} selected {/if}>否</option>
+</select>
+</div>
+<div class="me_r_2">
+<input type="text" id="uname" name="uname" autocomplete="off" value="{$get.uname}" placeholder="全部员工">
+</div>
+<div class="me_r_2">
+<input type="text" id="pdn" name="pdn" value="{$get.pdn}" autocomplete="off" placeholder="生产流水号">
+</div>
+<div class="me_r_2">
+<input type="text" id="salenum" name="salenum" value="{$get.salenum}" autocomplete="off" placeholder="销售单号">
+</div>
+<div class="me_r_2">
+<input type="text" id="year" name="date" value="{$get.date}" autocomplete="off" placeholder="报工日期">
+</div>
+<div class="me_r_2">
+<input type="text" id="inyear" name="dates" value="{$get.dates}" autocomplete="off" placeholder="入库日期">
+</div>
+<div class="me_r_2" style="width:56px">
+<button type="submit" style="border-radius:4px;margin-top:2px;">搜索</button>
+</div>
+</form>
+<div class="outdata">
+<button onclick="outExcel()">导出当前数据</button>
+</div>
+<div class="check-salary-num">筛选结果-总提成：{$totalprice}</div>
+</div>
+
+<table width="100%" border="0" cellspacing="1" cellpadding="1" class="mwpw_bg" >
+
+<tr class="title">
+<td width="5%">ID</td>
+<td width="10%">员工账号</td>
+<td width="10%">工序</td>
+<td width="45%">生产单号</td>
+<td width="10%">订单数量</td>
+<td width="10%">计件单位</td>
+<td width="10%">总提成（元）</td>
+</tr>
+
+{volist name="list" id="la"}
+	<tr>
+	<td>{$key+1}</td>
+	<td>{$la.uname}</td>
+	<td>{$la.dname}</td>
+	<td data-uname="{$la.uname}" data-price="{$la.price}" data-jnum="{$la.jnum}"  data-gx="{$la.dname}" data-dw="{$la.unitname}" data-uid="{$la.id}" data-did="{$la.orstatus}" onclick="detail(this)" style="line-height:30px">{$la.ordersn}</td>
+	<td>{$la.total_order}</td>
+	<td>{$la.unitname}</td>
+	<td>{$la.total}</td>
+	</tr>
+{/volist}
+
+</table>
+</div>
+
+<div class="pages" style="justify-content:center">
+	{$page|raw}
+</div>
+
+<script src="__STATIC__index/js/jquery.min.js"></script>
+<script src="__STATIC__index/js/layer/layer.js"></script>
+<script src="__STATIC__index/js/laydate/laydate.js"></script>
+<script type="text/javascript">
+laydate.render({
+	  elem: '#year' //指定元素
+	  ,range: true
+	});
+laydate.render({
+	  elem: '#inyear' //指定元素
+      ,range: true
+	});
+function detail(e){
+	var uid = $(e).attr('data-uid');
+	var did = $(e).attr('data-did');
+	var uname = $(e).attr('data-uname');
+	var dw = $(e).attr('data-dw');
+	var gx = $(e).attr('data-gx');
+	/* var allid = $(e).attr('data-id'); */
+	var price = $(e).attr('data-price');
+	var jnum = $(e).attr('data-jnum');
+	//搜素条件
+	var status = $('#entry').val();
+	var pdn = $('#pdn').val();
+	var salenum = $('#salenum').val();
+	var b_date = $('#year').val();
+	var in_date = $('#inyear').val();
+	
+	layer.open({
+		type: 2,
+		  title: '员工：'+uname+'【'+gx+'】'+'| 计件单位：'+dw+' | 计件数量：'+jnum+' | 单价：'+price,
+		  shadeClose: true,
+		  shade: 0.8,
+		  area: ['80%', '80%'],
+		  content: "salarydetail?uid="+uid+"&did="+did+"&status="+status+"&pdn="+pdn+"&salenum="+salenum+"&b_date="+b_date+"&in_date="+in_date+"" //iframe的url
+	})
+}
+
+//数据导出
+function outExcel(){
+	$('#formd').attr('action',"{:Url('Index/staffSalary')}");
+	$('#formd').submit();
+	$('#formd').attr('action',"{:Url('Index/salary')}");
+}
+	</script>
+	
+{include file="public/footer" /}
+
+</body>
+</html>

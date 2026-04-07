@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>全部订单</title>
+    {include file="public/header" /}
+    <script src="__STATIC__/index/js/erp.js"></script>
+</head>
+<style>
+    .layui-form-select{
+		color: #333333;
+	}
+</style>
+<body class="add_field_rule">
+    <div class="modal-body">
+        <div class="content">
+            <form class="layui-form">
+                <div class="layui-form-item">
+                    <label for="username" class="layui-form-label">
+                        判断顺序
+                    </label>
+                    <div class="layui-input-inline" style="width: 250px">
+                        <input name="sort" type="text" class="layui-input" value="{if condition="$res['sort']"}{$res['sort']}{else/}0{/if}"/>
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">
+                        判断顺序由小到大，进行先后判断
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label for="username" class="layui-form-label">
+                        组合方式
+                    </label>
+                    <div class="layui-input-inline" style="width: 250px">
+                        <div class="imitate-select">
+                            <span class="select-txt">and</span>
+                            <span class="triangle-down"></span>
+                            <input type="hidden" name="relate_type" value="and">
+                            <ul data-sign="relate_type">
+                                <li data-value="and" {if condition="$res['relate_type'] eq 'and'" }data-selected="true"{/if}>and</li>
+                                <li data-value="or" {if condition="$res['relate_type'] eq 'or'" }data-selected="true"{/if}>or</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label for="username" class="layui-form-label">
+                        对应工艺线
+                    </label>
+                    <div class="layui-input-inline" style="width: 250px">
+                        <select name="gxline_id" id="gxline_id" lay-verify="required" lay-search lay-filter="gxline_id">
+                            <option value="">选择工艺线</option>
+                            {volist name='gxline' id='v'}
+                                <option value="{$v.id}" {if condition="$v['id'] eq $res['gxline_id']" }selected="selected"{/if}>{$v.title}</option>
+                            {/volist}
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label for="username" class="layui-form-label">
+                        选择字段
+                    </label>
+                    <div class="layui-input-inline" style="width: 250px">
+                        <select name="field_id" id="field_id" lay-verify="required" lay-search lay-filter="field_id">
+                            <option value="">选择字段</option>
+                            {volist name='field' id='v'}
+                                <option value="{$v.id}" {if condition="$v['id'] eq $res['field_id']" }selected="selected"{/if}>{$v.fieldname}|{$v.explains}</option>
+                            {/volist}
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label for="username" class="layui-form-label">
+                        符号
+                    </label>
+                    <div class="layui-input-inline" style="width: 250px">
+                        <div class="imitate-select">
+                            <span class="select-txt">=</span>
+                            <span class="triangle-down"></span>
+                            <input type="hidden" name="type" value="=">
+                            <ul data-sign="type">
+                                <li data-value="=" {if condition="'=' eq $res['type']" }data-selected="true"{/if}>=</li>
+                                <li data-value="!=" {if condition="'!=' eq $res['type']" }data-selected="true"{/if}>!=</li>
+                                <li data-value="包含" {if condition="'包含' eq $res['type']" }data-selected="true"{/if}>包含</li>
+                                <li data-value="不包含" {if condition="'不包含' eq $res['type']" }data-selected="true"{/if}>不包含</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label for="username" class="layui-form-label">
+                        判断值
+                    </label>
+                    <div class="layui-input-inline" style="width: 250px">
+                        <textarea name="rule" required placeholder="请输入" class="layui-textarea">{$res.rule}</textarea>
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">
+                        多个值用|隔开，如三轨推拉门|二轨推拉门
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">&nbsp;</label>
+                    <div class="layui-input-inline" style="width: 250px">
+                        <input name="id" type="hidden" value="{$id}" />
+                        <button class="layui-btn layui-btn-sm" lay-filter="add" lay-submit="">保存</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+<script>
+    layui.use(['form', 'laydate', 'layer', 'upload'], function () {
+        $ = layui.jquery;
+        var form = layui.form;
+        var layer = layui.layer;
+        
+        // 显示当前选中的筛选条件
+		$('.layui-form').find('.imitate-select').each(function(){
+            var _this = $(this);
+			if(_this.children('ul').children('li[data-selected=true]')){
+				var tempTxt = _this.children('ul').children('li[data-selected=true]').html();
+				var tempVal = _this.children('ul').children('li[data-selected=true]').attr('data-value');
+				if(tempTxt != null && tempVal != null){
+					_this.children('.select-txt').attr('data-value',tempVal).html(tempTxt);
+					_this.children('input[type=hidden]').val(tempVal);
+				}
+			}
+        })
+        //监听提交
+        form.on('submit(add)', function (data) {
+            ajaxform("{:url('add_field_rule')}", data.field);
+            return false;
+        });
+    });
+
+    // 下拉列表
+	$('.imitate-select').click(function(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		var _this = $(this);
+		var clickSign = _this.attr('data-sign');
+		$('.imitate-select').removeAttr('data-sign').children('ul').hide();
+		if (clickSign == 'true') {
+			_this.children('ul').hide();
+			_this.removeAttr('data-sign');
+		} else {
+			_this.children('ul').show();
+			_this.attr('data-sign', 'true');
+		}
+	});
+
+	$('.imitate-select ul').delegate('li','click',function(e){
+		e.preventDefault();
+		e.stopPropagation();
+		var _this = $(this);
+		var tempTxt = _this.html();
+		var _thisValue = _this.attr('data-value');
+		_this.parent().parent().children('.select-txt').attr('data-value',_thisValue).html(tempTxt);
+		_this.parent().hide();
+		_this.parent().parent().removeAttr('data-sign');
+		var _clickTarget = _this.parent().attr('data-sign');
+		_this.parent().siblings('input[type=hidden]').val(_thisValue);
+	});
+	$(window).click(function(){
+		$('.imitate-select').removeAttr('data-sign').children('ul').hide();
+	}) 
+</script>
+</html>

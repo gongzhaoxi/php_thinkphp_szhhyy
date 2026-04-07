@@ -1,0 +1,368 @@
+<?php $current='6'; ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>微元生产工序报工管理系统,建材行业生产管理系统,门窗生产管理系统,微元科技,佛山市微元科技有限公司</title>
+{include file="public/header" /}
+
+</head>
+<style>
+</style>
+<body>
+	<div class="baogong_parameterSetting popup-box">
+		<div class="popup-header">
+			<div>参数设置</div>
+		</div>
+		<div class="popup-body">
+			{php}$index = 4;{/php}
+			{include file="setting/menu" /}
+			<div class="body-center">
+				<!-- 工序管理 -->
+				<div class="body-content-box body-nav-active">
+					<div class="content-header">
+						<div class="content-header-left">
+							<span class="header-left-item procedure-item" id="addRouteBtn">
+								<img src="__STATIC__/theme/index/img/icon_add_route.png">
+								<span>添加工艺路线</span>
+							</span>
+							<span class="header-left-item procedure-item" id="setProcedureBtn">
+								<img src="__STATIC__/theme/index/img/icon_setting.png">
+								<span>工序顺序设置</span>
+							</span>
+							<span class="header-left-item procedure-item" id="setGxBtn">
+								<img src="__STATIC__/theme/index/img/icon_setting.png">
+								<span>工序组设置</span>
+							</span>
+							<span class="header-left-item procedure-item" id="transationBtn">
+								<img src="__STATIC__/theme/index/img/icon_transation.png">
+								<span>固定流水工序</span>
+							</span>
+						</div>
+					</div>
+					<div class="content-center">
+						<form method="post" class="content-center-inner">
+							<div style="padding: 0 20px 20px;">
+								<button type="submit" class="layui-btn layui-btn-normal layui-btn-sm">一键更新排序</button>
+							</div>
+							<table class="layui-table parameter-table">
+								<thead>
+									<tr>
+										<th width="3%">排序</th>
+										<th width="5%">ID</th>
+										<th width="15%" class="text-align-left">工艺路线</th>
+										<th>工序排序</th>
+										<th width="8%">操作</th>
+									</tr>
+								</thead>
+								<tbody>
+									{volist name="data" id="li"}
+										<tr id="doclass_{$li.id}" {if $li['isdel']==1} class="a23" {/if}>
+											<td>
+												<input name="sort[]" type="text" style="width: 30px;height:20px;text-align:center;padding:0;" value="{$li.sort}">
+  												<input name="id[]" type="hidden" value="{$li.id}">
+											</td>
+											<td>{$li.id}</td>
+											<td class="td-class-group text-align-left">{$li.title}</td>
+											<td class="td-procedure">
+												{foreach $li['list'] as $k=>$al}
+												<span><?php echo htmlspecialchars_decode($al['dname']); ?></span>
+												{if count($li['list'])-($k+1) !== 0}<i>-</i>{/if}
+												{/foreach}
+											</td>
+											<td class="operate-box">
+												<span class="btn-normal btn-edit-procedure change" data-id="{$li.id}">修改</span>/
+												{if $li['isdel']==0}
+												<span class="btn-normal btn-danger doi" data-id="{$li.id}" data-type="{$li.isdel}">禁用</span>
+												{/if}
+												{if $li['isdel']==1}
+												<span class="btn-normal btn-danger doi" data-id="{$li.id}" data-type="{$li.isdel}">启用</span>
+												{/if}
+												{if condition="$li['isedit'] eq true"}
+												/ <span class="btn-normal btn-danger delete" data-id="{$li.id}">删除</span>
+												{/if}
+											</td>
+										</tr>
+									{/volist}
+								</tbody>
+							</table>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- 添加工艺路线 -->
+	<div class="modal-box modal-procedure" id="addRouteModal">
+		<div class="modal-content">
+			<div class="modal-header">
+				<div class="modal-header-left">
+					<div class="modal-header-title">
+						<img src="__STATIC__/theme/index/img/icon_add_route.png">
+						<span>添加工艺路线</span>
+					</div>
+				</div>
+				<div class="modal-header-right">
+					<span class="close-modal-btn"></span>
+				</div>
+			</div>
+			<div class="modal-body">
+				<div class="iframe-box">
+					<iframe class="myIframe" id="addRouteIframe" frameborder="0"></iframe>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- 设置工序程序 -->
+	<div class="modal-box modal-procedure" id="setProcedureModal">
+		<div class="modal-content">
+			<div class="modal-header">
+				<div class="modal-header-left">
+					<div class="modal-header-title">
+						<img src="__STATIC__/theme/index/img/icon_setting.png">
+						<span>设置工序程序</span>
+					</div>
+				</div>
+				<div class="modal-header-right">
+					<span class="close-modal-btn"></span>
+				</div>
+			</div>
+			<div class="modal-body">
+				<div class="iframe-box">
+					<iframe class="myIframe" id="setProcedureIframe" frameborder="0"></iframe>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- 固定流水工序 -->
+	<div class="modal-box modal-procedure" id="transationModal">
+		<div class="modal-content">
+			<div class="modal-header">
+				<div class="modal-header-left">
+					<div class="modal-header-title">
+						<img src="__STATIC__/theme/index/img/icon_transation.png">
+						<span>固定流水工序</span>
+					</div>
+				</div>
+				<div class="modal-header-right">
+					<span class="close-modal-btn"></span>
+				</div>
+			</div>
+			<div class="modal-body">
+				<div class="iframe-box">
+					<iframe class="myIframe" id="transationIframe" frameborder="0"></iframe>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- 工序组设置 -->
+	<div class="modal-box modal-procedure" id="setGxModal">
+		<div class="modal-content">
+			<div class="modal-header">
+				<div class="modal-header-left">
+					<div class="modal-header-title">
+						<img src="__STATIC__/theme/index/img/icon_transation.png">
+						<span>工序组设置</span>
+					</div>
+				</div>
+				<div class="modal-header-right">
+					<span class="close-modal-btn"></span>
+				</div>
+			</div>
+			<div class="modal-body">
+				<div class="iframe-box">
+					<iframe class="myIframe" id="myIframe_setGx" frameborder="0"></iframe>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- 修改工序 -->
+	<div class="modal-box" id="routeEditModal">
+		<div class="modal-content">
+			<div class="modal-header">
+				<div class="modal-header-title">
+					<span>修改工艺路线</span>
+				</div>
+				<div class="modal-header-right">
+					<img src="__STATIC__/theme/index/img/icon_close_3.png" class="close-modal-btn">
+				</div>
+			</div>
+			<div class="modal-body">
+				<div class="modal-body-top">
+					<div>工艺路线名称：</div>
+					<input type="text" placeholder="输入用户名" value="平开门机加工">
+				</div>
+				<div class="modal-body-middle">
+					<div class="procedure-group">
+						<input type="text" placeholder="名称" class="input-name">
+						<div class="dividing-line"></div>
+						<div class="increment-box">
+							<input type="text" placeholder="增值" class="input-increment">
+							<div class="select-custom select-unit">
+								<span class="select-txt">选择单位</span>
+								<ul>
+									<li>单位1</li>
+									<li>单位2</li>
+									<li>单位3</li>
+								</ul>
+								<span class="triangle-down"></span>
+							</div>
+						</div>
+						<div class="dividing-line"></div>
+						<div class="select-custom select-time">
+							<span class="select-txt">需报开始和结束</span>
+							<ul>
+								<li>单位1</li>
+								<li>单位2</li>
+								<li>单位3</li>
+							</ul>
+							<span class="triangle-down"></span>
+						</div>
+						<div class="dividing-line"></div>
+						<div class="select-custom select-group">
+							<span class="select-txt">物料组</span>
+							<ul>
+								<li>开料组</li>
+								<li>备料组</li>
+								<li>开料组</li>
+							</ul>
+							<span class="triangle-down"></span>
+						</div>
+						<div class="dividing-line"></div>
+						<div class="proceduce-num">
+							<span>需报数量</span>
+							<div class="imitate-checkbox proceduce-num-icon">
+								<span></span>
+							</div>
+							<div class="delete-btn"></div>
+						</div>
+					</div>
+					<div class="add-proceduce-box">
+						<img src="__STATIC__/theme/index/img/icon_add_work.png">
+						<span>添加工序</span>
+					</div>
+				</div>
+				<div class="modal-body-bottom">
+					<div>确认修改</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	{include file="setting/timeset" /}
+</body>
+<script type="text/javascript">
+	// 添加工艺路线
+	$('#addRouteBtn').click(function(e){
+		e.preventDefault();
+		e.stopPropagation();
+		$('#addRouteModal').fadeIn();
+		$('#addRouteIframe').attr('src','gx_add');
+	});
+	// 设置工序顺序
+	$('#setProcedureBtn').click(function(e){
+		e.preventDefault();
+		e.stopPropagation();
+		$('#setProcedureModal').fadeIn();
+		$('#setProcedureIframe').attr('src','gx_order');
+	});
+	// 设置工序组
+	$('#setGxBtn').click(function(e){
+		e.preventDefault();
+		e.stopPropagation();
+		$('#setGxModal').fadeIn();
+		$('#myIframe_setGx').attr('src','gx_group');
+	});
+	// 固定工序路线
+	$('#transationBtn').click(function(e){
+		e.preventDefault();
+		e.stopPropagation();
+		$('#transationModal').fadeIn();
+		$('#transationIframe').attr('src','fix_gx');
+	});
+	
+	//工艺路线修改
+	$('.change').click(function(e){
+		e.preventDefault();
+		e.stopPropagation();
+		$('#addRouteModal').fadeIn();
+		var id = $(this).data("id");
+		$('#addRouteIframe').attr('src',"gx_edit?id="+id);
+	});
+	
+	
+	//工序的禁用、启用
+	$('.doi').click(function(){
+		var type=$(this).data("type");
+		var id=$(this).data("id");
+		var text="";
+		if(type==0){
+			text="是否禁用";
+		}else{
+			text="是否启用";
+		}
+		var data={};
+		data['type']=type;
+		data['id']=id;
+		layer.confirm(text,{icon:3,title:'提示'},function(index){
+			$.ajax({
+				url:"{:Url('Setting/gx_disable')}",
+				data:data,
+				dataType: "JSON",
+				success:function(obj){
+					if(obj.code==0){
+						var lo=layer.load(0);
+						window.location.reload();
+						layer.close(lo);
+					}
+				}
+				
+			});
+			layer.close(index);
+		});
+		
+	});
+	//工序的删除
+	$('.delete').click(function(){
+		var id=$(this).data("id");
+		console.log(id);
+		var text="";
+		var data={};
+		data['id']=id;
+		layer.confirm("确认要删除工序吗？",{icon:3,title:'提示'},function(index){
+			$.ajax({
+				url:"{:Url('Setting/gx_del')}",
+				data:data,
+				dataType: "JSON",
+				success:function(obj){
+					if(obj.status==1){
+						$("#doclass_"+id).remove();
+						layer.msg('删除成功');
+					}else{
+						layer.msg(obj.msg);
+					}
+				}
+				
+			});
+			layer.close(index);
+		});
+		
+	});
+	// 关闭弹窗
+	$('.close-modal-btn').click(function () {
+		$('.modal-box').fadeOut();
+	});
+	$(window).click(function(){
+		var elem = event.srcElement ? event.srcElement : event.target;
+		while (elem) { //循环判断至跟节点，防止点击的是div子元素 
+			if (elem.id && elem.id == 'orderScreenBox') {
+				return;
+			}
+			if($(elem).hasClass('modal-content')){
+				return;
+			}
+			elem = elem.parentNode;
+		}
+		$('.modal-box').fadeOut();
+	});
+</script>
+</html>

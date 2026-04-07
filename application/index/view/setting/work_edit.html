@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+<meta name="referrer" content="never">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>生产进度扫码报工系统</title>
+<link href="__STATIC__/index/css/index.css" rel="stylesheet" />
+<style type="text/css">
+.mb{display:none;width:100%;height:100%;background:black;opacity:0.6;position:fixed;z-index:1000;}
+.true{width:200px;height:40px;line-height:40px;background:#FF4040;color:#fff;border:0;outline:none;border-radius:8px;margin-left:26%;margin-top:8px;margin-bottom:10px; cursor:pointer;}	
+.lis{height:auto;margin-top:10px;margin:20px 30px;display:inline-block;}
+.lis input{width:130px;height:30px;line-height:30px;border-radius:4px;border:0;padding-left:6px;margin-top:10px; margin-right:10px;}
+.lis img{width:15px;height:15px;}
+.in_inp{display:flex; font-size:12px; line-height:30px; height:30px; margin:10px 0px;; margin-bottom:0px; color:#555;}
+.add{margin-bottom:50px;background:#ffffff;z-index:9999;left:28%;top:10%;border-radius:8px;padding:15px;}
+.add div{width:100%;line-height:30px;margin-top:4px;font-size:14px;}
+.add div input{padding-left:4px;height:30px;line-height:30px;border-radius:4px;border:0;margin-top:2px;}
+.add div select{line-height:30px;height:30px;position: relative;top: 3px;border-radius: 5px;border: 1px solid #999;font: 12px/30px "微软雅黑";height: 30px;min-width: 100px;padding: 0px 10px;}
+.add div .spa{letter-spacing:4px;}
+.btne{width:80px;height:40px;line-height:40px;background:#FF4040;color:#fff;border:0;outline:none;border-radius:8px;margin-left:42%;margin-top:8px;margin-bottom:10px;}
+#title{ line-height:35px; font-size:12px; text-align:left;padding:0px; padding:0px 10px 5px 10px; float:left; width:98%;}
+#title input{ height:35px;}
+.cur{ cursor:pointer;}
+.ddmwpw{ width:760px;height:auto;}
+.aaycxeg{ line-height:35px; height:auto; font-size:12px; text-align:left; margin:0px; padding:0px; padding:0px 10px 10px 10px; float:left; width:266px; background:#e9e9e9; border: 1px solid #9999;margin:5px;}
+.aaycxeg > div{ text-align:left; float:left; display:inline; margin:0px; padding:0px; padding-top:5px;}
+.aaycxeg > div input{ width:150px;text-align:center;padding:0px;}
+.aaycxeg > div input.aajf{ width:30px;padding:0;}
+.aaycxeg > div img{width:20px;height:20px;padding-top:4px;}
+#iglk{text-align:left; height:30px;}
+.span{ float:left;background:#CC0000; border:2px solid #fff; padding:0px 5px; color:#fff;}
+.other{display:flex;width:100%;}
+.other div input{width:36px;}
+.other div{margin-left:4px;background:#999;border:2px solid #fff;line-height:40px;padding:2px;font-size:13px}
+.gxnameinput{height: 30px;line-height: 30px;border-radius: 4px;border: 0;margin-top: 4px;width:140px;margin-left:20px}
+.btne{display:inline-block;text-align:center;width:80px;height:40px;line-height:40px;background:#FF4040;color:#fff;border:0;outline:none;border-radius:8px;margin-left:42%;margin-top:8px;margin-bottom:10px;}
+.aaycxeg > div input.needum{width:20px;}
+#gxname{width:220px;}
+.groups{ width:760px;height:auto;}
+.hidden{display:none;}
+.aaycxeg .aaa{padding:0;position:absolute;width: 20px;height: 22px;line-height: 22px; right: 70px; cursor:pointer;margin-top: 10px;}
+.add div input{border-radius:5px; border:1px solid #999;font:12px/30px "微软雅黑"; height:30px; padding:0px 10px; }
+.add div.neednum{width:120px;}
+.add div.neednum span{display:inline-block;height:40px;float:left;}
+</style>
+</head> 
+
+<body>
+
+<!-- 隐身html(可复制) -->
+
+<!-- 添加组 -->
+<div id="groups_hidden" class="hidden">
+<div class='groups' style='width:760px;'>
+	<div>
+		<strong class="gtitleindex">第组工序</strong>
+		<input type='text' name="gname" placeholder='工序组名称' class='gname gxnameinput'/>
+		  &nbsp;&nbsp;
+		  	出入库 : <select class="gstate">
+		  				<option value='0'></option>
+		  				<option value='1'>入库</option>
+		  				<option value='2'>出库</option>
+		  			</select>
+		  <div class="delete_group" style='width:32px;height:32px;float:right;'>
+		  <img src='__STATIC__/index/img/dels.png'></img>
+		  </div>
+	</div>
+	<div class="aaycxeg_parent">
+		<div class='aaycxeg' style='width:95%'>
+			<div class='g-content' style='float:none;'>
+				<div  style='display:flex;line-height:36px;'>
+				<input type='text' name="gxname" class="gxname" placeholder='名称' value=''>-<input name="gxday" class="gxday aajf" type='text' autocomplete='off' value='' placeholder='量值' class='aajf'>
+				<select class="work_unit">
+					<option value="0">选择单位</option>
+					{volist name="ab_unit" id="vo"}
+			    		<option value="{$vo['id']}">{$vo['label']}</option>
+		    		{/volist}
+			    </select>
+				<select class="gxstate">
+			    		<option value='1'>需报开始和结束</option>
+			    		<option value='2'>只报结束时间</option>
+			    </select>
+			    <div class="neednum">
+			    <span>&nbsp;需报数量 &nbsp;</span><input name="gxnum" type="checkbox" value="1" class="needum"/>
+			    </div>
+			    <div class="delete_gxline" style='width:24px;height:30px;margin-left:10px;cursor:pointer;'>
+			    <img src='__STATIC__/index/img/del.png'></img>
+			    </div>
+			    </div>
+			 </div>
+			 <div class='addgx lie cur' style='display:flex;margin-top:6px'>
+			 	<img src='__STATIC__/index/img/add.png' width='15'>
+			 		<span style='margin-left:2px'>加工序</span>
+			 </div>
+		</div>
+	</div>
+	<div class='addbx model cur' style='margin-left:6px;width:20%;'>
+		<div style='display:flex'><img src='__STATIC__/index/img/add.png' width='15' style='width:20px;height:20px;padding-top:4px;'>
+		<span style='margin-left:2px'>添加拼列工序</span>
+		</div>
+	</div>
+</div>
+</div>
+
+<!-- 添加并列工序 -->
+<div id="binglie_hidden" class="hidden">
+<div class='aaycxeg' style='width:95%'>
+	<div class="aaa">
+	<img src='__STATIC__/index/img/dels.png' style='padding:0'></img>
+	</div>
+	<div class='g-content' style='float:none;'>
+		<div class='ind' style='display:flex;line-height:36px;'>
+			<input type='text' name="gxname" class="gxname" placeholder='名称' value=''>-<input name="gxday" class="gxday aajf" type='text' autocomplete='off' value='' placeholder='量值' class='aajf'>
+			<select class="work_unit">
+					<option value="0">选择单位</option>
+					{volist name="ab_unit" id="vo"}
+			    		<option value="{$vo['id']}">{$vo['label']}</option>
+		    		{/volist}
+			    </select>
+			<select class="gxstate">
+		  		<option value='1'>需报开始和结束</option>
+		  		<option value='2'>只报结束时间</option>
+		  	</select>
+		  	<div class="neednum">
+		  	<span>&nbsp;需报数量 &nbsp;</span><input name="gxnum" type="checkbox" value="1" class="needum"/>
+		  	</div>
+		  	<div class="delete_gxline" style='width:24px;height:30px;margin-left:10px;cursor:pointer;'>
+		  		<img src='__STATIC__/index/img/del.png'></img>
+		  	</div>
+		</div>
+	</div>
+	<div class='addgx lie cur' style='display:flex;margin-top:6px'>
+	<img src='__STATIC__/index/img/add.png' width='15'><span style='margin-left:2px'>加工序</span>
+	</div>
+</div>
+</div>
+
+
+<!-- 添加单项工序 -->
+<div id="gxline_hidden" class="hidden">
+<div style='line-height:36px;display:flex;'>
+	<input type='text' name="gxname" class="gxname" placeholder='名称' value=''>-<input name="gxday" class="gxday aajf" type='text' autocomplete='off' value='' placeholder='量值' class='aajf' style='margin-right:4px;'>
+	<select class="work_unit">
+					<option value="0">选择单位</option>
+					{volist name="ab_unit" id="vo"}
+			    		<option value="{$vo['id']}">{$vo['label']}</option>
+		    		{/volist}
+   	</select>
+	<select class="gxstate">
+		<option value='1'>需报开始和结束</option>
+		<option value='2'>只报结束时间</option>
+	</select>
+	<div class="neednum">
+	<span>&nbsp;需报数量 &nbsp;</span><input name="gxnum" type="checkbox" value="1" class="needum"/>
+	</div>
+	<div class="delete_gxline" style='width:24px;height:30px;margin-left:10px;cursor:pointer;'>
+		<img src='__STATIC__/index/img/del.png'></img>
+	</div>
+</div>
+</div>
+
+
+<!-- 隐身html(可复制)结束 -->
+
+
+
+<!-- 工序添加 -->
+<div class="add">
+  <form action="" id="forme" method="post">
+	<div>
+		<label>工艺路线名称：<input type="text" id="gxname" placeholder="请输入工艺路线名称" value="{$list.title}"/></label>
+		<label style="margin-left:20px">总周期：<input type="text" id="day" placeholder="总周期" style="width:50px" value="{$list.day}"/></label>
+	</div>
+    
+    <!-- ///////////////////////         内容循环  开始          //////////////////////////////// -->
+    {php} $index=0;{/php}
+	{volist name="list.gl" id="vo"}
+	
+    <div class="groups" style="width:760px;" id="{$key}">
+    <div><strong class="gtitleindex">第{$index+1}组工序</strong>
+    	<input type="text" name="gname" class="gname gxnameinput" placeholder="工序组名称" value="{php} if(isset($gp_list[$key])&&trim($gp_list[$key]['name'])!=''){ echo $gp_list[$key]['name'];} {/php}"/>  &nbsp;&nbsp;
+    	出入库 : <select name="gstate" class="gstate">
+    				<option value="0"></option>
+    				<option value="1" {php} if(isset($gp_list[$key])){ if($gp_list[$key]['inouts']==1){echo 'selected="selected"';} } {/php}>入库</option>
+    				<option value="2" {php} if(isset($gp_list[$key])){ if($gp_list[$key]['inouts']==2){echo 'selected="selected"';} } {/php}>出库</option>
+			   </select>
+		 <div class="delete_group"  style='width:32px;height:32px;float:right;'>
+		  <img src='__STATIC__/index/img/dels.png'></img>
+		 </div>
+    </div>
+	
+    <div class="aaycxeg_parent">
+    {php} $aindex=1;{/php}
+  	{volist name="vo" id="vl"}
+  	
+    <!-- 并列工序循环-->
+    <div class="aaycxeg" style="width:95%;">
+    	<div class="aaa">
+		<img src='__STATIC__/index/img/dels.png' style='padding:0'></img>
+		</div>
+    <div class="g-content" style="float:none;">
+    {volist name="vl" id="va"}
+     <!-- 单工序循环-->
+    <div class="" style="display:flex;line-height:36px;">
+    	<input type="text" name="gxname" class="gxname" placeholder="名称" value="<?php echo htmlspecialchars_decode($va['dname'])?>">
+     - <input type="text"  name="gxday" class="gxday aajf" autocomplete="off" value="{$va.work_value}" placeholder="量值" style="margin-right:4px;">
+     <select class="work_unit">
+					<option value="0">选择单位</option>
+					{volist name="ab_unit" id="vab"}
+			    		<option value="{$vab['id']}" {if condition="$va['work_unit'] eq $vab['id']"}selected="selected"{/if}>{$vab['label']}</option>
+		    		{/volist}
+    	</select>
+     <select  class="gxstate">
+     			<option value="1" {if condition="$va['state'] eq '1'"}selected="selected"{/if}>需报开始和结束</option>
+     			<option value="2" {if condition="$va['state'] eq '2'"}selected="selected"{/if}>只报结束时间</option>
+     	</select>
+     	<div class="neednum">
+     	<span>&nbsp;需报数量 &nbsp;</span><input name="gxnum" type="checkbox" value="1" class="needum" {php} if($va['need_num']==1){echo 'checked="checked"';} {/php}/>
+     	</div>
+    	<div class="delete_gxline" style="width:24px;height:30px;margin-left:10px;cursor:pointer;"><img src="__STATIC__/index/img/del.png"></img></div>
+   	</div>
+   	{/volist}
+    </div>
+    <div class="addgx lie cur" style="display:flex;margin-top:6px"><img src="__STATIC__/index/img/add.png" width="15"><span style="margin-left:2px">加工序</span></div>
+    </div>
+    <!-- 并列工序循环-->
+     {php} $aindex++;{/php}
+	{/volist}
+    </div>
+
+    <div class="addbx model cur" style="margin-left:6px;width:20%;">
+    	<div style="display:flex;"><img src="__STATIC__/index/img/add.png" width="15" style="width:20px;height:20px;padding-top:4px;">
+    	<span style="margin-left:2px">添加拼列工序</span></div>
+    </div>
+
+    </div>
+    {php} $index++;{/php}
+    {/volist}
+    <!-- ///////////////////////         内容循环  结束          //////////////////////////////// -->
+  </form>
+
+  <div class="clear"></div>
+    <div class="addgroup row cur" style="margin-top:20px;"><span class="span">+ 添加工序组</span></div>
+    <div class="clear"></div>
+  <div><a class="btne cur" href="javascript:void(0);">确认修改</a></div>
+  <div class="clear"></div>
+</div>
+<!-- 工序添加end -->
+
+
+<script src="__STATIC__index/js/jquery.min.js"></script>
+<script src="__STATIC__index/js/layer/layer.js"></script>
+<script type="text/javascript">
+	$(document).ready(function(){
+		addEvent();
+		
+		//添加工序模板
+		{present name="work_add"}
+		$(".addgroup").click();
+		{/present}
+	});
+	//删除事件
+	function unbindEvent(){
+		$(".delete_group").unbind("click"); 
+		$(".aaa").unbind("click"); 
+		$(".delete_gxline").unbind("click"); 
+		$(".addgroup").unbind("click"); 
+		$(".addbx").unbind("click"); 
+		$(".addgx").unbind("click"); 
+	}
+	
+	function addEvent(){
+		
+		unbindEvent();
+		
+		//删除组
+		$(".delete_group").click(function(){
+			$(this).parent().parent().remove();
+			addEvent();
+			update_group();
+		});
+		
+		//删除并列工序
+		$(".aaa").click(function(){
+			$(this).parent().remove();
+			addEvent();
+		});
+	
+		//删除小工序行
+		$(".delete_gxline").click(function(){
+			$(this).parent().remove();
+			addEvent();
+		});
+		
+		//添加组
+		$(".addgroup").click(function(){
+			addgroup();
+		});
+		//添加并列
+		$(".addbx").click(function(){
+			addbx($(this));
+		});
+		//添加小工序
+		$(".addgx").click(function(){
+			addgx($(this));
+		});
+	}
+	
+	//添加组
+	function addgroup(){
+		var _html=$("#groups_hidden").html();
+		$("#forme").append(_html);
+		update_group();
+		addEvent();
+	}
+	
+	//添加并列
+	function addbx(obj){
+		var _html=$("#binglie_hidden").html();
+		obj.parent().find(".aaycxeg_parent").append(_html);
+		addEvent();
+	}
+	
+	//添加小工序
+	function addgx(obj){
+		var _html=$("#gxline_hidden").html();
+		obj.siblings(".g-content").append(_html);
+		addEvent();
+	}
+	//更新组名
+	function update_group(){
+		$("#forme").find(".gtitleindex").each(function(i){
+			$(this).html("第"+String(i+1)+"组工序");
+		})
+	}
+	
+	//保存工序
+	$('.btne').click(function(){
+		
+		var title=$('#gxname').val();//工艺名称
+		var day=$('#day').val();//总周期
+		var id = "{$list['id']}";//工艺线的ID
+		var groups=new Array();//所有的组的信息
+		
+		var isok=true;//检查数据不为空
+		var tips='';//错误提示
+		//遍历所有的工序组
+		$("#forme").find(".groups").each(function(i){
+			var gid=i;
+			var gtemp={};
+				gtemp.name=$(this).find(".gname").val();//组名
+				gtemp.state=$(this).find(".gstate").val();//出入库
+				if(gtemp.name==''){
+					isok=false;
+					tips="请填写组名";
+				}
+			//记录下面所有并列工序
+			var gxs=[];
+				
+			//遍历下面的并列工序
+			$(this).find(".aaycxeg").each(function(k){
+				
+				//查找小工序
+				var binlie=$(this);
+				var gxname=[];
+				var gxday=[];//变成量值
+				var gxunit=[];//量值单位
+				var gxstate=[];
+				var gxneednum=[];
+				//查找小工序名称
+				binlie.find(".gxname").each(function(n){
+					if($(this).val()==''){
+						isok=false;
+						tips="请填写工序名";
+					}
+					gxname.push($(this).val());
+				});
+				//查找小工序天数
+				binlie.find(".gxday").each(function(n){
+					if($(this).val()==''){
+						isok=false;
+						tips="请填写量值";
+					}
+					gxday.push($(this).val());
+				});
+				//查找小工序量值单位
+				binlie.find(".work_unit").each(function(n){
+					var _tval=$(this).find("option:selected").val();
+					if(_tval==''||_tval==0){
+						isok=false;
+						tips="请选择单位";
+					}
+					gxunit.push(_tval);
+				});
+				//查找小工序需报开始或结束
+				binlie.find(".gxstate").each(function(n){
+					gxstate.push($(this).find("option:selected").val());
+				});
+				
+				//查找报数量
+				binlie.find(".needum").each(function(n){
+					if($(this).attr("checked")){
+						gxneednum.push(1);
+					}else{
+						gxneednum.push(0);
+					}
+				});
+				
+				var gx=[];
+				
+				for(var j in gxname){
+					var t={};
+					t.name=gxname[j];
+					t.day=gxday[j];
+					t.unit=gxunit[j];
+					t.state=gxstate[j];//报开始和结束状态
+					t.need_num=gxneednum[j];
+					gx.push(t);
+				}
+				
+				gxs[k]=gx;
+			});
+			
+				gtemp.gxs=gxs;
+				groups[gid]=gtemp;
+		});
+		
+		if(!isok){
+			layer.msg(tips);
+			return;
+		}
+		
+		 var data = {};
+	     data['id']=id;
+	     data['day']=day;
+	     data['title'] = title;
+	     data['groups'] = groups;//所有组和下级数组
+
+	   	$.post("{:Url('Setting/editgx2')}",data,function(obj){
+	       if(obj.code==1){
+	         layer.msg('修改工序成功');
+	         var index=parent.layer.getFrameIndex(window.name);
+	         setTimeout(function(){
+	        	 parent.layer.close(index);
+	        	 window.parent.location.reload();
+	         },2000)
+	       }else{
+	    	   layer.msg('保存失败，请重试');
+	       }
+	     },'json');
+
+	   	
+	})
+
+</script>
+</body>
+</html>

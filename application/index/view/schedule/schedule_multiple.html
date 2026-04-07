@@ -1,0 +1,42 @@
+<div class="scheduling-box-top">
+	<div class="scheduling-detail">
+		<div>
+		排产日期：{php} echo date('Y-m-d',$schedule['do_time']); {/php}
+		</div>
+		<div>
+		订单总面积：{$schedule['square']}㎡
+		</div>
+		<div>
+		订单总扇数：{$schedule['fans']}
+		</div>
+		<div>订单总数：{$schedule['ordernum']}</div>
+	</div>
+	{present name="schedule_no"}
+	<img src="{$schedule_no}">
+	{/present}
+</div>
+<div class="scheduling-table">
+	<table width="100%" border="1" cellspacing="0" cellpadding="0" class="layui-table">
+		<thead>
+			<tr>
+				{volist name="fieldList" id="vo"}
+				<th>{$vo['explains']}</th>
+				{/volist}
+			</tr>
+		</thead>
+		<tbody>
+			{volist name="orders" id="vo"}
+			<tr>
+				{php}
+				foreach($fieldList as $field=>$name){
+				{/php}
+				<td>{php} echo $vo[$field]!=''?$vo[$field]:'&nbsp;';{/php}
+				</td>
+				{php}
+				}
+				{/php}
+			</tr>
+			{/volist}
+		</tbody>
+	</table>
+</div>

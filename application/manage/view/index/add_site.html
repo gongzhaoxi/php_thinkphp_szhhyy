@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>佛山市微元科技-扫码报工系统</title>
+
+	<link href="__STATIC__/theme/manage/css/bootstrap.min.css" rel="stylesheet">
+	<link href="__STATIC__/theme/manage/css/bootstrap-table.css" rel="stylesheet">
+	<link href="__STATIC__/theme/manage/css/styles.css" rel="stylesheet">
+
+	<!--[if lt IE 9]>
+	<script src="__STATIC__/theme/manage/js/html5shiv.js"></script>
+	<script src="__STATIC__/theme/manage/js/respond.min.js"></script>
+	<![endif]-->
+	<style type="text/css">
+		.col-md-6{ width: 98%;}
+		.form-group{ width:31%; padding: 0.5%; display: inline-block; background:#e9e9e9; margin: 0.5%; border:1px solid #CCC; }
+	</style>
+</head>
+
+<body>
+
+{include file="public/header" /}
+{include file="public/menu" /}
+
+<div class="col-sm-9 col-sm-offset-3 col-lg-10 col-lg-offset-2 main">
+	<div class="row">
+		<ol class="breadcrumb">
+			<li><a href="#"><span class="glyphicon glyphicon-home"></span></a></li>
+			<li class="active">站点列表</li>
+		</ol>
+	</div>
+
+	<div class="row">
+		<div class="col-lg-12">
+			<h1 class="page-header"><a href="{:url('Index/index')}">返回列表</a></h1>
+		</div>
+	</div>
+
+
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<a class="btn btn-primary">编辑站点</a>
+				</div>
+				<div class="panel-body">
+					<div class="col-md-6">
+						<form role="form" >
+							<div class="form-group">
+								<label>项目标识</label>
+								<input class="form-control" id="tag" value="{present name="tag"}{$tag}{else/}{$one['tag']}{/present}" placeholder="请填写站点名称">
+							</div>
+							<div class="form-group">
+								<label>名称</label>
+								<input class="form-control" id="sitename" value="{$one['sitename']}" placeholder="请填写站点名称">
+							</div>
+
+							<div class="form-group">
+								<label>域名</label>
+								<input class="form-control" id="domain" value="{$one['domain']}"  placeholder="请填写如:test.ecloudm.com">
+							</div>
+
+							<div class="form-group">
+								<label>数据库名:</label>
+								<input class="form-control" id="dbname" value="{$one['dbname']}"  placeholder="数据库名称">
+							</div>
+
+							<div class="form-group">
+								<label>账号</label>
+								<input class="form-control" id="account" value="{$one['account']}"  placeholder="数据库账号">
+							</div>
+
+							<div class="form-group">
+								<label>数据库密码</label>
+								<input class="form-control" id="password" value="{$one['password']}"  placeholder="数据库密码">
+							</div>
+
+							<div class="form-group">
+								<label>站点开启状态</label>
+								<div class="radio">
+									<label>
+										<input type="radio" name="status" value="1" {if condition="$one['status'] eq '1'"}checked="checked"{/if}>开启
+									</label>
+								</div>
+								<div class="radio">
+									<label>
+										<input type="radio" name="status" value="0" {if condition="$one['status'] neq '1'"}checked="checked"{/if}>关闭
+									</label>
+								</div>
+							</div>
+							<div class="form-group">
+								<label>菜单显示</label>
+								<div class="radio">
+									<label>
+										<input type="checkbox" name="menu[]" value="index" {php} if(isset($one['menu'])&&in_array('index',$one['menu'])){ echo 'checked="checked"'; } {/php}> 首页
+									</label>
+									<label>
+										<input type="checkbox" name="menu[]" value="orders" {php} if(isset($one['menu'])&&in_array('orders',$one['menu'])){ echo 'checked="checked"'; } {/php}> 全部订单
+									</label>
+									<label>
+										<input type="checkbox" name="menu[]" value="them" {php} if(isset($one['menu'])&&in_array('them',$one['menu'])){ echo 'checked="checked"'; } {/php}> 入库订单
+									</label>
+									<label>
+										<input type="checkbox" name="menu[]" value="out" {php} if(isset($one['menu'])&&in_array('out',$one['menu'])){ echo 'checked="checked"'; } {/php}> 出库订单
+									</label>
+									<label>
+										<input type="checkbox" name="menu[]" value="warm" {php} if(isset($one['menu'])&&in_array('warm',$one['menu'])){ echo 'checked="checked"'; } {/php}> 预警订单
+									</label>
+									<label>
+										<input type="checkbox" name="menu[]" value="setting" {php} if(isset($one['menu'])&&in_array('setting',$one['menu'])){ echo 'checked="checked"'; } {/php}>参数设置
+									</label>
+								</div>
+							</div>
+
+<!-- 							<div class="form-group">
+								<label>新版工序(启用新版工艺路线设置)</label>
+								<div class="radio">
+									<label>
+										<input type="radio" name="newgx" value="1" {if condition="$one['newgx'] lt '2'"}checked="checked"{/if}>是
+									</label>
+								</div>
+								<div class="radio">
+									<label>
+										<input type="radio" name="newgx" value="3" {if condition="$one['newgx'] eq '3'"}checked="checked"{/if}>否
+									</label>
+								</div>
+							</div> -->
+
+							<div class="form-group">
+								<label>排产功能</label>
+								<div class="radio">
+									<label>
+										<input type="radio" name="schedule" value="1" {if condition="$one['schedule'] eq '1'"}checked="checked"{/if}>开启
+									</label>
+								</div>
+								<div class="radio">
+									<label>
+										<input type="radio" name="schedule" value="0" {if condition="$one['schedule'] neq '1'"}checked="checked"{/if}>关闭
+									</label>
+								</div>
+							</div>
+							<div class="form-group">
+								<label>预生产计划</label>
+								<div class="radio">
+									<label>
+										<input type="radio" name="preproduct" value="1" {if condition="$one['preproduct'] eq '1'"}checked="checked"{/if}>开启
+									</label>
+								</div>
+								<div class="radio">
+									<label>
+										<input type="radio" name="preproduct" value="0" {if condition="$one['preproduct'] neq '1'"}checked="checked"{/if}>关闭
+									</label>
+								</div>
+							</div>
+							<div class="form-group">
+								<label>玻璃计划</label>
+								<div class="radio">
+									<label>
+										<input type="radio" name="glass_plan" value="1" {if condition="$one['glass_plan'] eq '1'"}checked="checked"{/if}>开启
+									</label>
+								</div>
+								<div class="radio">
+									<label>
+										<input type="radio" name="glass_plan" value="0" {if condition="$one['glass_plan'] neq '1'"}checked="checked"{/if}>关闭
+									</label>
+								</div>
+							</div>
+							<div class="form-group">
+								<label>看板功能</label>
+								<div class="radio">
+									<label>
+										<input type="radio" name="databoard" value="1" {if condition="$one['databoard'] eq '1'"}checked="checked"{/if}>开启
+									</label>
+								</div>
+								<div class="radio">
+									<label>
+										<input type="radio" name="databoard" value="0" {if condition="$one['databoard'] neq '1'"}checked="checked"{/if}>关闭
+									</label>
+								</div>
+							</div>
+
+							<div class="form-group">
+								<label>计件工资</label>
+								<div class="radio">
+									<label>
+										<input type="radio" name="salary" value="1" {if condition="$one['salary'] eq '1'"}checked="checked"{/if}>开启
+									</label>
+								</div>
+								<div class="radio">
+									<label>
+										<input type="radio" name="salary" value="0" {if condition="$one['salary'] neq '1'"}checked="checked"{/if}>关闭
+									</label>
+								</div>
+							</div>
+
+<!-- 							<div class="form-group">
+								<label>锁定字段(锁定后不能修改字段管理)</label>
+								<div class="radio">
+									<label>
+										<input type="radio" name="lockfield" value="1" {if condition="$one['lockfield'] eq '1'"}checked="checked"{/if}>是
+									</label>
+								</div>
+								<div class="radio">
+									<label>
+										<input type="radio" name="lockfield" value="0" {if condition="$one['lockfield'] neq '1'"}checked="checked"{/if}>否
+									</label>
+								</div>
+							</div> -->
+
+<!-- 							<div class="form-group">
+								<label>小程序不显示自定义路线</label>
+								<div class="radio">
+									<label>
+										<input type="radio" name="noselfy" value="1" {if condition="$one['noselfy'] eq '1'"}checked="checked"{/if}>是
+									</label>
+								</div>
+								<div class="radio">
+									<label>
+										<input type="radio" name="noselfy" value="0" {if condition="$one['noselfy'] neq '1'"}checked="checked"{/if}>否
+									</label>
+								</div>
+							</div> -->
+
+							<div class="form-group">
+								<label>固定报工流程(必须按顺序报工)</label>
+								<div class="radio">
+									<label>
+										<input type="radio" name="reportorder" value="1" {if condition="$one['reportorder'] eq '1'"}checked="checked"{/if}>是
+									</label>
+								</div>
+								<div class="radio">
+									<label>
+										<input type="radio" name="reportorder" value="0" {if condition="$one['reportorder'] neq '1'"}checked="checked"{/if}>否
+									</label>
+								</div>
+							</div>
+
+							<div class="form-group">
+								<label>重复订单报工(订单可重复多次工序路线报工)</label>
+								<div class="radio">
+									<label>
+										<input type="radio" name="repeatorder" value="1" {if condition="$one['repeatorder'] eq '1'"}checked="checked"{/if}>是
+									</label>
+								</div>
+								<div class="radio">
+									<label>
+										<input type="radio" name="repeatorder" value="0" {if condition="$one['repeatorder'] neq '1'"}checked="checked"{/if}>否
+									</label>
+								</div>
+							</div>
+
+
+							<div class="form-group">
+								<label>半成品打印</label>
+								<div class="radio">
+									<label>
+										<input type="radio" name="product-print" value="1" {if condition="$one['product-print'] eq '1'"}checked="checked"{/if}>开启
+									</label>
+								</div>
+								<div class="radio">
+									<label>
+										<input type="radio" name="product-print" value="0" {if condition="$one['product-print'] neq '1'"}checked="checked"{/if}>关闭
+									</label>
+								</div>
+							</div>
+							<div class="form-group">
+								<label>切割方案打印</label>
+								<div class="radio">
+									<label>
+										<input type="radio" name="cut-print" value="1" {if condition="$one['cut-print'] eq '1'"}checked="checked"{/if}>开启
+									</label>
+								</div>
+								<div class="radio">
+									<label>
+										<input type="radio" name="cut-print" value="0" {if condition="$one['cut-print'] neq '1'"}checked="checked"{/if}>关闭
+									</label>
+								</div>
+							</div>
+
+							<div class="form-group">
+								<label>固定入库工序</label>
+								<div class="radio">
+									<label>
+										<input type="radio" name="fix_into_gx" value="1" {if condition="$one['fix_gx'] eq '1'"}checked="checked"{/if}>开启
+									</label>
+								</div>
+								<div class="radio">
+									<label>
+										<input type="radio" name="fix_into_gx" value="0" {if condition="$one['fix_gx'] neq '1'"}checked="checked"{/if}>关闭
+									</label>
+								</div>
+							</div>
+
+							<div class="form-group">
+								<label>使用半成品出入库</label>
+								<div class="radio">
+									<label>
+										<input type="radio" name="part_into" value="1" {if condition="$one['part_into'] eq '1'"}checked="checked"{/if}>开启
+									</label>
+								</div>
+								<div class="radio">
+									<label>
+										<input type="radio" name="part_into" value="0" {if condition="$one['part_into'] neq '1'"}checked="checked"{/if}>关闭
+									</label>
+								</div>
+								<input class="form-control" id="erp_url" value="{$one['erp_url']}"  placeholder="开启则需填写半成品出入库域名">
+							</div>
+							<div class="form-group">
+								<label>订单唯一字段</label>
+								<input class="form-control" id="orderfield" value="{$one['orderfield']}"  placeholder="请填写英文字段名">
+								<label>唯一辅助字段</label>
+								<input class="form-control" id="accessfield" value="{$one['accessfield']}"  placeholder="请填写英文字段名">
+							</div>
+
+							<div class="form-group">
+								<label>二维码字段分隔符</label>
+								<input class="form-control" id="seperator" value="{$one['seperator']}"  placeholder="请使用英文字符|或 ,或其他">
+							</div>
+
+							<div class="form-group">
+								<label>订单排序优先字段</label>
+								<input class="form-control" id="orderbyfield" value="{$one['orderbyfield']}"  placeholder="请填写英文字段名">
+							</div>
+							<div class="form-group">
+								<label>小程序单号显示字段</label>
+								<input class="form-control" id="wxfield" value="{$one['wxfield']}"  placeholder="请填写英文字段名">
+							</div>
+							<div class="form-group">
+								<label>二维码只报工</label>
+								<div class="radio">
+									<label>
+										<input type="radio" name="qrreport" value="1" {if condition="$one['qrreport'] eq '1'"}checked="checked"{/if}>是
+									</label>
+								</div>
+								<div class="radio">
+									<label>
+										<input type="radio" name="qrreport" value="0" {if condition="$one['qrreport'] neq '1'"}checked="checked"{/if}>否
+									</label>
+								</div>
+							</div>
+
+							<div class="form-group">
+								<label></label>
+								<a class="btn btn-primary" href="javascript:void(0);" onclick="savesite();">保存站点</a>
+							</div>
+						</form>
+					</div>
+
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
+</div>
+
+<script src="__STATIC__/theme/manage/js/jquery-1.11.1.min.js"></script>
+<script src="__STATIC__/theme/manage/js/bootstrap.min.js"></script>
+<script src="__STATIC__/theme/manage/js/bootstrap-table.js"></script>
+<script src="__STATIC__index/js/layer/layer.js"></script>
+<script>
+	!function ($) {
+		$(document).on("click","ul.nav li.parent > a > span.icon", function(){
+			$(this).find('em:first').toggleClass("glyphicon-minus");
+		});
+		$(".sidebar span.icon").find('em:first').addClass("glyphicon-plus");
+	}(window.jQuery);
+
+	$(window).on('resize', function () {
+		if ($(window).width() > 768) $('#sidebar-collapse').collapse('show')
+	})
+	$(window).on('resize', function () {
+		if ($(window).width() <= 767) $('#sidebar-collapse').collapse('hide')
+	})
+
+	function savesite(){
+		var menu=new Array();
+		var tag=$("#tag").val();
+		var sitename=$("#sitename").val();
+		var domain=$("#domain").val();
+		var dbname=$("#dbname").val();
+		var account=$("#account").val();
+		var password=$("#password").val();
+		var orderfield=$("#orderfield").val();
+		var seperator=$("#seperator").val();
+		var orderbyfield=$("#orderbyfield").val();
+		var accessfield=$("#accessfield").val();
+		var wxfield=$('#wxfield').val();
+		var status=$("input[name='status']:checked").val();
+		var schedule=$("input[name='schedule']:checked").val();
+		var databoard=$("input[name='databoard']:checked").val();
+		var salary=$("input[name='salary']:checked").val();
+		var lockfield=$("input[name='lockfield']:checked").val();
+		var reportorder=$("input[name='reportorder']:checked").val();
+		var repeatorder=$("input[name='repeatorder']:checked").val();
+		var qrreport=$("input[name='qrreport']:checked").val();
+		var noselfy=$("input[name='noselfy']:checked").val();
+		var newgx=$("input[name='newgx']:checked").val();
+		var glass_lan=$("input[name='glass_plan']:checked").val();
+		var preproduct=$("input[name='preproduct']:checked").val();
+		var product_print = $("input[name='product-print']:checked").val();
+		var cut_print = $("input[name='cut-print']:checked").val();
+		var fix_gx = $("input[name='fix_into_gx']:checked").val();
+		var part_into = $("input[name='part_into']:checked").val();
+		var erp_url = $('#erp_url').val();
+		var id="{$one['id']}";
+
+		$("input[name='menu[]']").each(function(){
+			if($(this).prop("checked")=="checked"||$(this).prop("checked")==true){
+				menu.push($(this).val());
+			}
+		})
+		$.ajax({
+			url: "{:Url('Index/save_site')}",
+			data:{
+				"id":id,"tag":tag,"sitename":sitename,"domain":domain
+				,"dbname":dbname,"account":account,"password":password,"orderfield":orderfield,"wxfield":wxfield,"accessfield":accessfield,'seperator':seperator
+				,"status":status,"schedule":schedule,"databoard":databoard,"salary":salary,"orderbyfield":orderbyfield,"qrreport":qrreport
+				,"lockfield":lockfield,"reportorder":reportorder,"repeatorder":repeatorder,"noselfy":noselfy,"newgx":newgx,"menu":menu,
+				'glass_plan':glass_lan,'preproduct':preproduct,'product-print':product_print,'cut-print':cut_print,'fix_gx':fix_gx,
+				'part_into':part_into,'erp_url':erp_url
+			},
+			dataType:"json",
+			type:'POST',
+			success:function(obj){
+				//console.log(obj);
+				if(obj.status==1){
+					layer.msg('保存成功');
+					setTimeout(function(){
+						window.location.reload();
+					}, 2000);
+				}else{
+					layer.msg(obj.msg);
+				}
+			}
+		})
+	}
+
+</script>
+</body>
+
+</html>

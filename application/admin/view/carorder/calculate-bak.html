@@ -1,0 +1,185 @@
+{include file="public/header"/}
+<style>
+    body{background-color: #fff;}
+    *{ padding: 0px; margin: 0px; }
+    ul,li{ list-style:none;}
+    .single-head{ width: 100%; height: 144px; overflow: hidden; }
+    .center{ text-align: center;margin: 10px 0; font-size:16px; color: #000; font-weight: bold;}
+    .top{width: 100%;}
+    .top table tr td{ padding: 0px 10px;font-size:12px; line-height: 20px;}
+    .top_left{ width: 89%; float: left;}
+    .top_left ul.a1{width: 100%; float: left; height: 30px;}
+    .top_left ul.a1 li{float: left; width: 33%; line-height: 20px; font-size: 14px; color: #000; text-align: left;}
+    .top_left ul.a1 li.a2{ width: 66% }
+    .top_right{ width: 10%; float: left; padding-right: 1%; text-align:right;}
+    .top_right img{ background: #999; width: 65px; height: 65px; }
+    .mwpw{ width: 100%;display: flex;flex-wrap: wrap; }
+    .gqge{  width:50%;  overflow: hidden; border:1px solid #000;box-sizing:border-box; padding:0.5%;}
+    .gqge_left{ float:left; width: 72%;text-align: center;}
+    .gqge_left img{max-width:100%;max-height:240px;vertical-align:middle;}
+    .gqge_right{ width: 27%;padding: 0.5%;float: left;}
+    .gqge_right li{ width: 100%; border:1px solid #000;box-sizing:border-box;line-height:15px;font-size: 12px; color: #000; text-align: center;}
+    .gqge_cent{ width: 100%; float: left; font-size: 12px; line-height:15px; color: #000;text-align: left; }
+    @media print{
+        INPUT {display:none}
+        .PageNext   {   PAGE-BREAK-AFTER:   always   }
+    }
+</style>
+<body>
+    <div style="padding: 10px;">
+        <div class="single-head">
+            <h3 class="center">深圳市恒辉窗花饰制品有限公司(生产作业单)</h3>
+            <div class="top">
+                <div class="top_left">
+                    <ul class="a1">
+                        <li>客户名称：{$order.dealer}</li>
+                        <li>下单日期：{$order.addtime|date='Y-m-d',###}</li>
+                        <li>交货日期：{$order.end_time}</li>
+                    </ul>
+                    <ul class="a1">
+                        <li class="a2">送货地址：{$order.send_address}</li><li>订单编号：{$order.number}</li>
+                    </ul>
+                </div>
+                <div class="top_right"><img src="{$order.qrcode}"></div>
+            </div>
+            <div class="top">
+                <table width="100%" border="1" cellspacing="0" cellpadding="0">
+                    <tr>
+                        <td width="33%">下单人 ：营运部（工号1007）</td>
+                        <td width="33%">审核人 ：算料组（工号1006）</td>
+<!--                        <td width="34%">计划部 ：龙茂强</td>-->
+                    </tr>
+                    <tr>
+                        <td>总面积：{$order.area}m²&nbsp;&nbsp;|&nbsp;&nbsp;总数量：{$order.count}</td>
+                        <td colspan="2">备注：</td>
+                    </tr>
+                </table>    
+            </div>
+        </div>
+        <div class="mwpw">
+            {volist name='list' id='v'}
+            <!-- ///////////////////////////////// -->
+            <div class="gqge" >
+                <div class="gqge_left">
+                    <div style="min-height: 250px;">
+                        <img src="{$v.path}">
+                    </div>
+                    <div class="gqge_cent">
+                        <p>型材: {$v.material} | 花件：{$v.flower_type} | 型材/花件颜色：{$v.color_name} | 锁高: {$v.lock_position}mm | 单窗面积：{$v.product_area}㎡ | 数量：{$v.count}</p>
+                        <p>备注：{$v.note}</p>
+                        <p>结构ID：{$v.structure_id}</p>
+                        <div style="word-wrap:break-word;display:none;"><?php dump($v['ruler_data']);?></div>
+                        <div style="word-wrap:break-word;display:none;"><?php dump($v['calculate_data']);?></div>
+                    </div>
+                </div>
+
+                <div class="gqge_right" style="{if condition="!is_array($v['calculate'])"}display:none{/if}">
+                    <li><strong>开料尺寸</strong></li>
+                    {volist name="v['calculate']" id='v2'}
+                    <li>{$v2}</li>
+                    {/volist}
+                    {if condition="$v['is_hand'] eq 0"}
+                    <li><strong>花型(高*宽)</strong></li>
+                    <li>{$v.flower}</li>
+                    {/if}
+                </div>
+            </div>
+            <!-- ///////////////////////////////// -->
+            {/volist}
+            {if condition="is_array($material) && count($material)>0"}
+            <table class="layui-table layui-form">
+                    <thead>
+                        <tr>                                        
+                            <th>名称</th>
+                            <th>材质/型号</th>
+                            <th>铝材/花件颜色</th>
+                            <th>单位</th>
+                            <th>宽</th>
+                            <th>高</th>
+                            <th>个数</th>
+                            <th>产品面积</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table">
+                         {volist name='material' id='v'}
+                        <tr>
+                            <td>{$v.name}</td>
+                            <td>{$v.type}</td>
+                            <td>{$v.color}</td>
+                            <td>㎡</td>
+                            <td>{$v.width}</td>
+                            <td>{$v.height}</td>
+                            <td>{$v.count}</td>
+                            <td>{$v.product_area}</td>
+                        </tr>
+                        {/volist}
+                    </tbody>
+                </table>
+            {/if}
+        </div>
+    </div>
+    <!-- ///////////////////////////////// --><!-- ///////////////////////////////// --><!-- ///////////////////////////////// --><!-- ///////////////////////////////// --><!-- ///////////////////////////////// -->
+
+
+    <!-- <div class="layui-fluid">
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-md12">
+                <h3 class="center">深圳市恒辉窗花饰制品有限公司(生产作业单)</h3>
+                <div class="title">客户名称:{$order.dealer}</div>
+                <div class="title">客户电话:{$order.phone}</div>
+                <div class="title">订单日期:{$order.addtime|date='Y-m-d',###}</div>
+                <div class="title">送货地址:{$order.send_address}</div>
+                <div class="title">订单编号:{$order.number}</div>
+            </div>
+            <div class="layui-col-md12 check" style="padding-top:0px; padding-bottom: 0px; line-height: 25px;">
+                <div class="layui-inline layui-col-md4 mwlpsag">&nbsp;下单人:张鸿新</div>
+                <div class="layui-inline layui-col-md4 mwlpsag">&nbsp;&nbsp;审核人:张鸿新</div>
+                <div class="layui-inline layui-col-md4">&nbsp;&nbsp;计划部:龙茂强</div>
+            </div>
+            <div class="layui-col-md12 all">
+                <div class="layui-inline layui-col-md2">&nbsp;总面积:{$order.total_price}&nbsp;&nbsp;|&nbsp;&nbsp;总数量：{$order.count}</div>
+                <div class="layui-inline layui-col-md9">&nbsp;备注:{$order.note}</div>
+            </div>
+            {volist name='list' id='v'}
+            <div class="layui-col-md6 product">
+                <div class="">
+                <div class="pic-box layui-col-md6"><img src="{$v.path}" height="330"/></div>
+                <div class="calculate layui-col-md3 layui-col-md-offset2">
+                    <div class="calculate-title">开料尺寸</div>
+                    {volist name="v['calculate']" id='v2'}
+                    <div class="calculate-int">{$v2}</div>
+                    {/volist}
+                    <div class="calculate-title">花型(高*宽)</div>
+                    <div class="calculate-int">{$v.flower}</div>
+                </div>
+                <div class="info layui-col-md12">
+                    <p>型材: {$v.material} | 花件：{$v.flower_type} | 型材/花件颜色：{$v.color_name}</p>
+                    <p>锁高: {$v.lock_position}mm | 单窗面积：{$v.area}㎡ | 数量：{$v.count}</p>
+                    <p>备注：{$v.note}</p>
+                    <p style="word-wrap:break-word;display: none;"><?php dump($v['ruler_data']);?></p>
+                    
+                </div>
+                
+                </div>
+                
+            </div>
+            {/volist}
+
+        </div>
+    </div> -->
+    <div class="layui-col-md12">
+        <button class="layui-btn" id="print" type='button' style="margin-left: 40%;">立即打印</button>
+        <!--                 <button class="layui-btn layui-btn-primary" type='button' onclick="javasript:history.back(-1)">返回</button> -->
+    </div>
+</body>
+<script src="__STATIC__/js/jquery.min.js" charset="utf-8"></script>
+<script>
+    $(function(){
+        $('#print').click(function () {
+            $('#print').css('display','none');
+            window.print();
+            $('#print').css('display','block');
+        })
+    })
+</script>
+</html>

@@ -1,0 +1,215 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>车间作业看板</title>
+<link href="__STATIC__/theme/index/databoard/{$style}?v=<?php echo time();?>" rel="stylesheet" />
+<script src="__STATIC__/theme/index/databoard/jquery.min.js"></script>
+<script type="text/javascript" src="__STATIC__/theme/index/js/echartsjs/echarts.min.js"></script> 
+</head>
+<style>
+	.left{width: 38%;}
+	.right{width:60.7%}
+	.right div.lits{font-size: 1.8vw;}
+</style>
+<body>
+<div class="left">
+  <div class="title">{$gx['dname']}工序-{$monitor['vname']}</div>
+  <div style="float:left; width:100%;height: calc(38vh);">
+    <div id="container" style="height: 100%"></div>
+  </div>
+  <div class="title1"><span>达成率:<i id="yrate">0%</i></span><i>■</i>昨天 | </div>
+  <div class="mwpw1">可生产量
+    <p id="ycan">0</p>
+  </div>
+  <div class="mwpw1">已完成量
+    <p id="yfinish">0</p>
+  </div>
+  <div class="mwpw1">未完成量
+    <p id="yunfinish">0</p>
+  </div>
+  <div class="wvst"></div>
+  <div class="title1"><span>达成率:<i id="trate">12%</i></span><i>■</i>今天 | </div>
+  <div class="mwpw2">可生产量
+    <p id="tcan">0</p>
+  </div>
+  <div class="mwpw2">已完成量
+    <p id="tfinish">0</p>
+  </div>
+  <div class="mwpw2">未完成量
+    <p id="tunfinish">0</p>
+  </div>
+</div>
+<style type="text/css">
+@keyframes rowup {
+    0% {
+        -webkit-transform: translate3d(0, 0, 0);
+        transform: translate3d(0, 0, 0);
+    }
+    100% {
+        -webkit-transform: translate3d(0, -307px, 0);
+        transform: translate3d(0, -307px, 0);
+        display: none;
+    }
+}
+.list{
+    position: relative;
+    overflow: hidden;
+}
+
+.list .rowup{
+    -webkit-animation: 10s rowup linear infinite normal;
+    animation: 10s rowup linear infinite normal;
+    position: relative;
+}
+</style>
+<div class="right list">
+<div class="rowup" id="rightbox" style="width: 100%;">
+
+</div>
+</div>
+<script type="text/javascript">
+	var dom = document.getElementById("container");
+	var myChart = echarts.init(dom);
+	var app = {};
+	option = null;
+
+	option = {
+		grid: {
+			left: '-10%',
+			top: '15%',
+			right: '0%',
+			bottom: '10%',
+			containLabel: true
+			},
+		xAxis: {
+				axisTick: {
+					show: false,
+					alignWithLabel: false,
+				},
+				inverse: 'true', //排序
+				axisLabel: {
+		       show: true,
+			        textStyle: {
+			          color: '#fff',  //更改坐标轴文字颜色
+			          fontSize : 15,      //更改坐标轴文字大小
+			        }
+			     },
+				axisLine: {
+					show: false,
+					lineStyle: {
+						color: '#fff',
+					},
+
+				},
+				data: ['昨流量', '今加量', '可产量', '总单量'],
+			},
+		yAxis: [{
+			show:false,
+		}],
+		series: [{
+				type: 'bar',
+				label: {
+					normal: {
+						show: true,
+						position: 'top',
+						textStyle: {
+							color: '#fff',
+							fontSize: '30',
+						}
+
+					}
+				},
+				itemStyle: {
+					normal: {
+						barBorderRadius: 10,
+						color: function (params) {
+							var colorList = [
+								['#EE6363', 'rgba(238,99,99,0.3)'],//昨流量
+								['#228B22', 'rgba(34,139,34,0.3)'],//今加量
+								['#CD950C', 'rgba(205,149,12,0.3)'],//可产量
+								['#00CDCD', 'rgba(0,205,205,0.3)'],//总单量
+							];
+							var index = params.dataIndex;
+	
+							return new echarts.graphic.LinearGradient(0, 0, 0, 1,
+								[{
+										offset: 0,
+										color: colorList[index][0]
+									},
+									{
+										offset: 1,
+										color: colorList[index][1]
+									}
+								]);
+						},
+					},
+				},
+				barCategoryGap: '40%',
+				//data: [1400, 3600, 5000, 5020]//昨流量,今加量,可产量,总单量
+			}]
+	};           
+
+	//if (option && typeof option === "object") {
+		//myChart.setOption(option, true);
+	//}
+var display_field="{$monitor['display_field']}";
+function getdata(){
+            var	gxid = "{$gx['id']}";
+            var no = "{$no}";
+            $.ajax({
+                url:"{:url('Databoard/ajax_fixed_flow')}",
+                data: {"id":gxid,'field':display_field,no:no},
+                type: 'POST',
+                dataType: 'json',
+                success:function(res){
+                	
+	                var all_num=res.all_num;
+	                var can_num=res.can_num;
+	                var today_num=res.today_num;
+	                var yestoday_num=res.yestoday_num;
+	                var yestoday=res.yestoday;
+	                var today=res.today;
+	                var right_list=res.right_list;
+               
+                   	$("#yrate").html(yestoday.rate);
+                	$("#ycan").html(yestoday.can_num);
+                	$("#yfinish").html(yestoday.finish);
+                	$("#yunfinish").html(yestoday.unfinish);
+                	
+                	$("#trate").html(today.rate);
+                	$("#tcan").html(today.can_num);
+                	$("#tfinish").html(today.finish);
+                	$("#tunfinish").html(today.unfinish);
+                	
+                	//昨流量,今加量,可产量,总单量
+                	var _data=[yestoday_num,today_num,can_num,all_num];
+                	option['series'][0]['data']=_data;
+                	if (option && typeof option === "object") {
+                		myChart.setOption(option, true);
+                	}
+                	var _len=Object.keys(right_list);
+                	if(_len.length>0){
+                		var _html="";
+                    	for(var i in right_list){
+                        		var one=right_list[i];
+                        		_html+='<div class="lits">'+one['unique_sn']+'<i style="color:'+one['color']+'">['+one['day']+'] </i>';
+                        		if(one['isurgent']==1){
+                        			_html+='<span>急</span>';
+                        		}
+                        		_html+='</div>';
+                        }
+                    	$("#rightbox").html(_html);
+                	}
+                	
+                }
+            })
+}	
+$(document).ready(function(){
+	getdata();
+})	
+</script>
+
+
+</body>
+</html>

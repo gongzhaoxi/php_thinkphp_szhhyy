@@ -1,0 +1,135 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD HTML 4.01 Strict//EN' 'http://www.w3.org/TR/html4/strict.dtd'>
+<html>
+<head>
+<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>
+<link href="__STATIC__index/css/index.css" rel="stylesheet" type="text/css"/>
+
+<script src="__STATIC__index/js/jquery.min.js"></script>
+<script src="__STATIC__index/js/layer/layer.js"></script>
+<script src="__STATIC__index/js/laydate/laydate.js"></script>
+<title>编辑</title>
+</head>
+<style type="text/css">
+.user{display:none;width:500px;height:auto;background:#E3E3E3;position:absolute;z-index:9999;left:36%;top:30%;border-radius:8px;}
+.user div{width:100%;text-align:center;height:40px;line-height:40px;margin-top:20px;font-size:14px;}
+.user div input{padding-left:4px;width:70%;height:40px;line-height:40px;border-radius:4px;border:0;margin-bottom:6px;}
+.user div .spa{letter-spacing:8px;}
+.btne{width:200px;height:40px;line-height:40px;background:#FF4040;color:#fff;border:0;outline:none;border-radius:8px;margin-left:25%;margin-top:18px;margin-bottom:10px;}
+.role{width: 70%;height: 40px;border-radius: 6px;border: none;}
+.ser{width: 70%;height: 40px;border-radius: 6px;border: none;}
+.mb{display:none;width:100%;height:100%;background:black;opacity:0.6;position:fixed;z-index:1000;}
+.mwpw_bg{margin-top:0px;}
+.me_r_1,.me_r_2{float:left;width:auto;}
+.me_r_1 select{border: 1px solid #e2e2e2;}
+.me_r_2{width:122px;}
+.me_r_2 input{border: 1px solid #e2e2e2;border-radius:4px;width:122px}
+.button{width: 50px;height: 25px;color: #FFFFFF;font: 12px/25px "微软雅黑";background: #0aad20;text-align: center;border: none;float: left;display:inline-block;border-radius:4px;}
+.button:hover{text-decoration:none;color:white;}
+.pages{width:100%;height:50px;line-height:50px;background:#EAEAEA;display:flex;	align-items: center;margin-bottom: 1px;}
+.me_r_2 select{border:none;border-radius:4px;font-size:11px;height:26px;line-height:26px;padding:0 4px;}
+.me_r_2 select option{font: 12px/25px "微软雅黑";color:#333333}
+.second-menu{background:#c0c8cb;width:100%;line-height:40px;height:40px;display:flex;align-items: center;}
+.second-menu div{width:80px;height:26px;line-height:26px;background:#3A5FCD;color:#FFFFFF;text-align:center;border-radius:4px;margin-left:12px}
+.second-menu div a{color:#fff;font-size:12px;text-decoration: none;}
+.second-menu div a:active{text-decoration: none;}
+.outdata button{color: #fff;border: none;width: 90px;line-height: 26px; height: 26px;background: #CD0000;font-size: 12px;border-radius: 4px;margin-left:20px}
+.check-salary-num{width: 20%;position: absolute;right: 91px;background: #CD5C5C;color: #fff;text-align: center;font-size: 14px;}    
+.add-gs{font-size: 12px;position: absolute;right: 20px;}
+.add-info{position:fixed;width:34%;height:auto;z-index:9999;background:#fff;left:33%;top:80px}
+.info-title{line-height: 44px;background: #EAEAEA;padding: 0 10px;font-size: 14px;display:flex}
+.close{position:absolute;right:10px;margin-top:10px}
+.close img{width:24px;height:24px}
+.info-text{padding:16px;font-size:12px}
+.info-text-li{display:flex;margin:16px 0;align-items: center;}
+.info-text-li input{line-height:36px;padding-left:8px;width:72%;border-radius:4px;margin-left:22px;border-width:1px}
+.info-text-li select{line-height:26px;height:36px;border-radius:4px;margin-left:22px}
+.info-text-li textarea{line-height:18px;padding:8px;margin-left:22px}
+.info-text button{width: 100%;line-height: 44px;font-size: 16px;background: #008B8B;border: none;color: #fff;}
+</style>
+<body>
+<div style="background:#fff">
+	<div class="info-text">
+			<div class="info-text-li" style="padding-left:24px">
+				<p>工序</p>
+				<select id="gx" disabled>
+					{volist name="gxList" id="eg"}
+					<option value="{$eg.id}" {if condition="$eg['id'] eq $res['gxid']"}selected="selected"{/if}>工艺路线：{$eg.title}&nbsp;|&nbsp;工序：{$eg.dname}</option>
+					{/volist}
+				</select>
+			</div>
+			<div class="info-text-li">
+				<p>判断内容</p>
+				<textarea id="content" rows="8" cols="52" placeholder="请输入判断内容：
+注：每个数据中间请加‘|’竖杠区分，最后一个数据后不用加竖杠。
+
+
+如无需判断直接为空" value="">{$res.text}</textarea>
+			</div>
+			<div class="info-text-li">
+				<p>计件单位</p>
+				<select id="field">
+					{volist name="qrcodeList" id="ql"}
+					<option value="{$ql.fieldname}" {if condition="$ql['fieldname'] eq $res['fieldname']"}selected="selected"{/if}>{$ql.explains}</option>
+					{/volist}
+				</select>
+			</div>
+			<div class="info-text-li">
+				<p>计件公式</p>
+				<input type="text" id="gs-inp" placeholder="如：$area*$num" value="{$res.formula_text}"/>
+			</div>
+			<div><a href="{:url('Index/fieldexcel')}">数据对应字段表下载</a></div>
+			<div class="info-text-li" style="padding-left:24px">
+				<p>单价</p>
+				<input type="text" id="price" placeholder="如：2.5" value="{$res.price}" style="width:16%"/>
+				<p style="margin-left:10px">单位：元</p>
+			</div>
+			<button onclick="sub()">确认填写内容无误，并提交！</button>
+	</div>
+</div>
+<script type="text/javascript">
+
+//修改计件公式
+function sub(){
+	var data = {};
+	data['id'] = "<?php echo $res['id'] ?>";
+	data['content'] = $('#content').val();
+	data['field'] = $('#field').val();
+	data['price'] = $('#price').val();
+	data['gongshi'] = $('#gs-inp').val();
+
+	if(data['gongshi']==''){
+		layer.msg('请填写计件公式');
+		return false;
+	}
+	if(data['price']==''){
+		layer.msg('请填写单价');
+		return false;
+	}
+	layer.confirm('是否修改',{icon:3,title:'提示'},function(index){
+		$.ajax({
+			url:"{:url('Index/addformula')}",
+			data:data,
+			dataType: 'json',
+			success:function(res){
+				console.log(res)	
+				if(res.code==0){
+					var indx=parent.layer.getFrameIndex(window.name);
+					layer.msg(res.msg);
+					setTimeout(function(){
+						parent.layer.close(indx);
+	    	        	window.parent.location.reload();
+					},1500)
+					
+				}else{
+					layer.msg(res.msg);
+				}
+			}
+			
+		},'json')
+		layer.close(index)
+	})
+	
+}
+</script>
+</body>
+</html>

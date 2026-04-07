@@ -1,0 +1,54 @@
+
+{include file='public/header2'}
+<style>
+    .title span{margin-right: 15px;height: 40px;line-height: 40px;}
+    .title-button{margin-top: 10px;}
+    .title-button span{padding: 10px 20px;text-align: center;color: #fff;}
+    .part{background-color: rgb(66, 164, 146)}
+    .all{background-color: rgb(24, 159, 34)}
+    .no{background-color: rgb(219, 219, 219)}
+    .dange{background-color: rgb(153, 37, 15)}
+    .layui-input{height: 27px;}
+    .layui-table td{color: #fff;}
+</style>
+<body style="background-color: #fff">
+    <div style=" margin: 15px;">
+        <form class=" layui-form" id='form1'>
+
+
+            <table class="layui-table">
+                <thead>
+                    <tr>
+                        {volist name="field_name" id='v'}
+                        <th>{$v}</th>
+                        {/volist}
+                    </tr> 
+                </thead>
+                <tbody>
+                    {php}for($z=0;$z<count($data);$z++){{/php}
+                    <tr class="{if condition="$data[$z]['status_text'] eq '已回'"}all{elseif condition="$data[$z]['status_text'] eq '已回部分'"}part{else/}no{/if}">
+                        {volist name="field" id='v'}
+                        <td>{$data[$z][$v]}</td>
+                        {/volist}
+                    </tr> 
+                    {php}}{/php}
+                </tbody>
+            </table>
+        </form>
+       
+
+    </div>	
+</body>
+<script>
+    layui.use(['laydate', 'form', 'upload'],
+            function() {
+            $ = layui.jquery;
+            var laydate = layui.laydate;
+            var form = layui.form;
+                form.on('select(select-filter)', function(data){
+                    $('#form1').submit();
+                  });   
+                
+            });
+</script>
+</html>

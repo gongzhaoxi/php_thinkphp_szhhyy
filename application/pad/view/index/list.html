@@ -1,0 +1,138 @@
+<div class="form">
+<table width="100%" border="0" cellspacing="1" cellpadding="0"  style="table-layout:fixed;word-break:break-all;">
+{volist name="list" id="vo"}
+
+<tr class="title">
+<td width="8%" height="30">下单时间</td>
+<td width="8%" height="30">销售单号</td>
+<td width="8%" height="30">客户名称</td>
+<td width="3%" height="30">状态</td>
+<td width="73%" height="30" rowspan="2">
+	<table width="100%" border="0" cellspacing="0" cellpadding="0"  style="table-layout:fixed;word-break:break-all;">
+		{php} 
+			$dline=0;
+			$listLen=count($vo['list']);
+		{/php}
+		{volist name="vo['list']" id="cvo"}
+		{php} 
+			$dline++;
+			$tdStyle="";
+			if($dline==$listLen){
+				$tdStyle="border-bottom:0;";
+			}
+		{/php}
+		<tr class="title">
+		<td style="width: 110px;">生产单号</td>
+		<td style="width: 50px;">数量</td>
+		<td style="width: 110px;">工艺</td>
+		
+		{php} 
+				$lb='';
+				$gline=0;
+				$gxlen=count($cvo['gx_list']);
+		{/php}
+		
+		{volist name="cvo['gx_list']" id="gvo"}
+		{php} 
+				$gline++;
+				if($gline==$gxlen){
+					$lb="border-right: 0;";
+				}
+		{/php}
+		<td style="width: 110px;{$lb}">{$gvo['dname']}</td>
+		{/volist}
+		</tr>
+		
+		<tr>
+		<td style="{$tdStyle}">{$cvo['produce_no']}</td>
+		<td style="width: 50px; height: 41px;{$tdStyle}">{$cvo['snum']}</td>
+		<td style="{$tdStyle}">{$cvo['pname']}</td>
+		{php} 
+				$lb='';
+				$gline=0;
+				$gxlen=count($cvo['gx_list']);
+		{/php}
+		{volist name="cvo['gx_list']" id="gvo"}
+			{php}
+				$gline++;
+				if($gline==$gxlen){
+					$lb="border-right: 0;";
+				}
+				
+				$b=$gvo;
+				$gx_id=$b['id'];
+				$dname=$b['dname'];	
+				$dtime='';
+				if($b['starttime']>0){
+					$dtime=date('Y-m-d',$b['starttime']);
+				}
+				if (($b['state']==1&&$b['endtime']>0)||($b['starttime'] >0&&$b['endtime']>0)){
+					$dtime.="  -  ";
+				}
+				if($b['endtime']>0){
+						$dtime.=date('Y-m-d',$b['endtime']);
+				}
+				$started=true;
+				$status='';
+				$excep='';
+				$un_excep="";
+		  		if($b['endtime']==0){
+		  			$started=false;
+					$status='未开始';
+				}
+
+				if($b['endtime']>0){
+					$status='完成';
+				}
+				
+				if($b['isbad']== 1){
+					$started=true;
+					$excep='异常';
+				}
+				if ($b['isover']==1)
+		  		{ 
+		  			$started=true;
+					$excep='超时';
+				}
+				
+				if($b['isbad']== 1&&$b['isback']==0){
+					$un_excep="unhandle_exception";
+				}
+				
+			{/php}
+		
+		{php} if($started){ {/php}
+		<td style="width: 110px;{$tdStyle}{$lb}" id="{$cvo['id']}_{$gx_id}" class="gxs_status {$un_excep}"  data-id="{$cvo['id']}" data-gxid="{$gx_id}">{$status} 
+			{php} if($excep!=''){ {/php}<a href="javascript:void(0);" id="urgent">【{$excep}】</a>{php} } {/php}
+			{php} if($dtime!=''){ {/php}
+			</br>{$dtime}
+
+		</td>
+		{php} } {/php}
+		{php} }else{ {/php}
+		<td style="width: 110px;{$tdStyle}{$lb}" id="{$cvo['id']}_{$gx_id}" class="gxs_status notfinished {$un_excep}" data-id="{$cvo['id']}" data-gxid="{$gx_id}">未完成{php} if($excep!=''){ {/php}<a href="javascript:void(0);" id="urgent">【{$excep}】</a>{php} } {/php}
+		</td>
+		{php} } {/php}
+		
+		{/volist}
+		</tr>
+		{/volist}
+		
+	
+	</table>
+</td>
+</tr>
+<tr>
+<td>{$vo['ordertime']}</td>
+<td>{$vo['ordernum']}</td>
+<td>{$vo['uname']}</td>
+<td class="urgent">{$vo['orderstatus']}</td>
+</tr>
+{/volist}
+
+</table>
+
+
+
+
+</div>

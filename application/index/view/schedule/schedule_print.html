@@ -1,0 +1,82 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>微元生产工序报工管理系统,建材行业生产管理系统,门窗生产管理系统,微元科技,佛山市微元科技有限公司</title>
+<script src="__STATIC__/theme/index/js/jquery-1.10.2.js"></script>
+<link href="__STATIC__/theme/index/css/index.css" rel="stylesheet" />
+<link href="__STATIC__/theme/index/css/bootstrap.css" rel="stylesheet">
+<link href="__STATIC__/theme/index/css/font-awesome.min.css" rel="stylesheet">
+<script src="__STATIC__index/js/layer/layer.js"></script>
+<script src="__STATIC__index/js/laydate/laydate.js"></script>
+</head>
+<style>
+#contentText5{width:96%;display:block;overflow:hidden; margin-left: 2%;}
+#orderdetail{float:left;}
+#schedule_no{float:right;padding-top:8px;height: 80px;}
+body{ width: 100%; min-width:100%; }
+.bottom-title{line-height:36px;font-size:14px}
+.bottom-title div{display:inline-block}
+.bottom-title :nth-child(1){width:18%}
+.bottom-title :nth-child(2){width:60%}
+.bottom-title :nth-child(1){width:22%}
+</style>
+<body style="background:white;">
+<!-- 打印排产订单 -->
+<div id="contentText5" class="exporta" style="display:block;">
+<table width="100%" border="1" cellspacing="0" cellpadding="0" class="rsqgrdut">
+<div id="titlea">
+<div id="orderdetail" style="line-height: 40px; height: 80px; font-size: 14px; font-weight: bold;">
+<i style="font-size: 20px;">排产日期：{php} echo date('Y-m-d',$schedule['do_time']); {/php}  | 班组：{$schedule['team']}-{$schedule['gx_name']}</i></br>订单总面积：{$schedule['square']}㎡ | 订单总扇数：{$schedule['fans']} | 订单总数：{$schedule['ordernum']}
+</div>
+{present name="schedule_no"}
+<div id="schedule_no">
+	<img src="{$schedule_no}">
+</div>
+{/present}
+
+</div>
+<tr>
+{volist name="fieldList" id="vo"}
+<td>{$vo['explains']}</td>
+{/volist}
+<!-- <td style="width:138">二维码</td> -->
+</tr>
+
+{volist name="orders" id="vo"}
+<tr>
+{php}
+foreach($fieldList as $field=>$name){
+{/php}
+<td>{php} echo $vo[$field]!=''?$vo[$field]:'&nbsp;';{/php}
+</td>
+{php}
+}
+{/php}
+
+<!-- <td><img src="{$vo['qrcode']}" ></td> -->
+</tr>
+{/volist}
+
+</table>
+<div class="bottom-title">
+	<div>制表人：{$schedule['uname']}</div>
+	<div>打印时间：{$schedule['time']}</div>
+	<div>审核：</div>
+</div>
+<div style="width:100%;text-align:center;float:right;" id="printbutton">
+<button class="btne" onclick="doPrint();">立即打印</button>
+</div>
+</div>
+
+<script>
+function doPrint() {   
+   $("#printbutton").hide();
+    window.print();   
+    setTimeout(function(){
+    	$("#printbutton").show();
+     },500)
+}
+</script>
+</body>
+</html>

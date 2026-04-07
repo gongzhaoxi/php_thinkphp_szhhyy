@@ -1,0 +1,339 @@
+<?php $current='6'; ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>微元生产工序报工管理系统,建材行业生产管理系统,门窗生产管理系统,微元科技,佛山市微元科技有限公司</title>
+{include file="public/header" /}
+</head>
+<body>
+	<div class="baogong_piecework popup-box">
+		<div class="popup-header">
+			<div>计件管理</div>
+		</div>
+		<div class="popup-body" style="padding-top: 40px;">
+			<div class="body-nav">
+				<ul class="body-nav-list">
+					<li><a href="{:url('Salary/salary')}">已对账提成</a></li>
+					<li><a href="{:url('Salary/formula')}">计件公式</a></li>
+					<li class="li-active"><a href="{:url('Salary/handSalary')}">员工提成<br>（手输）</a></li>
+					<li><a href="{:url('Salary/paysalary')}">日对账</a></li>
+				</ul>
+			</div>
+			<div class="body-center">
+				<!-- 员工提成(手输) -->
+				<div class="body-content-box body-nav-active">
+					<div class="content-header">
+						<div class="content-header-left">
+							<span class="header-left-item unset-margin-top" id="addCommission"> <img src="__STATIC__/theme/index/img/icon_commission.png"><span>添加提成</span></span>
+						</div>
+						<div class="content-header-right">
+							<div class="search-box">
+								<input type="text" name="uname" id="uname" autocomplete="off" placeholder="全部员工">
+								<input type="text" name="date" id="year" value="{$get.date}" autocomplete="off" placeholder="计提日期">
+								<span class="search-btn" id="searchSalary">搜索</span>
+							</div>
+                            <div class="commission-total-num">
+                                <span>总提成：</span>
+                                <span class="commission-price">{$totalprice}</span>
+                            </div>
+						</div>
+					</div>
+					<div class="content-center unset-padding-top">
+						<div class="content-center-inner">
+							<table class="layui-table parameter-table" border="1" cellpadding="0" cellspacing="0">
+								<thead>
+									<tr>
+										<th>ID</th>
+										<th>员工账号</th>
+										<th>工序</th>
+										<th>生产单号</th>
+										<th>计件数量</th>
+										<th>计件单位</th>
+										<th>总提成（元）</th>
+										<th>操作</th>
+									</tr>
+								</thead>
+								<tbody>
+									{volist name="list" id="la"}
+										<tr>
+											<td>{$key+1}</td>
+											<td>{$la.uname}</td>
+											<td>{$la.dname}</td>
+											<td style="line-height:30px">
+												<div style="max-height: 60px; width: 100%; overflow:auto;">{$la.produce_no}</div>
+											</td>
+											<td>{$la.num}</td>
+											<td>{$la.unitname}</td>
+											<td>{$la.price}</td>
+											<td class="operate-box">
+												<span class="btn-normal editCommission edit" data-id="{$la.id}" onclick="revise(this)">修改</span>/
+												<span class="btn-normal btn-danger del" data-sid="{$la.sid}" data-id="{$la.id}" onclick="del(this)">删除</span>
+											</td>
+										</tr>
+									{/volist}
+								</tbody>
+							</table>
+							<div class="page-box">
+								<div class="pages">
+									{$page|raw}
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+    </div>
+	<!-- 添加提成 -->
+	<div class="modal-box" id="addCommissionModal">
+		<div class="modal-content">
+			<div class="modal-header">
+				<div class="modal-header-left">
+					<div class="modal-header-title">
+						<img src="__STATIC__/theme/index/img/icon_commission.png">
+						<span>添加员工提成</span>
+					</div>
+				</div>
+				<div class="modal-header-right">
+					<span class="close-modal-btn"></span>
+				</div>
+			</div>
+			<div class="modal-body">
+				<div class="modal-body-middle">
+                    <div class="formula-box">
+                        <ul class="formula-box-list">
+							<li class="formula-list-group">
+                                <div class="formula-list-group-left">计提时间：</div>
+                                <div class="formula-list-group-right">
+                                    <input type="text" id="jt_time" autocomplete="off" placeholder="点击选择时间">
+                                </div>
+							</li>
+							<li class="formula-list-group">
+                                <div class="formula-list-group-left">员工：</div>
+                                <div class="formula-list-group-right">
+                                    <input type="text" id="um" autocomplete="off" placeholder="输入员工账号">
+                                </div>
+                            </li>
+                            <li class="formula-list-group">
+                                <div class="formula-list-group-left">工序：</div>
+                                <div class="formula-list-group-right">
+                                    <div class="imitate-select setDefaultSelect">
+                                        <span class="select-txt"></span>
+										<span class="triangle-down"></span>
+										<input type="hidden" name="gx" id="gx">
+                                        <ul data-sign="gx">
+											{volist name="gxList" id="eg"}
+											<li data-value="{$eg.id}">工艺路线：{$eg.title}&nbsp;|&nbsp;工序：{$eg.dname}</li>
+											{/volist}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="formula-list-group">
+                                <div class="formula-list-group-left">生产单号：</div>
+                                <div class="formula-list-group-right">
+									<textarea name="contents" id="contents" placeholder="请输入判断内容：&#10;&#10;注：每个数据之间请加“|”竖杠区分，最后一个数据不用加竖杠。&#10;&#10;&#10;&#10;无需判断直接为空"></textarea>
+								</div>
+                            </li>
+                            <li class="formula-list-group">
+                                <div class="formula-list-group-left">订单数量：</div>
+                                <div class="formula-list-group-right">
+									<input type="text" id="ordernum" autocomplete="off">
+								</div>
+                            </li>
+                            <li class="formula-list-group">
+                                <div class="formula-list-group-left">计件单位：</div>
+                                <div class="formula-list-group-right">
+									<input type="text" id="unit" autocomplete="off" placeholder="如：平方/日">
+								</div>
+                            </li>
+                            <li class="formula-list-group">
+                                <div class="formula-list-group-left">总提成：</div>
+                                <div class="formula-list-group-right">
+									<input type="text" id="gs-inp" autocomplete="off">
+								</div>
+                            </li>
+                        </ul>
+                    </div>
+				</div>
+				<div class="modal-body-bottom">
+					<div onclick="sub()">确认添加</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- 修改提成 -->
+	<div class="modal-box" id="editCommissionModal">
+		<div class="modal-content">
+			<div class="modal-header">
+				<div class="modal-header-left">
+					<div class="modal-header-title">
+						<span>修改提成</span>
+					</div>
+				</div>
+				<div class="modal-header-right">
+					<img src="__STATIC__/theme/index/img/icon_close_3.png" class="close-modal-btn">
+				</div>
+			</div>
+			<div class="modal-body">
+				<div class="modal-body-middle">
+					<div class="iframe-box">
+						<iframe class="myIframe" id="editCommissionIframe" frameborder="0"></iframe>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+<script type="text/javascript">
+	var layer , laydate;
+	layui.use(['layer','laydate'],function(){
+		layer = layui.layer;
+		laydate = layui.laydate;
+		laydate.render({
+		elem: '#year' //指定元素
+		,range: true
+		});
+		laydate.render({
+		elem: '#jt_time' //指定元素
+		});
+	})
+	$(document).ready(function(){
+		// 显示默认工序
+		$('.formula-box').find('.setDefaultSelect').each(function(){
+			var _this = $(this);
+			var _val = _this.children('ul').children().eq(0).attr('data-value')
+			var _html = _this.children('ul').children().eq(0).html();
+			_this.children('input[type=hidden]').val(_val).attr('data-value',_val);
+			_this.children('.select-txt').attr('data-value',_val).html(_html);
+		})
+	});
+	//添加计件公式
+	function sub(){
+		var data = {};
+		data['gid'] = $('#gx').val();
+		data['uname'] = $('#um').val();
+		data['ordernum'] = $('#ordernum').val();
+		data['price'] = $('#gs-inp').val();
+		data['unitname'] = $('#unit').val();
+		data['jt_time'] = $('#jt_time').val();
+		data['contents'] = $('#contents').val();
+		layer.confirm('是否添加',{icon:3,title:'提示'},function(index){
+			$.ajax({
+				url:"{:url('Salary/addsalary')}",
+				data:data,
+				dataType: 'json',
+				success:function(res){
+					if(res.code==0){
+						$('.mb').fadeOut();
+						$('.add-info').fadeOut();
+						layer.msg(res.msg);
+						window.location.reload();
+					}else{
+						layer.msg(res.msg);
+					}
+				}
+				
+			},'json')
+			layer.close(index)
+		})
+		
+	}
+	
+	//修改计件公式
+	function revise(e){
+		var id = $(e).attr('data-id');
+		$('#editCommissionModal').fadeIn();
+		$('#editCommissionIframe').attr('src',"editsalary?id=" + id);
+	}
+	//删除计件公式
+	function del(e){
+		var id = $(e).attr('data-id');
+		var sid = $(e).attr('data-sid');
+		layer.confirm('是否删除',{icon:3,title:'提示'},function(index){
+			$.ajax({
+				url: "{:url('Salary/delformula')}",
+				data:{id,sid},
+				dataType: 'json',
+				success: obj=>{
+					if(obj.code==0){
+						layer.msg('删除成功');
+						window.location.reload();
+					}else{
+						layer.msg('删除失败');
+					}
+				}
+			},'json')
+			layer.close(index)
+		})
+	}
+	
+</script>
+<script type="text/javascript">
+	// 关闭弹窗
+	$('.close-modal-btn').click(function () {
+		$('.modal-box').fadeOut();
+	});
+    // 选择搜索条件
+	$('.imitate-select').click(function(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		var _this = $(this);
+		var clickSign = _this.attr('data-sign');
+		$('.imitate-select').removeAttr('data-sign').children('ul').hide();
+		if (clickSign == 'true') {
+			_this.children('ul').hide();
+			_this.removeAttr('data-sign');
+		} else {
+			_this.children('ul').show();
+			_this.attr('data-sign', 'true');
+		}
+	});
+	$(window).click(function(){
+		
+		var elem = event.srcElement ? event.srcElement : event.target;
+		while (elem) { //循环判断至跟节点，防止点击的是div子元素 
+			if (elem.id && elem.id == 'orderScreenBox') {
+				return;
+			}
+			if($(elem).hasClass('modal-content')){
+				return;
+			}
+			elem = elem.parentNode;
+		}
+		$('.modal-box').fadeOut();
+		$('.imitate-select').removeAttr('data-sign').children('ul').hide();
+		$('.content-header-left').removeAttr('data-click').css({
+			top: '0',
+		}).children('.filter-orders').removeClass('filter-orders-active');
+		$('.content-header-left').siblings('.order-screen-box').css({
+			height: '0',
+			overflow: 'hidden'
+		})
+	});
+	$('.imitate-select ul').delegate('li','click',function(e){
+		e.preventDefault();
+		e.stopPropagation();
+		var _this = $(this);
+		var tempTxt = _this.html();
+		var _thisValue = _this.attr('data-value');
+		_this.parent().parent().children('.select-txt').attr('data-value',_thisValue).html(tempTxt);
+		_this.parent().hide();
+		_this.parent().parent().removeAttr('data-sign');
+		var _clickTarget = _this.parent().attr('data-sign');
+		_this.parent().siblings('input[type=hidden]').val(_thisValue);
+	});
+	// 员工提成
+	$('#addCommission').click(function(e){
+		e.preventDefault();
+		e.stopPropagation();
+		$('#addCommissionModal').fadeIn();
+	})
+	$('.editCommission').click(function(e){
+		e.preventDefault();
+		e.stopPropagation();
+		$('#editCommissionModal').fadeIn();
+	})
+</script>
+</html>

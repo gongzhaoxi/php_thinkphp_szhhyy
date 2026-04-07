@@ -1,0 +1,164 @@
+
+{include file="public/header"/}
+<style>
+      .layui-card-body > div{ margin-top: 0px; }
+    .alldisplay td{ text-align: center;}
+    .layui-table-cell{ height: 60px;line-height: 60px;}
+    .layui-table-edit{ margin-top: 15px}
+    .layui-table td,.layui-table th{text-align: center;}
+</style>
+<body>
+
+    <form class="layui-form layui-col-space5">
+        <div class="layui-fluid">
+            <div class="layui-row layui-col-space15">
+
+                <div class="layui-col-md12">
+                    <div class="layui-card">
+                        
+                        <div class="layui-card-body " style="padding-bottom: 0px;">
+                            <blockquote class="layui-elem-quote" style="margin: 0px;background: #c3c3c3;font-size: 14px; color: #000;">报价信息</blockquote>                       
+                        </div>
+                        <div class="layui-card-body " style="padding-top: 0px;">
+                            <table class="layui-table layui-form" id="product-table" lay-filter="product-table" style="margin: 0px;">
+                                 <thead>
+                                    <tr>
+                                        
+                                        <th>产品编号</th>
+                                        <th>名称</th>
+                                        <th>材质</th>
+                                        <th>型号</th>
+                                        <th>铝材/花件颜色</th>
+                                        <th>单位</th>
+                                        <th>宽</th>
+                                        <th>高</th>
+                                        <th>个数</th>
+                                        <th>面积</th>
+                                        <th>单价</th>
+                                        <th>折后价</th>
+                                        <th>总金额</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {volist name='price' id='v'}
+                                    <tr>
+
+                                        <td width="30">{$i}</td>
+                                        <td>{$v.name}</td>
+                                        <td>{$v.material}</td>
+                                        <td>{$v.flower_type}</td>
+                                        <td>{$v.color_name}</td>
+                                        <td>㎡</td>
+                                        <td>{$v.all_width}</td>
+                                        <td>{$v.all_height}</td>
+                                        <td>{$v.count}</td>
+                                        <td>{$v.product_area}</td>
+                                        <td>{$v.price}</td>
+                                        <td>{$v.rebate_price}</td>
+                                        <td>{$v.all_price}</td>
+                                        <td class="td-manage">
+                                            <a title="查看" onclick="xadmin.open('编辑产品', '{:url('readProduct',array('id'=>$v['op_id'],'order_id'=>$v['order_id']))}')" href="javascript:;">
+                                                <i class="layui-icon">&#xe63c;</i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {/volist}
+
+                                </tbody> 
+                            </table>
+                            
+                        </div>
+                        <div class="layui-card-body " style="padding-bottom: 0px;clear: both;">
+                            <blockquote class="layui-elem-quote" style="margin: 0px;background: #c3c3c3;font-size: 14px; color: #000;">算料信息</blockquote>                       
+                        </div>
+                        <div class="layui-card-body " style="padding-top: 0px;">
+                            <table class="layui-table layui-form" id="group-table" lay-filter="group-table" style="margin: 0px;">
+                                <thead>
+                                    <tr>
+                                        
+                                        <th>产品编号</th>
+                                        <th>名称</th>
+                                        <th>材质</th>
+                                        <th>型号</th>
+                                        <th>铝材/花件颜色</th>
+                                        <th>单位</th>
+                                        <th>宽</th>
+                                        <th>高</th>
+                                        <th>个数</th>
+                                        <th>面积</th>
+                                        <th>单价</th>
+                                        <th>折后价</th>
+                                        <th>总金额</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {volist name='calculate' id='v'}
+                                    <tr>
+
+                                        <td width="30">{$i}</td>
+                                        <td>{$v.name}</td>
+                                        <td>{$v.material}</td>
+                                        <td>{$v.flower_type}</td>
+                                        <td>{$v.color_name}</td>
+                                        <td>㎡</td>
+                                        <td>{$v.all_width}</td>
+                                        <td>{$v.all_height}</td>
+                                        <td>{$v.count}</td>
+                                        <td>{$v.product_area}</td>
+                                        <td>{$v.price}</td>
+                                        <td>{$v.rebate_price}</td>
+                                        <td>{$v.all_price}</td>
+                                        <td class="td-manage">
+                                            <a title="查看" onclick="xadmin.open('查看产品', '{:url('readProduct',array('id'=>$v['op_id'],'order_id'=>$v['order_id']))}')" href="javascript:;">
+                                                <i class="layui-icon">&#xe63c;</i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {/volist}
+
+                                </tbody> 
+                            </table>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</body>
+
+<script>
+    layui.use(['laydate', 'form','table'],
+            function () {
+                var laydate = layui.laydate;
+                var form = layui.form;
+                
+                //执行一个laydate实例
+                laydate.render({
+                    elem: '#end_date' //指定元素
+                });
+                var table = layui.table;
+                var order_id = $('#order_id').val();
+      
+                    
+                //监听提交表单
+                form.on('submit(edit)',
+                        function (data) {                            
+                            ajaxform("{:url('edit')}", data.field);
+                            return false;
+                        });
+
+            });
+        /*删除*/
+        function member_del(obj, id) {
+            layer.confirm('确认要删除吗？',
+            function(index) {
+                //发异步删除数据
+                ajaxform("{:url('delProduct')}",{id:id},1);
+            });
+        }   
+</script>
+
+</html>

@@ -1,0 +1,609 @@
+<?php $current='6'; ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>微元生产工序报工管理系统,建材行业生产管理系统,门窗生产管理系统,微元科技,佛山市微元科技有限公司</title>
+	{include file="public/header" /}
+</head>
+<body>
+	<div class="baogong_parameterSetting popup-box">
+		<div class="popup-header">
+			<div>参数设置</div>
+		</div>
+		<div class="popup-body" style="padding-top: 40px;">
+			{php}$index = 1;{/php}
+			{include file="setting/menu" /}
+			<div class="body-center">
+				<!-- 用户管理 -->
+				<div class="body-content-box body-nav-active">
+					<div class="content-header">
+						<div class="content-header-left">
+							<span class="header-left-item" id="addUserBtn">
+								<img src="__STATIC__/theme/index/img/icon_user_add.png">
+								<span>添加用户</span>
+							</span>
+						</div>
+						<form id="searchForm" action="{:url('Setting/setting')}" method="get" class="content-header-right">
+							<div class="sort-list">
+								<div class="imitate-select setDefaultSelect">
+									<span class="select-txt">选择用户角色</span>
+									<span class="icon-arrow triangle-down"></span>
+									<input type="hidden" name="role">
+									<ul data-sign="role-index">
+										<li>选择用户角色</li>
+										{volist name="roles" id="vo"}
+											<li {if condition="$key eq $get['role']"} data-selected="true"{/if} data-value="{$key}">{$vo}</li> 
+										{/volist}
+									</ul>
+								</div>
+							</div>
+							<div class="search-box">
+								<input type="text" name="uname" value="{$get['uname']}" placeholder="请输入用户名称">
+								<span id="searchBtn" class="search-btn">搜索</span>
+								<div class="show-all-user"><a href="{:url('Setting/setting')}">全显示</a></div>
+							</div>
+						</form>
+					</div>
+					<div class="content-center">
+						<div class="content-center-inner">
+							<table class="layui-table parameter-table">
+								<thead>
+									<th>ID</th>
+									<th>用户名称</th>
+									<th>内部标识客户名称</th>
+									<th>创建时间</th>
+									<th>所属用户组</th>
+									<th>所属班组</th>
+									<th>所属权限</th>
+									<th>能否登录后台</th>
+									<th>操作</th>
+								</thead>
+								<tbody>
+									{volist name="user" id="e"}
+									<tr>
+										<td>{$e.id}</td>
+										<td>{$e.uname}</td>
+										<td>{php} if($e['user_role']==4&&$e['client_name']!=''){ echo $e['client_name'];} {/php}</td>
+										<td>{$e.addtime|date="Y-m-d"}</td>
+										<td>{php}if($e['user_role']<=0){ echo '未设置';}else{ echo $roles[$e['user_role']];} {/php}</td>
+										<td>{$e.team_name}</td>
+										<td>{$e.role_name}</td>
+										<td>
+										{php} if($e['nologin']=='1'){ {/php}
+										<span style="color:#c00;">✘</span>
+										{php} }else{ {/php}
+										<span style="color:#390;">✔</span>
+										{php} } {/php}
+										</td>
+										<td class="operate-box">
+											{if condition="$e['showDismission'] eq 1"}
+											<span class="btn-normal" onclick="changeDismission({$e.id});" id="dismission_{$e.id}" style="{if condition="$e['dimission'] eq 1"}color:red{/if}">{if condition="$e['dimission'] neq 1"}离职{else/}已离职{/if}</span> /
+											{/if}
+											<!-- <span class="btn-normal"  onclick="changeDismission({$e.id});" id="dismission_{$e.id} style="color:red">{if condition="$e['dimission'] neq 1"}离职{else/}已离职{/if}</span> / -->
+											<span class="btn-normal editUserBtn edit" data-id="{$e.id}">修改</span> /
+											<span class="btn-normal btn-danger del" data-id="{$e.id}" data-master="{$e.master}">删除</span>
+										</td>
+									</tr>
+									{/volist}
+								</tbody>
+							</table>
+							<div class="page-box">
+								<div class="pages">
+									{$page|raw}
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- 添加用户 -->
+	<div class="modal-box" id="addUserModal">
+		<div class="modal-content">
+			<div class="modal-header">
+				<div class="modal-header-left">
+					<div class="modal-header-title">
+						<img src="__STATIC__/theme/index/img/icon_user_add.png">
+						<span>添加用户</span>
+					</div>
+				</div>
+				<div class="modal-header-right">
+					<span class="close-modal-btn"></span>
+				</div>
+			</div>
+			<div class="modal-body">
+				<div class="modal-body-middle">
+					<ul class="add-user-box">
+						<li>
+							<div class="li-left">用户名称：</div>
+							<div class="li-right">
+								<input type="text" name="user" id="user" placeholder="输入用户名" autocomplete="off">
+							</div>
+						</li>
+						<li>
+							<div class="li-left">登录密码：</div>
+							<div class="li-right">
+								<input type="password" id="pwd" name="pwd" placeholder="设置登录密码" autocomplete="off">
+							</div>
+						</li>
+						<li>
+							<div class="li-left">确认密码：</div>
+							<div class="li-right">
+								<input type="password" id="pwde" name="pwde" autocomplete="off" placeholder="确认登录密码">
+							</div>
+						</li>
+						<li>
+							<div class="li-left">用户角色：</div>
+							<div class="li-right">
+								<div class="imitate-select">
+									<span class="select-txt"></span>
+									<span class="triangle-down"></span>
+									<input type="hidden" name="user_role" id="user_role">
+									<ul data-sign="user_role">
+										{volist name="roles" id="vo"}
+											<li data-value="{$key}">{$vo}</li> 
+										{/volist}
+									</ul>
+								</div>
+							</div>
+						</li>
+						<li id="client_namediv">
+							<div class="li-left">客户名称：</div>
+							<div class="li-right">
+								<input type="text" name="client_name"  id="client_name" autocomplete="off" value="" placeholder="请输入客户名称" />
+							</div>
+						</li>
+						<li>
+							<div class="li-left">所属权限：</div>
+							<div class="li-right">
+								<div class="imitate-select">
+									<span class="select-txt"></span>
+									<span class="triangle-down"></span>
+									<input type="hidden" name="role" id="role">
+									<ul data-sign="role">
+										{volist name="role_l" id="rl"}
+											<li data-value="{$rl.id}">{$rl.title}</li>
+										{/volist}
+									</ul>
+								</div>
+							</div>
+						</li>
+						<li id="teamdiv">
+							<div class="li-left">所属班组：</div>
+							<div class="li-right">
+								<div class="imitate-select">
+									<span class="select-txt"></span>
+									<span class="triangle-down"></span>
+									<input type="hidden" name="team" id="team">
+									<ul data-sign="team">
+										{volist name="team[0]" id="e"}
+											<li data-value="{$e.id}">+ {$e.team_name}</li>
+												{php} 
+														if(isset($team[$e['id']])){ 
+															$childs=$team[$e['id']];
+															foreach($childs as $val){
+												{/php}
+												<li data-value="{$val.id}">&nbsp;&nbsp;&nbsp;- {$val.team_name}</li>
+												{php} 
+														}
+													} 
+												{/php}
+										{/volist}
+									</ul>
+								</div>
+							</div>
+						</li>
+						<li>
+							<div class="li-left">登录后台：</div>
+							<div class="li-right">
+								<div class="imitate-select">
+									<span class="select-txt">能</span>
+									<span class="triangle-down"></span>
+									<input type="hidden" name="nologin" id="nologin" value="0">
+									<ul data-sign="nologin">
+										<li data-value="0">能</li>
+										<li data-value="1">不能</li>
+									</ul>
+								</div>
+							</div>
+						</li>
+						<li>
+							<div class="li-left">小程序报工显示模块：</div>
+							<div class="li-right select-list">
+								<ul id="wx_model" class="select-item">
+									<li>
+										<div data-value="1" class="imitate-checkbox-small">
+											<span></span>
+										</div>
+										<div>头部数据统计</div>
+									</li>
+									<li>
+										<div data-value="2" class="imitate-checkbox-small">
+											<span></span>
+										</div>
+										<div>三项数据筛选统计</div>
+									</li>
+									<li>
+										<div data-value="3" class="imitate-checkbox-small">
+											<span></span>
+										</div>
+										<div>时间段工序超时分析</div>
+									</li>
+									<li>
+										<div data-value="4" class="imitate-checkbox-small">
+											<span></span>
+										</div>
+										<div>按时完成量</div>
+									</li>
+									<li>
+										<div data-value="5" class="imitate-checkbox-small">
+											<span></span>
+										</div>
+										<div>工序异常汇总</div>
+									</li>
+									<li>
+										<div data-value="6" class="imitate-checkbox-small">
+											<span></span>
+										</div>
+										<div>工序人均产值</div>
+									</li>
+									<li>
+										<div data-value="7" class="imitate-checkbox-small">
+											<span></span>
+										</div>
+										<div>工序产能分析占比</div>
+									</li>
+									<li>
+										<div data-value="8" class="imitate-checkbox-small">
+											<span></span>
+										</div>
+										<div>生产计划达成率</div>
+									</li>
+									<li>
+										<div data-value="9" class="imitate-checkbox-small">
+											<span></span>
+										</div>
+										<div>系列颜色分析汇总</div>
+									</li>
+									<li>
+										<div data-value="10" class="imitate-checkbox-small">
+											<span></span>
+										</div>
+										<div>超期订单</div>
+									</li>
+								</ul>
+							</div>
+						</li>
+						<li>
+							<div class="li-left">小程序首页数据显示模块：</div>
+							<div class="li-right select-list">
+								<ul id="wx_function" class="select-item">
+									<li>
+										<div data-value="1" class="imitate-checkbox-small">
+											<span></span>
+										</div>
+										<div>创建新的生产单</div>
+									</li>
+									<li>
+										<div data-value="2" class="imitate-checkbox-small">
+											<span></span>
+										</div>
+										<div>我要对工序报工</div>
+									</li>
+									<li>
+										<div data-value="3" class="imitate-checkbox-small">
+											<span></span>
+										</div>
+										<div>批次排产报工</div>
+									</li>
+									<li>
+										<div data-value="4" class="imitate-checkbox-small">
+											<span></span>
+										</div>
+										<div>我要对工序报异常</div>
+									</li>
+									<li>
+										<div data-value="5" class="imitate-checkbox-small">
+											<span></span>
+										</div>
+										<div>工序拍照</div>
+									</li>
+									<li>
+										<div data-value="6" class="imitate-checkbox-small">
+											<span></span>
+										</div>
+										<div>半成品标签</div>
+									</li>
+									<li>
+										<div data-value="7" class="imitate-checkbox-small">
+											<span></span>
+										</div>
+										<div>打包入库</div>
+									</li>
+									<li>
+										<div data-value="8" class="imitate-checkbox-small">
+											<span></span>
+										</div>
+										<div>扫码出库</div>
+									</li>
+									<li>
+										<div data-value="9" class="imitate-checkbox-small">
+											<span></span>
+										</div>
+										<div>切割方案</div>
+									</li>
+								</ul>
+							</div>
+						</li>
+					</ul>
+				</div>
+				<div class="modal-body-bottom">
+					<div class="btne">确认添加</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- 修改用户信息 -->
+	<div class="modal-box" id="userEditModal">
+		<div class="modal-content">
+			<div class="modal-header">
+				<div class="modal-header-left">
+					<div class="modal-header-title">
+						<span id="usernameTxt"></span>
+					</div>
+				</div>
+				<div class="modal-header-right">
+					<span class="close-modal-btn layui-icon layui-icon-close"></span>
+				</div>
+			</div>
+			<div class="modal-body">
+				<div class="iframe-box">
+					<iframe class="myIframe" id="userEditIframe" frameborder="0"></iframe>
+				</div>
+			</div>
+		</div>
+	</div>
+	{include file="setting/timeset" /}
+</body>
+	<script type="text/javascript">
+		// 改变在职状态
+		function changeDismission(uid){
+			$.ajax({
+				url: "{:Url('Setting/change_dismission')}",
+				data: {"uid":uid},
+				dataType: 'json',
+				success:function(obj){
+					if(obj.status==1){
+						layer.msg('操作成功');
+						$("#dismission_"+uid).html(obj.msg);
+					}else{
+						layer.msg('操作失败，请重试');
+					}
+				}
+			});
+		}	
+	
+		// 改变用户组时 , 判断是否显示班组
+		function changerole(){
+			var _val=$("#user_role").val();
+			if(_val==2||_val==1||_val==6){
+				$("#teamdiv").show();
+			}else{
+				$("#teamdiv").hide();
+			}
+			if(_val==4){
+				$("#client_namediv").show();
+			}else{
+				$("#client_namediv").hide();
+			}
+		}
+		// 确认添加账号
+		$('.btne').click(function(){
+			var user = $("#user").val();
+			var pwd = $("#pwd").val();
+			var again = $("#pwde").val();
+			var user_role = $('#user_role').val();
+			var client_name = $("#client_name").val();
+			var role_id = $('#role').val();
+			var tid = $('#team').val();
+			var nologin = $('#nologin').val();
+			var wx_model = [];
+			var wx_function = [];
+			$('#wx_model li .imitate-checkbox-small[data-sign=true]').each(function(i){
+				wx_model[i]=$(this).attr('data-value');
+			})
+			$('#wx_function li .imitate-checkbox-small[data-sign=true]').each(function(i){
+				wx_function[i]=$(this).attr('data-value');
+			})
+			var str_wx_model = wx_model.join(',');
+			var str_wx_function = wx_function.join(',');
+			if(user==''){
+				layer.msg("请输入用户名称");
+				return false;
+			}
+			if(pwd==''){
+				layer.msg("请输入密码");
+				return false;
+			}
+			if(again!=pwd){
+				layer.msg("两次密码不一致");
+				return false;
+			}
+			if(role_id==''){
+				layer.msg("请选择所属权限");
+				return false;
+			}
+			$.ajax({
+				url: "{:Url('Setting/inuser')}",
+				data: {"user":user,"pwd":pwd,"role_id":role_id,"tid":tid,"nologin":nologin,'user_role':user_role,"client_name":client_name,'wxmodel':str_wx_model,"wxfunction":str_wx_function},
+				dataType: 'json',
+				success:function(obj){
+					if(obj.status==1){
+						layer.msg('添加成功');
+						//如果是跟单或业务，则跳到绑定的中间页
+						if(user_role == 3 || user_role == 5){
+							layer.open({ 
+								type: 2,
+								title: '绑定用户客户',
+								shadeClose: true,
+								shade: 0.8,
+								area: ['650px', '70%'],
+								content: "bind_middle?id="+obj.id+"" ,
+								cancel: function(){ 
+									window.location.reload(); //刷新父页面
+									return false; 
+								}
+							});
+						}else{
+							setTimeout(function(){
+								window.location.reload();
+							},1000);
+						}
+					}else{
+						layer.msg(obj.msg);
+					}
+				}
+			},'json')
+		});
+		
+		//编辑
+		$('.editUserBtn').click(function (e) {
+			e.preventDefault();
+			e.stopPropagation();
+			var id = $(this).data('id');
+			var url = "change_user?id=" + id;
+			$('#userEditModal').fadeIn();
+			$('#userEditIframe').attr('src',url);
+		});
+
+		//删除
+		$('.del').click(function(){
+			var id = $(this).data('id');
+			var key = $(this).data('master');
+			layer.confirm('是否删除',{icon:3,title:'提示'},function(index){
+				$.ajax({
+					url: "{:Url('Setting/del')}",
+					data: {kind:0,kid:id,mst:key},
+					dataType:"json",
+					success:function(obj){
+						if(obj.code==2){
+							layer.alert('管理员账号，不可删除',{icon:1});
+						}else if(obj.code==0){
+							layer.msg('删除成功');	
+						}
+						setTimeout(function(){
+							window.location.reload();	
+						},2000);
+					}
+				})
+				layer.close(index);
+			})
+		});
+		$('#searchBtn').click(function(){
+			$('#searchForm').submit();
+		})
+	</script>
+	<script type="text/javascript">
+		$(document).ready(function(){
+			$('#addUserModal').find('.imitate-select').each(function(){
+				var _this = $(this);
+				var _val = _this.children('ul').children('li').eq(0).attr('data-value');
+				var _html = _this.children('ul').children('li').eq(0).html();
+				if(_val != null && _html != null){
+					_this.children('.select-txt').html(_html);
+					_this.children('input[type=hidden]').val(_val);
+
+				}
+			})
+			$('#searchForm').find('.setDefaultSelect').each(function(){
+				var _this = $(this);
+				var _val = _this.children('ul').children('li[data-selected=true]').attr('data-value')
+				var _html = _this.children('ul').children('li[data-selected=true]').html();
+				if(_val != null && _html != null){
+					_this.children('input[type=hidden]').val(_val).attr('data-value',_val);
+					_this.children('.select-txt').attr('data-value',_val).html(_html);
+				}
+			})
+		})
+		$('.close-modal-btn').click(function () {
+			$('.modal-box').fadeOut();
+		});
+		// 添加用户
+		$('#addUserBtn').click(function (e) {
+			e.preventDefault();
+			e.stopPropagation();
+			$('#addUserModal').fadeIn();
+		});
+		// 下拉列表
+		$('.imitate-select').click(function(e) {
+			e.preventDefault();
+			e.stopPropagation();
+			var _this = $(this);
+			var clickSign = _this.attr('data-sign');
+			$('.imitate-select').removeAttr('data-sign').children('ul').hide();
+			if (clickSign == 'true') {
+				_this.children('ul').hide();
+				_this.removeAttr('data-sign');
+			} else {
+				_this.children('ul').show();
+				_this.attr('data-sign', 'true');
+			}
+		});
+		$(window).click(function(){
+			var elem = event.srcElement ? event.srcElement : event.target;
+			while (elem) { //循环判断至跟节点，防止点击的是div子元素 
+				if (elem.id && elem.id == 'orderScreenBox') {
+					return;
+				}
+				if($(elem).hasClass('modal-content')){
+					return;
+				}
+				elem = elem.parentNode;
+			}
+			$('.modal-box').fadeOut();
+			$('.imitate-select').removeAttr('data-sign').children('ul').hide();
+			$('.content-header-left').removeAttr('data-click').css({
+				top: '0',
+			}).children('.filter-orders').removeClass('filter-orders-active');
+			$('.content-header-left').siblings('.order-screen-box').css({
+				height: '0',
+				overflow: 'hidden'
+			})
+		});
+		$('.imitate-select ul').delegate('li','click',function(e){
+			e.preventDefault();
+			e.stopPropagation();
+			var _this = $(this);
+			var tempTxt = _this.html();
+			var _thisValue = _this.attr('data-value');
+			_this.parent().parent().children('.select-txt').attr('data-value',_thisValue).html(tempTxt);
+			_this.parent().hide();
+			_this.parent().parent().removeAttr('data-sign');
+			var _clickTarget = _this.parent().attr('data-sign');
+			_this.parent().siblings('input[type=hidden]').val(_thisValue);
+			switch (_clickTarget) {
+				case 'user_role':
+					changerole();
+					break;
+				default:
+					break;
+			}
+		});
+		// 多选框
+		$('.imitate-checkbox-small').click(function(e) {
+			e.preventDefault();
+			e.stopPropagation();
+			let _this = $(this);
+			let clickSign = _this.attr('data-sign');
+			if (clickSign == 'true') {
+				_this.removeAttr('data-sign');
+				_this.children('span').hide();
+			} else {
+				_this.children('span').show();
+				_this.attr('data-sign', 'true');
+			}
+		});
+	</script>
+</html>

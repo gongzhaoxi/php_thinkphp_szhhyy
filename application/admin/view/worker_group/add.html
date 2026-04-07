@@ -1,0 +1,68 @@
+{include file="public/header"/}
+<link rel="stylesheet" href="__STATIC__/css/select.css">
+<div class="layui-fluid">
+	<div class="layui-row">
+		<form class="layui-form">
+			<div class="layui-form-item">
+				<label for="name" class="layui-form-label">
+					班组名称
+				</label>
+				<div class="layui-input-block">
+					<input type="text" id="name" name="name" value="" required="" lay-verify="required" class="layui-input" >
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label for="department" class="layui-form-label">
+					班组所属部门
+				</label>
+				<div class="layui-input-block">
+					<input type="text" id="department" name="department" value=""  class="layui-input" >
+				</div>
+			</div>
+			<div class="layui-form-item" >
+				<label class="layui-form-label">工序</label>
+				<div class="layui-input-block" >
+					<select name="process" xm-select="process" required  lay-verify="required" xm-select-search  xm-select-search-type="dl" xm-select-checkbox>
+						<option value="">请选择</option>
+						{volist name="process" id="vo"}
+						<option value="{$vo['id']}">{$vo['name']}</option>
+						{/volist}
+					</select>
+				</div>
+			</div>	
+			<div class="layui-form-item" >
+				<label class="layui-form-label">班长</label>
+				<div class="layui-input-block" >
+					<select name="monitor" xm-select="monitor"  xm-select-search  xm-select-search-type="dl" xm-select-checkbox>
+						<option value="">请选择</option>
+						{volist name="worker" id="vo"}
+						<option value="{$vo['id']}">{$vo['name']}</option>
+						{/volist}
+					</select>
+				</div>
+			</div>	
+
+			
+			<div class="layui-form-item">
+				<label for="L_repass" class="layui-form-label"></label>
+				<button class="layui-btn" lay-filter="save" lay-submit="">保存</button>
+			</div>
+		</form>
+	</div>
+</div>
+<script>
+layui.config({
+	base: "/static/js/",
+}).extend({
+	select: "select",
+}).use(['form','select'],function() {
+	$ = layui.jquery;
+	form = layui.form,select = layui.select;
+	form.on('submit(save)',function(data) {
+		ajaxform("{:url('add')}",data.field);
+		return false;
+	});  
+});
+</script>
+</body>
+</html>

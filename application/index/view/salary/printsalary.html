@@ -1,0 +1,116 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>微元生产工序报工管理系统,建材行业生产管理系统,门窗生产管理系统,微元科技,佛山市微元科技有限公司</title>
+<script src="__STATIC__/theme/index/js/jquery-1.10.2.js"></script>
+<link href="__STATIC__/theme/index/css/index.css" rel="stylesheet" />
+<link href="__STATIC__/theme/index/css/bootstrap.css" rel="stylesheet">
+<link href="__STATIC__/theme/index/css/font-awesome.min.css" rel="stylesheet">
+<script src="__STATIC__index/js/layer/layer.js"></script>
+<script src="__STATIC__index/js/laydate/laydate.js"></script>
+</head>
+
+<style>
+
+body{ width: 100%; min-width:100%; }
+.sc-l{padding:16px 4px;border-bottom:1px solid #EAEAEA}
+.s-l-func{display:flex;justify-content: flex-end;padding:8px 0}
+.s-l-func div{text-align: center;width: 104px;line-height: 29px;color: #fff;background: cadetblue;border-radius: 6px;font-size: 12px;letter-spacing: 1px;margin-right:8px}
+.s-l-title{display: flex;align-items: center;line-height: 34px;margin-top: 6px;padding: 0 12px;}
+.s-l-title p{margin-left:20px}
+.s-l-title input{width:18px;height:18px}
+.s-l-li{display: inline-block;width: 49%;padding:8px 0;font-size:12px}
+.s-l-li :nth-child(1){display: inline-block;width: 28%;text-align: center;}
+.s-l-li :nth-child(2){display: inline-block;width: 28%;text-align: center;}
+.s-l-li :nth-child(3){display: inline-block;width: 16%;text-align: center;}
+.s-l-li :nth-child(4){display: inline-block;width: 12%;text-align: center;}
+.s-l-li :nth-child(5){display: inline-block;width: 12%;text-align: center;}
+.check-report{padding-bottom:20px;padding-top: 8px;}
+.check-report :nth-child(1){float:left}
+.check-report :nth-child(2){float:right}
+.line{width:1px;height:38px;display:inline-block;background:black;position: absolute;margin-top: 8px;}
+#printbutton{width:120px;line-height:36px;background:red;color:#fff;text-align:center;border-radius:4px;margin-top:20px;margin-left:48%;}
+table{width:100%}
+table tr{line-height:38px}
+table tr td,th{text-align:center}
+</style>
+<body style="background:white;">
+<!-- 打印员工提成表 -->
+{volist name="list" id="lt"}
+			<div class="sc-l">
+				<div class="s-l-title">
+					<p>员工：{$lt.man_name}</p>
+					<p>工序：{$lt.gx_name}</p>
+					<p>报工日期：{$lt.time}</p>
+				</div>
+				<div class="s-l-content">
+					<table border='1'>
+						<tr>
+							<th>生产任务单编码</th>
+							<th>生产流水号</th>
+							<th>产品名称</th>
+							<th>套数</th>
+							<th>面积</th>
+							<th>玻扇数</th>
+							<th>纱扇数</th>
+							<th>单价</th>
+							<th>提成</th>
+							<th>实发提成</th>
+						</tr>
+						{php}
+									$snum_total=$area_total=$doornum_total=$screenwin_total=$salary_total=$real_money_total=0;{/php}
+						{volist name="lt.order_list" id="ls"}
+						<tr>
+							<td>{$ls.produce_sn}</td>
+							<td>{$ls.produce_no}</td>
+							<td>{$ls.pname}</td>
+							<td>{$ls.snum}</td>
+							<td>{$ls.area}</td>
+							<td>{$ls.doornum}</td>
+							<td>{$ls.screenwin}</td>
+							<td>{$ls.price}</td>
+							<td>{$ls.salary}</td>
+							<td>{$ls.real_money?$ls.real_money:$ls.salary}</td>
+						</tr>
+						{php}
+										$snum_total+=$ls['snum'];
+										$area_total+=$ls['area'];
+										$doornum_total+=$ls['doornum'];
+										$screenwin_total+=$ls['screenwin'];
+										$salary_total+=$ls['salary'];
+										$real_money_total+=$ls['real_money'];{/php}
+						{/volist}
+						<tr>
+							<td>汇总</td>
+							<td></td>
+							<td></td>
+							<td>{$snum_total}</td>
+							<td>{$area_total}</td>
+							<td>{$doornum_total}</td>
+							<td>{$screenwin_total}</td>
+							<td></td>
+							<td>{$salary_total}</td>
+							<td>{$real_money_total==0?$salary_total:$real_money_total}</td>
+						</tr>
+					</table>
+					<div class="check-report">
+											<div>员工审核：{$lt.true_time}</div>
+											<div>财务审核：{$lt.give_name?$lt.give_name:''}  {$lt.give_time}</div>
+										</div>
+				</div>
+			</div>
+			{/volist}
+			<div id="printbutton" onclick="doPrint()">打印内容</div>
+
+<script>
+function doPrint() {   
+   $("#printbutton").hide();
+    window.print();   
+    setTimeout(function(){
+    	$("#printbutton").show();
+     },500)
+}
+</script>
+</body>
+</html>

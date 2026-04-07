@@ -1,0 +1,114 @@
+{include file="public/header"/}
+<script type="text/javascript" src="__STATIC__/js/jquery.min.js"></script>
+<style>
+
+</style>
+<script>
+	//保存图片成功后，跳转的路径
+	var jumpurl="{:url('Carorder/calculate',array('series_id'=>'1','op_id'=>'1','structure_id'=>'1'))}";
+	function submitform(){
+		var index = layer.load(0, {shade: false}); 
+		$("#calform").submit();
+	}
+	//回调
+	function receiver(data){
+		
+		layer.closeAll();
+		
+		if(parseInt(data.status)==1){
+//			layer.msg(String(data.msg));
+                    var order_id = data.order_id;
+                    xadmin.open('编辑产品', '/admin/carorder/allCalculate/.html?order_id='+order_id+'&op_id={$info.op_id}');
+		}else{
+			layer.msg(String(data.msg));
+		}
+	}
+</script>  
+<body>
+    <div class="layui-fluid">
+        <div class="layui-row">
+            <form class="layui-form" target="imgiframe" action="{:url('Carorder/iframeImg')}" method="post" id="calform">
+                <blockquote class="layui-elem-quote">报价信息</blockquote> 
+                <table class="layui-table layui-form">
+                    <thead>
+                        <tr>
+                            <th>名称</th>
+                            <th>材质</th>
+                            <th>型号</th>
+                            <th>铝材/花件颜色</th>
+                            <th>单位</th>
+                            <th>宽</th>
+                            <th>高</th>
+                            <th>个数</th>
+                            <th>面积</th>
+                            <th>纱网</th>
+                            <th>弧高/深</th>
+                            <th>备注</th>
+                        </tr>
+                        
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{$info.name}</td>
+                            <td>{$info.material}</td>
+                            <td>{$info.flower_type}</td>
+                            <td>{$info.color_name}</td>
+                            <td>㎡</td>
+                            <td>{$info.all_width}</td>
+                            <td>{$info.all_height}</td>
+                            <td>{$info.count}</td>
+                            <td>{$info.area}</td>
+                            <td>纱网</td>
+                            <td>{$info.arc_height}</td>
+                            <td>{$info.note}</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+                {if condition="$info['order_type'] neq 2"}
+                <blockquote class="layui-elem-quote">算料信息</blockquote>
+                <div class='layui-col-md6'>
+                <table class="layui-table layui-form">
+                    <thead>
+                        <tr>
+                            <th>间距</th>
+                            {volist name='fixed' id='v'}
+                            <th>{$v.name}</th>
+                            {/volist}
+                            <th>把手位</th>
+                            <th>锁位高</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{$info.spacing}</td>
+                            {volist name='fixed' id='v'}
+                            <td>{$v.fixed}</td>
+                            {/volist}
+                            <td>{$hands.name}</td>
+                            <td>{$info.lock_position}</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+                </div>
+                <div class='layui-col-md12'>
+                    <blockquote class="layui-elem-quote">选中结构</blockquote> 
+                    <img src="/upload/{$info.structure}" style="max-height: 150px;"/>
+                </div>
+                <div class="layui-col-md12">
+                    <input name="series_id" type="hidden" value="{$info.series_id}"/>
+                    <input name="op_id" type="hidden" value="{$info.op_id}"/>
+                    <input name="order_id" type="hidden" value="{$info.order_id}"/>
+                    <input name="structure_id" type="hidden" value="{$info.structure_id}"/>
+                    <a class="layui-btn" id="print"  style="margin-left: 40%;" href="javascript:void(0);" onclick="javascript:submitform();">立即算料</a>              
+                </div>
+                {/if}
+            </form>
+        </div>
+    </div>
+	<iframe name="imgiframe" width="0" height="0"></iframe>
+
+</body>
+
+</html>

@@ -1,0 +1,144 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD HTML 4.01 Strict//EN' 'http://www.w3.org/TR/html4/strict.dtd'>
+<html>
+<head>
+<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>
+{include file="public/header" /}
+<title>设置</title>
+</head>
+<body class="edit_permissionr_modal">
+	<div class="modal-body">
+		<div class="modal-body-middle">
+			<form class="permission-box">
+				<div class="permission-box-top">
+					<span>权限名称</span>
+					<input type="text" id="rname" name="rname" value="{$roles.title}" placeholder="输入权限名称" autocomplete="off">
+				</div>
+				<ul class="permission-box-list">
+					{volist name="rule_li" id="lv"}
+					<li>
+						<div class="imitate-checkbox-all permission-list-icon">
+							<span></span>
+							<input type="hidden" name="ath" value="{$lv.id}" />
+						</div>
+						<div class=" permission-list-right">
+							<div>{$lv.title}</div>
+							<ul>
+								{volist name="lv['second']" id="v"}
+								<li>
+									<div class="imitate-checkbox-small permission-select-icon">
+										<span></span>
+										<input type="hidden" name="ath" value="{$v.id}" />
+									</div>
+									<span>{$v.title}</span>
+								</li>
+								{/volist}
+							</ul>
+						</div>
+					</li>
+					{/volist}
+				</ul>
+			</form>
+			<div class="modal-body-bottom">
+				<div class="btne">确认修改</div>
+			</div>
+		</div>
+	</div>
+<script type="text/javascript">
+//下拉选择-1
+$(document).ready(function(){
+	var checkbox = $("input[name='ath']");
+	
+	var auth = "{$roles.rules}";
+	var arr = auth.split(",");
+	for(var s in arr){
+		arr[s] = Number(arr[s]);
+	}
+	// 遍历已选择权限
+	$('.permission-box').find('input[name=ath]').each(function(){
+		var _this = $(this);
+		for(var e in arr){ 
+			if(_this.val() == arr[e]){
+				_this.siblings('span').show();
+				_this.parent().attr('data-sign','true');
+			}
+		}
+		
+	});
+	$('.permission-box').children('.permission-list-right').find('.permission-select-icon').each(function(){
+		var tempMaxLength = _this.parent().parent().find('.permission-select-icon').length;
+		var selectLength =  _this.parent().parent().find('.permission-select-icon[data-sign="true"]').length;
+		if(tempMaxLength == selectLength){	// 全部选中
+			_this.parent().parent().parent().siblings('.imitate-checkbox-all').attr('data-sign', 'true').children('span').show();
+		} else{
+			_this.parent().parent().parent().siblings('.imitate-checkbox-all').removeAttr('data-sign').children('span').hide();
+		}
+	})
+});
+
+$('.btne').click(function(){
+	var rname = $('#rname').val();
+	var id = "{$roles.id}";
+	var select_val = [];
+	// 遍历已选择权限
+	$('.permission-box').find('input[name=ath]').each(function(){
+		var _this = $(this);
+		if(_this.parent().attr('data-sign') == 'true'){
+			select_val.push(_this.val());
+		}
+	})
+	var groud = select_val.toString();
+	$.ajax({
+		url:"{:Url('Setting/inrole')}",
+		data:{"id":id,"rname":rname,"groud":groud},
+		dataType:'json',
+		success:function(res){
+			if(res.status==1){
+				layer.msg('修改成功');
+				var index = parent.layer.getFrameIndex(window.name);
+				setTimeout(function(){
+					layer.close(index);
+					window.parent.location.reload();
+				},2000);
+			}else{
+				layer.msg('暂无修改内容，请修改！');
+				var index = parent.layer.getFrameIndex(window.name);
+				setTimeout(function(){
+					layer.close(index);
+					window.parent.location.reload();
+				},2000);
+			}
+		}
+	},'json')
+})
+// 多选框
+$('.imitate-checkbox-small').click(function(e) {
+	e.preventDefault();
+	e.stopPropagation();
+	let _this = $(this);
+	let clickSign = _this.attr('data-sign');
+	if (clickSign == 'true') {
+		_this.removeAttr('data-sign');
+		_this.children('span').hide();
+	} else {
+		_this.children('span').show();
+		_this.attr('data-sign', 'true');
+	}
+});
+// 全选
+$('.imitate-checkbox-all').click(function(e) {
+	e.preventDefault();
+	e.stopPropagation();
+	let _this = $(this);
+	let clickSign = _this.attr('data-sign');
+	if (clickSign == 'true') {
+		_this.removeAttr('data-sign');
+		_this.children('span').hide();
+	} else {
+		_this.children('span').show();
+		_this.attr('data-sign', 'true');
+	}
+});
+
+</script>
+</body>
+</html>

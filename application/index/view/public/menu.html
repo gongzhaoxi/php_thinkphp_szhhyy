@@ -1,0 +1,127 @@
+
+<ul class="popup-nav">
+<!-- 	<li id="addOrderBtn">
+		<img src="__STATIC__/theme/index/img/icon_add.png">
+		<span>添加订单</span>
+	</li> -->
+	<li id="addOrderBatchBtn">
+		<img src="__STATIC__/theme/index/img/icon_batch.png">
+		<span>批量添加订单</span>
+	</li>
+	<!-- <li id="delOrderBatchBtn">
+		<img src="__STATIC__/theme/index/img/icon_batch.png">
+		<span>批量删除订单</span>
+	</li> -->
+	<!-- <li id="orderBatchEditBtn">
+		<img src="__STATIC__/theme/index/img/icon_batch.png">
+		<span>批量刷新订单</span>
+	</li> -->
+	<!-- <li id="toExamineBtn">
+		<img src="__STATIC__/theme/index/img/icon_batch.png">
+		<span>批量审核工序</span>
+	</li> -->
+	<li id="workReportDataBtn">
+		<img src="__STATIC__/theme/index/img/icon_batch.png">
+		<span>员工报工打印</span>
+	</li>
+	{if condition="PART_INTO neq 1"}
+		{if condition="PRODUCT_PRINT eq 1"}
+		<li id="banProductBtn">
+			<img src="__STATIC__/theme/index/img/icon_batch.png">
+			<span>半成品标签</span>
+		</li>
+		{/if}
+		{if condition="$fix_gx eq 0"}
+		<li id="scanQrcodeBtn">
+			<img src="__STATIC__/theme/index/img/icon_batch.png">
+			<span>扫码入库</span>
+		</li>
+		{/if}
+	{/if}
+
+	{if condition="CUT_PRINT eq 1"}
+	<li id="printCutBtn">
+		<img src="__STATIC__/theme/index/img/icon_export.png">
+		<span>切割方案</span>
+	</li>
+	{/if}
+	<li id="exportDataBtn">
+		<img src="__STATIC__/theme/index/img/icon_export.png">
+		<span>导出数据</span>
+	</li>
+	<li id="allDataBtn">
+		<img src="__STATIC__/theme/index/img/icon_refresh.png">
+		<span>全部数据</span>
+	</li>
+</ul>
+<!-- 导航栏操作 -->
+<script type="text/javascript">
+	// 导出数据
+	$('#exportDataBtn').click(function (e) {
+		e.preventDefault();
+		e.stopPropagation();
+		$('#exportDataModal').fadeIn();
+		$('#myIframe_exportData').attr('src',"{:url('Export/export')}");
+	})
+	// 添加订单
+	$('#addOrderBtn').click(function (e) {
+		e.preventDefault();
+		e.stopPropagation();
+		$('#addOrderModal').fadeIn();
+		$('#myIframe_addOrder').attr('src',"{:url('Index/edit')}");
+	})
+	// 批量添加订单
+	$('#addOrderBatchBtn').click(function (e) {
+		e.preventDefault();
+		e.stopPropagation();
+		$('#addOrderBatchModal').fadeIn();
+	})
+	// // 批量删除订单
+	// $('#delOrderBatchBtn').click(function (e) {
+	// 	e.preventDefault();
+	// 	e.stopPropagation();
+	// 	$('#delOrderBatchModal').fadeIn();
+	// 	$('#myIframe_delOrder').attr('src',"{:url('Index/batch_order_del')}");
+	// })
+	// // 批量刷新订单
+	// $('#orderBatchEditBtn').click(function (e) {
+	// 	e.preventDefault();
+	// 	e.stopPropagation();
+	// 	$('#orderBatchEditModal').fadeIn();
+	// 	$('#myIframe_editOrderBatch').attr('src',"{:url('Index/order_batch_edit')}");
+	// })
+	// 批量审核工序
+	$('#toExamineBtn').click(function (e) {
+		e.preventDefault();
+		e.stopPropagation();
+		$('#toExamineModal').fadeIn();
+	})
+	// 员工报工打印
+	$('#workReportDataBtn').click(function (e) {
+		e.preventDefault();
+		e.stopPropagation();
+		window.open("{:Url('Index/man_gx_print')}");
+	})
+	// 半成品标签
+	$('#banProductBtn').click(function (e) {
+		e.preventDefault();
+		e.stopPropagation();
+		window.open("{:url('Printer/ban_product')}");
+	})
+	// 扫码入库
+	$('#scanQrcodeBtn').click(function (e) {
+		e.preventDefault();
+		e.stopPropagation();
+		window.open("{:url('Printer/scan_qrcode')}");
+	})
+	// 切割方案
+	$('#printCutBtn').click(function (e) {
+		e.preventDefault();
+		e.stopPropagation();
+		window.open("{:url('Printer/cut')}");
+	})
+	// 全部数据
+	$('#allDataBtn').click(function (e) {
+		window.location.href = window.location.origin + window.location.pathname;
+	})
+</script>

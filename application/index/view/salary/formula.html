@@ -1,0 +1,390 @@
+<?php $current='6'; ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>微元生产工序报工管理系统,建材行业生产管理系统,门窗生产管理系统,微元科技,佛山市微元科技有限公司</title>
+{include file="public/header" /}
+</head>
+<style>
+.select-gx{position: absolute;left: 120px;margin-top:8px;padding: 8px}
+.layui-form-select{
+	color: #333333;
+}
+</style>
+<body>
+	<div class="baogong_piecework popup-box">
+		<div class="popup-header">
+			<div>计件管理</div>
+		</div>
+		<div class="popup-body">
+			<div class="body-nav">
+				<ul class="body-nav-list">
+					<li><a href="{:url('Salary/salary')}">已对账提成</a></li>
+					<li class="li-active"><a href="{:url('Salary/formula')}">计件公式</a></li>
+					<li><a href="{:url('Salary/handSalary')}">员工提成<br>（手输）</a></li>
+					<li><a href="{:url('Salary/paysalary')}">日对账</a></li>
+				</ul>
+			</div>
+			<div class="body-center">
+				<!-- 计件公式 -->
+				<div class="body-content-box body-nav-active">
+					<div class="content-header">
+						<div class="content-header-left">
+							<span class="header-left-item" id="addFormulaBtn"> <img src="__STATIC__/theme/index/img/icon_formula.png"><span>添加公式</span></span>
+						</div>
+						<div class="select-gx formula-box">
+							<form id="form-sub" class="layui-form" action="{:url('salary/formula')}">
+								<input type="hidden" id="type_gxs" name="type">
+								<input type="hidden" id="gxs" name="gxs">
+								<select name="gxs_select" id="gxs_select" lay-verify="required" lay-search lay-filter="gxs_select">
+									<option value="">选择工序</option>
+									{volist name="gxList" id="eg"}
+										{if condition="$eg['dname'] neq ''"}
+											<option value="0_{$eg.id}" {if condition="$eg['id'] eq $gx && $type eq 0"} selected="selected"{/if}>工序：{$eg.dname}</option>
+										{else}
+											<option {if condition="$eg['id'] eq $gx && $type eq 1"} selected="selected"{/if} value="1_{$eg.id}">入库工序：{$eg.name}</option>
+										{/if}
+									{/volist}
+								</select>
+							</form>
+						</div>
+					</div>
+					<div class="content-center">
+						<div class="content-center-inner">
+							<table class="layui-table parameter-table" border="1" cellpadding="0" cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th>排序</th>
+                                        <th>工序</th>
+                                        <th>数据判断内容</th>
+                                        <th>二级判断内容</th>
+                                        <th>计件单位（对应字段）</th>
+                                        <th>计价公式</th>
+                                        <th>单价</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- 一级系列 -->
+                                    {volist name="list" id="la"}
+                                    <tr>
+                                        <td>{$la.sort}</td>
+                                        <td>{$la.dname}</td>
+                                        <td style="padding:5px">{$la.text}</td>
+                                        <td>{$la.content}</td>
+                                        <td>{$la.unitname}</td>
+                                        <td>{$la.formula_text}</td>
+                                        <td>{$la.price}</td>
+                                        <td class="operate-box">
+                                            <span class="btn-normal editPiecework edit" data-id="{$la.id}">修改</span>/
+                                            <span data-sid="{$la.sid}" data-id="{$la.id}" onclick="del(this)" class="btn-normal btn-danger del">删除</span>
+                                        </td>
+                                    </tr>
+                                    {/volist}
+                                </tbody>
+                            </table>
+                            <div class="pages">
+                                {$page|raw}
+                            </div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+    </div>
+    <!-- 添加公式 -->
+	<div class="modal-box" id="addFormulaModal">
+		<div class="modal-content" style="width: 650px;height: 90%;">
+			<div class="modal-header">
+				<div class="modal-header-left">
+					<div class="modal-header-title">
+						<img src="__STATIC__/theme/index/img/icon_formula.png">
+						<span>添加公式</span>
+					</div>
+				</div>
+				<div class="modal-header-right">
+					<span class="close-modal-btn"></span>
+				</div>
+			</div>
+			<div class="modal-body">
+				<div class="modal-body-middle">
+                    <div class="formula-box layui-form">
+                        <ul class="formula-box-list">
+                        <li class="formula-list-group">
+                                <div class="formula-list-group-left">排序：</div>
+                                <div class="formula-list-group-right">
+									<input type="text" id="sort" autocomplete="off" placeholder="如：0">
+								</div>
+                            </li>
+                            <li class="formula-list-group">
+                                <div class="formula-list-group-left">工序：</div>
+                                <div class="formula-list-group-right">
+									<input type="hidden" name="type_gx" id="type_gx">
+									<input type="hidden" name="gx" id="gx">
+									<select name="gx_select" id="gx_select" lay-verify="required" lay-search lay-filter="gx_select">
+										<option value="">选择工艺路线</option>
+										{volist name="gxList" id="eg"}
+                                            {if condition="$eg['dname'] neq ''"}
+                                            <option value="0_{$eg.id}">工艺路线：{$eg.title}&nbsp;|&nbsp;工序：{$eg.dname}</option>
+                                            {else}
+                                            <option value="1_{$eg.id}">入库工序：{$eg.name}</option>
+                                            {/if}
+										{/volist}
+									</select>
+                                </div>
+                            </li>
+                            <li class="formula-list-group">
+                                <div class="formula-list-group-left">判断内容：</div>
+                                <div class="formula-list-group-right">
+									<textarea name="" id="content" placeholder="请输入判断内容：&#10;&#10;注：每个数据之间请加“|”竖杠区分，最后一个数据不用加竖杠。&#10;&#10;&#10;&#10;无需判断直接为空"></textarea>
+								</div>
+                            </li>
+                            <li class="formula-list-group addFirstFormulabox">
+                                <div class="formula-list-group-left">判断字段：</div>
+                                <div class="formula-list-group-right judge-field">
+									<select name="field" id="field" lay-verify="required" lay-search lay-filter="field">
+										<option value="">请选择判断字段</option>
+										{volist name="qrcodeList" id="ql"}
+                                            <option value="{$ql.fieldname}">{$ql.explains}</option>
+										{/volist}
+									</select>
+									<div class="judge-field-second addSecondFormula">添加二次判断</div>
+								</div>
+                            </li>
+                            <li class="formula-list-group formulaSecondBox" style="display: none;">
+                                <div class="formula-list-group-left">判断内容：</div>
+                                <div class="formula-list-group-right">
+									<textarea name="" id="contents" placeholder="请输入判断内容：&#10;&#10;注：每个数据之间请加“|”竖杠区分，最后一个数据不用加竖杠。&#10;&#10;&#10;&#10;无需判断直接为空"></textarea>
+								</div>
+                            </li>
+                            <li class="formula-list-group formulaSecondBox" style="display: none;">
+                                <div class="formula-list-group-left">判断字段：</div>
+                                <div class="formula-list-group-right judge-field">
+									<select name="fields" id="fields" lay-verify="required" lay-search lay-filter="fields">
+										<option value="">请选择判断字段</option>
+										{volist name="qrcodeList" id="ql"}
+                                            <option value="{$ql.fieldname}">{$ql.explains}</option>
+										{/volist}
+									</select>
+                                    <div class="judge-field-second cancelSecondFormula">取消二次判断</div>
+								</div>
+                            </li>
+                            <li class="formula-list-group">
+                                <div class="formula-list-group-left">计件单位：</div>
+                                <div class="formula-list-group-right">
+									<input type="text" id="unit" autocomplete="off" placeholder="如：平方/日">
+								</div>
+                            </li>
+                            <li class="formula-list-group">
+                                <div class="formula-list-group-left">计件公式：</div>
+                                <div class="formula-list-group-right download-formula">
+									<input type="text"  placeholder="$area*$snum" id="gs-inp"  autocomplete="off">
+									<div class="download-formula-btn"><a href="{:url('Salary/fieldexcel')}">数据对应字段表下载</a></div>
+								</div>
+                            </li>
+                            <li class="formula-list-group">
+                                <div class="formula-list-group-left">单价：</div>
+                                <div class="formula-list-group-right unit-price">
+									<input type="text" id="price" placeholder="如：2.7">
+									<span>单位：元</span>
+								</div>
+                            </li>
+                        </ul>
+                    </div>
+					<div class="modal-body-bottom">
+						<div onclick="sub()">确认添加</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- 修改公式 -->
+	<div class="modal-box" id="editFormulaModal">
+		<div class="modal-content">
+			<div class="modal-header">
+				<div class="modal-header-left">
+					<div class="modal-header-title">
+						<span>编辑公式</span>
+					</div>
+				</div>
+				<div class="modal-header-right">
+					<img src="__STATIC__/theme/index/img/icon_close_3.png" class="close-modal-btn">
+				</div>
+			</div>
+			<div class="modal-body">
+				<div class="modal-body-middle">
+                    <div class="iframe-box">
+						<iframe class="myIframe" id="editFormulaIframe" frameborder="0"></iframe>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+<script type="text/javascript">
+	$(document).ready(function(){
+		// 显示默认工序
+		$('.formula-box').find('.setDefaultSelect').each(function(){
+			var _this = $(this);
+			var _val = _this.children('ul').children('li[data-selected=true]').attr('data-value');
+			var _type = _val = _this.children('ul').children('li[data-selected=true]').attr('data-type');
+			var _html = _this.children('ul').children('li[data-selected=true]').html();
+			_this.children('input[type=hidden]').val(_val).attr('data-value',_type);
+			if(_html==''||_html==null){
+				return
+			}
+			_this.children('.select-txt').attr('data-value',_val).html(_html);
+		})
+	});
+	$('#addFormulaBtn').click(function(e){
+		e.preventDefault();
+		e.stopPropagation();
+		$('#addFormulaModal').fadeIn();
+	})
+	//添加计件公式
+	function sub(){
+		var data = {};
+		data['gid'] = $('#gx').val();
+		data['type'] = $('#type_gx').val();
+		data['content'] = $('#content').val();
+		data['field'] = $('#field').val();
+		data['price'] = $('#price').val();
+		data['unitname'] = $('#unit').val();
+		data['gongshi'] = $('#gs-inp').val();
+		data['fields'] = $('#fields').val();
+		data['sort'] = $('#sort').val();
+		data['contents'] = $('#contents').val();
+		if(data['gongshi']==''){
+			layer.msg('请填写计件公式');
+			return false;
+		}
+		if(data['price']==''){
+			layer.msg('请填写单价');
+			return false;
+		}
+		if(data['field']=='' || data['field']==0){
+			layer.msg('请选择判断字段');
+			return false;
+		}
+		if(data['gid']=='' || data['gid']==0){
+			layer.msg('请选择工序');
+			return false;
+		}
+		layer.confirm('是否添加',{icon:3,title:'提示',move:false},function(index){
+			$.ajax({
+				url:"{:url('Salary/addformula')}",
+				data:data,
+				dataType: 'json',
+				success:function(res){
+					if(res.code==0){
+						$('.mb').fadeOut();
+						$('.add-info').fadeOut();
+						layer.msg(res.msg);
+						window.location.reload();
+					}else{
+						layer.msg(res.msg);
+					}
+				}
+				
+			},'json')
+			layer.close(index)
+		})
+		
+	}
+	
+	//修改计件公式
+	$('.edit').click(function(e){
+		e.preventDefault();
+		e.stopPropagation();
+		var id = $(this).data('id');
+		$('#editFormulaModal').fadeIn();
+		$('#editFormulaIframe').attr('src',"editformula?id=" + id);
+	})
+	//删除计件公式
+	function del(e){
+		var id = $(e).attr('data-id');
+		var sid = $(e).attr('data-sid');
+		layer.confirm('是否删除',{icon:3,title:'提示'},function(index){
+			$.ajax({
+				url: "{:url('Salary/delformula')}",
+				data:{id,sid},
+				dataType: 'json',
+				success: obj=>{
+					console.log(obj)
+					if(obj.code==0){
+						layer.msg('删除成功');
+						window.location.reload();
+					}else{
+						layer.msg('删除失败');
+					}
+				}
+			},'json')
+			layer.close(index)
+		})
+	}
+</script>
+<script type="text/javascript">
+	layui.use('form',function(){
+		var form = layui.form;
+		form.render();
+		// 筛选搜索工序
+		form.on('select(gxs_select)', function(data){
+			var _dataArr = $(data.elem).find('option:selected').val().split('_');
+			var _dataType = _dataArr[0];	// 工序类型
+			var _dataVal = _dataArr[1];		// 工序id
+			$('#type_gxs').val(_dataType);
+			$('#gxs').val(_dataVal);
+			$('#form-sub').submit();
+		});
+		// 添加公式选择工序
+		form.on('select(gx_select)', function(data){
+			var _dataArr = $(data.elem).find('option:selected').val().split('_');
+			var _dataType = _dataArr[0];	// 工序类型
+			var _dataVal = _dataArr[1];		// 工序id
+			$('#type_gx').val(_dataType);
+			$('#gx').val(_dataVal);
+		})
+	})
+	// 关闭弹窗
+	$('.close-modal-btn').click(function () {
+		$('.modal-box').fadeOut();
+	});
+	$(window).click(function(){
+		
+		var elem = event.srcElement ? event.srcElement : event.target;
+		while (elem) { //循环判断至跟节点，防止点击的是div子元素 
+			if (elem.id && elem.id == 'orderScreenBox') {
+				return;
+			}
+			if($(elem).hasClass('modal-content')){
+				return;
+			}
+			elem = elem.parentNode;
+		}
+		$('.modal-box').fadeOut();
+		$('.content-header-left').removeAttr('data-click').css({
+			top: '0',
+		}).children('.filter-orders').removeClass('filter-orders-active');
+		$('.content-header-left').siblings('.order-screen-box').css({
+			height: '0',
+			overflow: 'hidden'
+		})
+	});
+	
+	// 添加二次判断字段
+	$('.addSecondFormula').click(function(e){
+		e.preventDefault();
+		e.stopPropagation();
+		$(this).hide();
+        $('.formulaSecondBox').css('display','flex');
+	});
+	// 移除二次判断字段
+	$('.cancelSecondFormula').click(function(e){
+		e.preventDefault();
+		e.stopPropagation();
+		$('.formulaSecondBox').hide();
+		$('.addSecondFormula').show();
+	})
+</script>
+</html>

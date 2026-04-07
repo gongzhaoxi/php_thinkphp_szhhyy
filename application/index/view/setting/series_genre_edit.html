@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>添加/修改类别</title>
+{include file="public/header" /}
+
+</head> 
+<body class="matter_add_modal">
+	<div class="modal-body">
+		<div class="modal-body-middle">
+			<div class="matteriel-box">
+				<div class="matteriel-box-inner">
+					<div class="matteriel-box-inner">
+						<div class="matteriel-box-title">----- 类别名称 -----</div>
+						<div class="matteriel-box-content">
+							<input type="text" name="genre" id="title" autocomplete="off" value="{$genre['name']}" placeholder="请输入类别名称" class="input-name">
+						</div>
+					</div>
+				</div>			
+			</div>
+		</div>
+		<div class="modal-body-bottom">
+			<div onclick="save_genre();">确认添加</div>
+		</div>
+	</div>
+
+<script type="text/javascript">
+	function save_genre(){
+		var id = "{$genre['id']}";
+		var name = $(".input-name").val();
+		$.ajax({
+			url: "{:url('setting/series_genre_edit')}",
+			data: {id,name},
+			dataType: 'json',
+			success:function(res){
+				console.log(res)
+				if(res.code==0){
+					layer.closeAll();
+					layer.msg('<span style="color:#fff;">添加成功</span>');
+					setTimeout(function(){
+						parent.location.reload();
+					},1500);
+				}else{
+					layer.closeAll();
+					layer.msg('<span style="color:#fff;">' + res.msg + '</span>');
+				}
+				
+			}
+		},'json')
+	}
+</script>
+</body>
+</html>

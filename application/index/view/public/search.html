@@ -1,0 +1,362 @@
+<form id="orderScreenBox" class="order-screen-box" action="{:Url($current_position)}" method="get">
+  <input name="senior" value="1" id="formsenior" type="hidden"/>
+  <input name="orderby" id="formorderby" type="hidden" value="{$post['orderby']}"/>
+  <div class="screen-box-top">
+    <ul class="screen-list">
+      <li class="screen-group">
+        <div class="screen-group-left">订单状态：</div>
+        <div class="screen-group-right">
+          <div class="imitate-select">
+            <span class="select-txt" data-value="">点击选择订单状态</span>
+            <span class="triangle-down"></span>
+            <input type="hidden" name="order_status" class="select-common">
+            <ul data-sign="order_status">
+              <li data-value="">默认状态</li>
+              <li data-value="1" {if condition="$post['order_status'] eq 1"}data-selected="true"{/if}>正常</li>
+              <li data-value="2" {if condition="$post['order_status'] eq 2"}data-selected="true"{/if}>暂停</li>
+              <li data-value="3" {if condition="$post['order_status'] eq 3"}data-selected="true"{/if}>作废</li>
+            </ul>
+          </div>
+        </div>
+      </li>
+      {php}
+        $time_field=array();
+        foreach($searchField as $value){
+          if($value['type']=='date'){
+            $time_field[]=$value['fieldname'];
+          }
+        }
+      {/php}
+      {volist name="searchField" id="vo"}
+      <li class="screen-group">
+        <div class="screen-group-left">{$vo['explains']}：</div>
+        <div class="screen-group-right">
+          <input name="{$key}" id="{$key}" type="text" placeholder="请填写{$vo['explains']}" autocomplete="off" value="{$searchpost[$key]}">
+        </div>
+      </li>
+        {php}
+            if(in_array($key,$time_field)){
+        {/php}
+          <script type="text/javascript">
+          var laydate;
+          layui.use(['laydate'],function(){
+            laydate = layui.laydate;
+             laydate.render({
+              elem: '#{$key}'
+            });
+          })
+          </script>
+        {php}
+            }
+        {/php}
+      {/volist}
+    </ul>
+  </div>
+  <div class="screen-box-center">
+    <ul class="screen-list">
+      <li class="screen-group">
+        <div class="screen-group-left">下单时间：</div>
+        <div class="screen-group-right">
+          <input type="text" id="s_date1" name="s_date" value="{$post['s_date']}" autocomplete="off" placeholder="开始时间">
+          <span>-</span>
+          <input type="text" id="e_date1" name="e_date" value="{$post['e_date']}" autocomplete="off"  placeholder="结束时间">
+        </div>
+      </li>
+      <li class="screen-group">
+        <div class="screen-group-left">{$endtime_field}：</div>
+        <div class="screen-group-right">
+          <input id="k_date" name="k_date" type="text" value="{$post['k_date']}" placeholder="开始时间" autocomplete="off">
+          <span>-</span>
+          <input id="ke_date" name="ke_date" type="text" value="{$post['ke_date']}" placeholder="结束时间" autocomplete="off">
+        </div>
+      </li>
+      <li class="screen-group">
+        <div class="screen-group-left">入库时间：</div>
+        <div class="screen-group-right">
+          <input type="text" id="in_date1" name="in_date1" value="{$post['in_date1']}" autocomplete="off" placeholder="开始时间">
+          <span>-</span>
+          <input type="text" id="in_date2" name="in_date2" value="{$post['in_date2']}" autocomplete="off"  placeholder="结束时间">
+        </div>
+      </li>
+    </ul>
+    <ul class="screen-list">
+      <li class="screen-group">
+        <div class="screen-group-left">预警订单：</div>
+        <div class="screen-group-right">
+          <div class="imitate-select">
+            <span class="select-txt" data-value="">全部订单</span>
+            <span class="triangle-down"></span>
+            <input type="hidden" name="iswarn">
+            <ul data-sign="warntime">
+              <li data-value="1" {if condition="$post['iswarn'] eq 1"} data-selected="true"{/if}>是</li>
+              <li data-value="2" {if condition="$post['iswarn'] eq 2"} data-selected="true"{/if}>否</li>
+            </ul>
+          </div>
+        </div>
+      </li>
+      <li class="screen-group">
+        <div class="screen-group-left">预警时间：</div>
+        <div class="screen-group-right">
+          <input type="text" id="warntime_s" name="warntime_s" value="{$post['warntime_s']}" autocomplete="off" placeholder="预警开始时间">
+          <span>-</span>
+          <input type="text" id="warntime_e" name="warntime_e" value="{$post['warntime_e']}" autocomplete="off"  placeholder="预警结束时间">
+        </div>
+      </li>
+      <li class="screen-group">
+        <div class="screen-group-left">工序状态：</div>
+        <div class="screen-group-right">
+          <div class="imitate-select">
+            <span class="select-txt" data-value="">请选择工序状态</span>
+            <span class="triangle-down"></span>
+            <input type="hidden" name="gx_status" id="gx_status_form" value="">
+            <ul data-sign="gxStatus">
+              <li data-value="1" {if condition="$post['gx_status'] eq 1"}data-selected="true"{/if}>未开始</li>
+              <li data-value="2" {if condition="$post['gx_status'] eq 2"}data-selected="true"{/if}>进行中</li>
+              <li data-value="3" {if condition="$post['gx_status'] eq 3"}data-selected="true"{/if}>已完成</li>
+              <li data-value="4" {if condition="$post['gx_status'] eq 4"}data-selected="true"{/if}>已超时</li>
+              <li data-value="5" {if condition="$post['gx_status'] eq 5"}data-selected="true"{/if}>有异常</li>
+              <li data-value="6" {if condition="$post['gx_status'] eq 6"}data-selected="true"{/if}>异常未处理</li>
+              <li data-value="7" {if condition="$post['gx_status'] eq 7"}data-selected="true"{/if}>异常已处理-未竣工</li>
+            </ul>
+          </div>
+        </div>
+      </li>
+      <li class="screen-group">
+        <div class="screen-group-left">不显示已发货：</div>
+        <div class="screen-group-right">
+          <input type="hidden" name="nosend" {if condition="$post['nosend'] eq '1'"} value="1" {/if}>
+          <div class="imitate-checkbox-all" {if condition="$post['nosend'] eq '1'"} data-sign="true" {/if}>
+            <span></span>
+          </div>
+        </div>
+      </li>
+      <li class="screen-group">
+        <div class="screen-group-left">不显示全部入库：</div>
+        <div class="screen-group-right">
+          <input type="hidden" data="{$post['nointo']}">
+          <input type="hidden" name="nointo" {if condition="$post['nointo'] eq '1'"} value="1" {/if}>
+          <div class="imitate-checkbox-all" {if condition="$post['nointo'] eq '1'"} data-sign="true" {/if}>
+            <span></span>
+          </div>
+        </div>
+      </li>
+    </ul>
+  </div>
+  <div class="screen-box-center">
+    <ul class="screen-list">
+      <li class="screen-group">
+        <div class="screen-group-left">未开始工序：</div>
+        <div id="select1"  class="selectPickerWrapper"> 
+          <input type="hidden" id="select_gx" name="gname" value="{$post['gname']}" >
+          <select name="gname" id="gname" multiple="multiple" style="display:none;">
+            {foreach($endg as $key=>$li)}
+            <option  value="{$li.dname}"><?php echo htmlspecialchars_decode($li['dname']) ?></option>
+            {/foreach}
+            </select>
+        </div>
+      </li>
+      <li class="screen-group">
+        <div class="screen-group-left">进行中工序：</div>
+        <div id="select3"  class="selectPickerWrapper"> 
+          <input type="hidden" id="doing_gx" name="doing_gx" value="{$post['dogx']}" >
+          <select name="doingGx" id="doingGx" multiple="multiple" style="display:none;">
+            {foreach($endg as $li)}
+            <option  value="{$li.dname}"><?php echo htmlspecialchars_decode($li['dname']) ?></option>
+            {/foreach}
+            </select>
+        </div>
+      </li>
+      <li class="screen-group">
+        <div class="screen-group-left">已完成工序：</div>
+        <div id="select2" class="selectPickerWrapper"> 
+          <input type="hidden" id="finish_gx" name="finish_gx" value="{$post['finish_gx']}" >
+          <select name="finishGx" id="finishGx" multiple="multiple" style="display:none;">
+            {foreach($endg as $li)}
+            <option  value="{$li.dname}"><?php echo htmlspecialchars_decode($li['dname']) ?></option>
+            {/foreach}
+            </select>
+        </div>
+      </li>
+      <li class="screen-group">
+        <div class="screen-group-left">工序结束时间：</div>
+        <div class="screen-group-right">
+          <input type="text" id="xs_date1" name="xs_date" value="{$post['xs_date']}" autocomplete="off" placeholder="开始时间">
+          <span>-</span>
+          <input type="text" id="xe_date1" name="xe_date" value="{$post['xe_date']}" autocomplete="off"  placeholder="结束时间">
+        </div>
+      </li>
+    </ul>
+  </div>
+  <div class="screen-box-bottom">
+    <div class="screenSureBtn" onclick="searchData()">立即筛选</div>
+    <div class="screenSureBtn clearVal" onclick="clearCondition()">清空筛选条件</div>
+
+  </div>
+</form>
+<!-- 订单筛选条件 -->
+<script type="text/javascript">
+var layer , laydate;
+	layui.use(['layer','laydate'],function(){
+		layer = layui.layer;
+		laydate = layui.laydate;
+    laydate.render({
+      elem: '#laydate'
+    });
+    laydate.render({
+      elem: '#laydates'
+    });
+    laydate.render({
+      elem: '#s_date'
+    });
+    laydate.render({
+      elem: '#e_date'
+    });
+    laydate.render({
+      elem: '#k_date'
+    });
+    laydate.render({
+      elem: '#ke_date'
+    });
+    laydate.render({
+      elem: '#s_date1'
+    });
+    laydate.render({
+      elem: '#e_date1'
+    });
+    laydate.render({
+    elem: '#xs_date1'
+    });
+    laydate.render({
+    elem: '#xe_date1'
+    });  
+    laydate.render({
+      elem: '#in_date1'
+      });
+    laydate.render({
+      elem: '#in_date2'
+    });  
+    laydate.render({
+      elem: '#warntime_s'
+    });  
+    laydate.render({
+      elem: '#warntime_e'
+    });
+  
+    var select_gx = "<?php echo $post['gname'];?>";
+    var finish_gx = "<?php echo $post['finishgx'];?>";
+    var doing_gx = "<?php echo $post['dogx'];?>";
+    select_gx==''?select_gx='请选择':'';
+    finish_gx==''?finish_gx='请选择':'';
+    doing_gx==''?doing_gx='请选择':'';
+    $("#select1").mySelect();
+    $("#select2").mySelect();
+    $("#select3").mySelect();
+    $("#select1").find(".select-picker-search-checked").html(select_gx);
+    $("#select2").find(".select-picker-search-checked").html(finish_gx);
+    $("#select3").find(".select-picker-search-checked").html(doing_gx);
+    // 显示当前筛选的条件
+    $('.order-screen-box').find('.imitate-checkbox-all[data-sign=true]').children('span').show();
+    $('.order-screen-box').find('.imitate-select').each(function(){
+      var _this = $(this);
+      if(_this.children('ul').children('li[data-selected=true]').html() != null){
+        var tempTxt = _this.children('ul').children('li[data-selected=true]').html();
+        var tempVal = _this.children('ul').children('li[data-selected=true]').attr('data-value');
+        _this.children('.select-txt').attr('data-value',tempVal).html(tempTxt);
+        _this.children('input[type=hidden]').val(tempVal);
+      }
+    })
+    // 选择完订单排序之后
+    var txtTarget = $('ul[data-sign="rating"]').siblings('.select-txt');
+    var tempTxt =  txtTarget.attr('data-value');
+    $('ul[data-sign="rating"]').find('li').each(function(){
+      if($(this).attr('data-value') == tempTxt){
+        txtTarget.html($(this).html());
+        return false;
+      }
+    })
+	})
+	// $(document).ready(function(){
+	// })
+	//清除搜索条件
+	function clearCondition(){
+		$('.order-screen-box').find('input').val('');
+		$('.order-screen-box').find('select').val('');
+		$('.order-screen-box').find('.imitate-checkbox-all').siblings('input[type=hidden]').val(0);
+		$('.order-screen-box').find('.imitate-select').children('.select-txt').html('请选择').attr('data-value','');
+		$('.order-screen-box').find('.imitate-checkbox-all').removeAttr('data-sign').children('span').hide();
+		$("#select1").find(".select-picker-search-checked").html('请选择');
+		$("#select2").find(".select-picker-search-checked").html('请选择');
+		$("#select3").find(".select-picker-search-checked").html('请选择');
+	}
+
+  //点击表头搜索异步查找
+  $('#td_keyword').keyup(function () {
+    $.ajax({
+      url: "{:url('td_find')}",
+      data: {
+        td_keyword: $('#td_keyword').val(),
+        td_field: $('#td_field').val()
+      },
+      type: 'POST',
+      dataType: 'json',
+      success: function (res) {
+        console.log(res);
+        if (res != '') {
+          $("#search-box").show();
+          $("#search-box").html('');
+          var html = '';
+          $.each(res, function (k, v) {
+            html += "<div>" + v.value + "</div>"
+          })
+          $('#search-box').append(html);
+        } else {
+          $("#search-box").hide();
+        }
+      }
+    })
+  });
+  //点击搜索框数据显示在搜索框上
+  $('#search-box').on('click', 'div', function () {
+    $('#td_keyword').val($(this).text());
+    $('#search-box').hide();
+  })
+  //点击表头搜索异步查找
+	$('#td_keyword').keyup(function () {
+		$.ajax({
+			url: "{:url('td_find')}",
+			data: {
+				td_keyword: $('#td_keyword').val(),
+				td_field: $('#td_field').val()
+			},
+			type: 'POST',
+			dataType: 'json',
+			success: function (res) {
+				console.log(res);
+				if (res != '') {
+					$("#search-box").show();
+					$("#search-box").html('');
+					var html = '';
+					$.each(res, function (k, v) {
+						html += "<div>" + v.value + "</div>"
+					})
+					$('#search-box').append(html);
+				} else {
+					$("#search-box").hide();
+				}
+			}
+		})
+	});
+	//高级搜索提交表单
+	function searchData() {
+		var gname = $("#select1").find(".select-picker-search-checked").html();
+		var finishGx = $("#select2").find(".select-picker-search-checked").html();
+		var dogx = $("#select3").find(".select-picker-search-checked").html();
+		gname == '请选择' ? gname = '' : gname;
+		finishGx == '请选择' ? finishGx = '' : finishGx;
+		dogx == '请选择' ? dogx = '' : dogx;
+		$("#select_gx").attr("value", gname);
+		$("#finish_gx").attr("value", finishGx);
+		$("#doing_gx").attr("value", dogx);
+		$('#orderScreenBox').submit();
+	}
+</script>

@@ -1,0 +1,65 @@
+{include file="public/header"/}
+        <div class="layui-fluid">
+            <div class="layui-row">
+                <form class="layui-form">
+                    <div class="layui-form-item">
+                        <label for="username" class="layui-form-label">
+                            标尺公式
+                        </label>
+                        <div class="layui-input-inline">
+                            <select name="ruler" id="ruler" required="" lay-verify="required">
+                                <option value="">请选择公式</option>
+                                {volist name='ruler' id='v'}                                
+                                <option value="{$v.srf_id}">{$v.name}</option>
+                                {/volist}
+                            </select>
+                        </div>
+                        
+                    </div>
+                    <div class="layui-form-item">
+                        <label for="phone" class="layui-form-label">
+                            算料公式
+                        </label>
+                        <div class="layui-input-inline">
+                             <select name="calculate" id="calculate" required="" lay-verify="required">
+                                <option value="">请选择公式</option>
+                                {volist name='calculate' id='v'}
+                                <option value="{$v.scf_id}">{$v.name}</option>
+                                {/volist}
+                            </select>
+                        </div>
+                        
+                    </div>
+        </form>
+        </div>
+        </div>
+        <script>layui.use(['form', 'layer'],
+            function() {
+                $ = layui.jquery;
+                var form = layui.form,
+                layer = layui.layer;
+
+                //监听提交
+                form.on('submit(add)',
+                function(data) {
+                    ajaxform("{:url('series/seriesAdd')}",data.field);
+                    return false;
+                });
+
+            });</script>
+            <script src="__STATIC__/js/jquery.min.js" charset="utf-8"></script>
+    <script>
+         //回调参数
+        function callbackdata() {
+            if($('#calculate option:selected').val() == '' || $('#calculate option:selected').val() == ''){
+                layer.msg('请选择公式',{icon:2});
+                return;
+            }
+            var data = {ruler_name:$('#ruler option:selected').text(),ruler:$('#ruler option:selected').val(),
+                        calculate_name:$('#calculate option:selected').text(),calculate:$('#calculate option:selected').val()};                       
+            return data;
+        }
+    </script>
+    </body>
+
+</html>

@@ -1,0 +1,121 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD HTML 4.01 Strict//EN' 'http://www.w3.org/TR/html4/strict.dtd'>
+<html>
+<head>
+<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>
+{include file="public/header" /}
+<title>编辑</title>
+</head>
+<style type="text/css">
+</style>
+<body class="edit_salary_modal">
+	<div class="modal-body">
+		<div class="modal-body-middle">
+			<div class="formula-box">
+				<ul class="formula-box-list">
+					<li class="formula-list-group">
+						<div class="formula-list-group-left">计提时间：</div>
+						<div class="formula-list-group-right">
+							<input type="text" id="jt_time" name="jt_time" value="{$res.endtime}" autocomplete="off" placeholder="点击选择时间">
+						</div>
+					</li>
+					<li class="formula-list-group">
+						<div class="formula-list-group-left">员工：</div>
+						<div class="formula-list-group-right">
+							<input type="text" id="uname" value="{$res.uname}" autocomplete="off" placeholder="输入员工账号">
+						</div>
+					</li>
+					<li class="formula-list-group">
+						<div class="formula-list-group-left">工序：</div>
+						<div class="formula-list-group-right">
+							<div class="imitate-select setDefaultSelect">
+								<span class="select-txt"></span>
+								<span class="triangle-down"></span>
+								<input type="hidden" id="gx">
+								<ul data-sign="gx">
+									{volist name="gxList" id="eg"}
+									<li value="{$eg.id}" {if condition="$eg['id'] eq $res['gxid']"}data-selected="true"{/if}>工艺路线：{$eg.title}&nbsp;|&nbsp;工序：{$eg.dname}</li>
+									{/volist}
+								</ul>
+							</div>
+						</div>
+					</li>
+					<li class="formula-list-group">
+						<div class="formula-list-group-left">生产单号：</div>
+						<div class="formula-list-group-right">
+							<textarea name="contents" id="contents" placeholder="请输入判断内容：&#10;&#10;注：每个数据之间请加“|”竖杠区分，最后一个数据不用加竖杠。&#10;&#10;&#10;&#10;无需判断直接为空">{$res.produce_no}</textarea>
+						</div>
+					</li>
+					<li class="formula-list-group">
+						<div class="formula-list-group-left">订单数量：</div>
+						<div class="formula-list-group-right">
+							<input type="text" id="ordernum" value="{$res.num}" autocomplete="off">
+						</div>
+					</li>
+					<li class="formula-list-group">
+						<div class="formula-list-group-left">计件单位：</div>
+						<div class="formula-list-group-right">
+							<input type="text" id="unit" value="{$res.unitname}"  placeholder="如：平方/日">
+						</div>
+					</li>
+					<li class="formula-list-group">
+						<div class="formula-list-group-left">总提成：</div>
+						<div class="formula-list-group-right">
+							<input type="text" id="gs-inp" value="{$res.price}" >
+						</div>
+					</li>
+				</ul>
+			</div>
+		</div>
+		<div class="modal-body-bottom">
+			<div onclick="sub()">确认修改</div>
+		</div>
+	</div>
+<script type="text/javascript">
+$(document).ready(function(){
+	// 显示默认工序
+	$('.formula-box').find('.setDefaultSelect').each(function(){
+		var _this = $(this);
+		var _val = _this.children('ul').children('li[data-selected=true]').attr('data-value')
+		var _html = _this.children('ul').children('li[data-selected=true]').html();
+		_this.children('input[type=hidden]').val(_val).attr('data-value',_val);
+		_this.children('.select-txt').attr('data-value',_val).html(_html);
+	})
+});
+//修改计件公式
+function sub(){
+	var data = {};
+	data['id'] = "<?php echo $res['id'] ?>";
+	data['uname'] = $('#uname').val();
+	data['ordernum'] = $('#ordernum').val();
+	data['price'] = $('#gs-inp').val();
+	data['gid'] = $('#gx').val();
+	data['jt_time'] = $('#jt_time').val();
+	data['contents'] = $('#contents').val();
+	data['unitname'] = $('#unit').val();
+	layer.confirm('是否修改',{icon:3,title:'提示',move:false},function(index){
+		$.ajax({
+			url:"{:url('Salary/addsalary')}",
+			data:data,
+			dataType: 'json',
+			success:function(res){
+				if(res.code==0){
+					var indx=parent.layer.getFrameIndex(window.name);
+					layer.msg(res.msg);
+					setTimeout(function(){
+						parent.layer.close(indx);
+	    	        	window.parent.location.reload();
+					},1500)
+					
+				}else{
+					layer.msg(res.msg);
+				}
+			}
+			
+		},'json')
+		layer.close(index)
+	})
+	
+}
+</script>
+</body>
+</html>

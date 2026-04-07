@@ -1,0 +1,86 @@
+<link rel="stylesheet" type="text/css" href="__STATIC__/theme/index/css/fy-alert.css">
+<style type="text/css">
+.fy-alert-footer{ text-align: center; }
+.fy-alert-btn,.fy-alert-btn:last-child{ width:300px; height:40px;background-color:#FF4040;color:#fff; margin:0 auto; border:none; padding:0px 20px;}
+input[type="file"] {display: inline;}
+</style>
+<script>
+function select_upfile(){
+	return $(".fy-alert-box").find(".excelimportform").find(".execl")[0].click();
+}
+function user_select(){
+
+		var obj = $(".fy-alert-box").find(".excelimportform").find(".execl");
+		var _label='';
+		obj.each(function(){
+			_label=$(this)[0].files[0].name;
+		})
+		
+		$(".fy-alert-box").find(".myselect").html("已选择文件:"+_label).show();	
+}
+function importsubmit(){
+	$(".fy-alert-box").find(".excelimportform").submit();
+}
+
+</script>
+<!-- 批量审核工序 -->
+<div id="contentText3" class="contentText" title="批量审核工序">
+<table width="100%" height="100%">
+<tr>
+<td class="sasr_1">
+如需要批量上传订单时，请先<a href="{:Url('index/bgload')}">下载模板</a>!
+<div>
+<a href="javascript:void(0);" class="file" onclick="javascript:select_upfile();">请选择上传指定的文件
+</a>
+<form action="{:Url('index/importgxExcel')}" class="excelimportform" enctype="multipart/form-data" method="post">
+<input type="file" name="excel" class="execl" onchange="javascript:user_select()"/>
+<input type="text" name="gx_id" id="gx_id" class="gx_id" value=""/>
+</form>
+<a style="display:none;display: inline-block;width: 100%;" class="myselect"></a>
+<div>
+	<span>选择工序：</span>
+	<select name="gxid" id="gxid" onchange="selectGx(this)">
+		<option value="">请选择</option>
+		{volist name="endg" id="eg"}
+		<option value="{$eg.id}">{$eg.dname}</option>
+		{/volist}
+	</select>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<!-- 导出数据 -->
+
+<script type="text/javascript" src="__STATIC__/theme/index/js/fy-alert.js"></script>
+<script type="text/javascript">
+//批量审核工序
+function addMesk3(){
+	fyAlert.alert({
+		title	 : '批量审核工序',
+		minmax   : false ,
+		type     : 1,
+		animateType : 2,
+		area     : ['700px','280px'],
+		content  : $("#contentText3"),//,    //内容
+		btns     : {                  //按钮组
+			'确认无误！并提交订单，GO！' : function(obj){
+				var gxid=$('#gx_id').val();
+				if(gxid==''){
+					layer.msg('请选择工序');
+					return
+				}else{
+					importsubmit();
+					obj.destory();   //在页面上
+				}
+				
+			}
+		}    
+	})
+}
+function selectGx(e){
+	var gxid = $(e).val();
+	$("input[name='gx_id']").attr("value",gxid);
+}
+</script>

@@ -1,0 +1,324 @@
+<?php $current='4'; ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>微元生产工序报工管理系统,建材行业生产管理系统,门窗生产管理系统,微元科技,佛山市微元科技有限公司</title>
+	{include file="public/header" /}
+</head>
+<style>
+	.view{padding:20px}
+	.title{font-size:20px;font-weight:bold;text-align:center;padding:10px 0}
+	.gx-list{margin:8px 0;width:100%;line-height:38px}
+	.list-top{line-height: 30px;font-weight: bold;font-size: 14px;}
+	.list-top :nth-child(1){float:left}
+	.list-top :nth-child(2){float:right}
+	.btns{text-align: center;}
+	.print-btn{margin: 20px auto;width: 136px;height: 40px;border: none;background: #004680;color: #fff;font-size: 16px;border-radius: 4px;cursor: pointer;}
+	.man-check{width:100%;line-height:38px}
+	.man-check label{display:inline-block;width:25%;font-weight:500;font-size:16px}
+	.layui-table{color: #000000;}
+	.layui-table td, .layui-table th{padding: 8px 1px;}
+</style>
+<body class="man_gx_print_modal">
+	<div class="modal-body">
+		<div class="toIndex" style="padding: 10px;">
+			<div class="layui-btn layui-btn-sm" onclick="window.location.href='/index/index/index.html'">返回首页</div>
+		</div>
+		<div class="select-box">
+			<div class="select-group">
+				<div class="dt">一级班组：</div>
+				<div class="dd">
+					<div class="imitate-select" id="team">
+						<span class="select-txt">请选择</span>
+						<span class="triangle-down"></span>
+						<input type="hidden" name="team">
+						<ul data-sign="team">
+							<li data-value="">请选择</li>
+							{volist name="classl" id="cl"}
+							<li data-value="{$cl.id}">{$cl.team_name}</li>
+							{/volist}
+						</ul>
+					</div>
+				</div>
+			</div>
+			<div class="select-group">
+				<div class="dt">二级班组：</div>
+				<div class="dd">
+					<div class="imitate-select" id="team_two">
+						<span class="select-txt">请选择</span>
+						<span class="triangle-down"></span>
+						<input type="hidden" name="team_two">
+						<ul data-sign="team_two"></ul>
+					</div>
+				</div>
+			</div>
+			<div class="select-group">
+				<div class="dt">员工：</div>
+				<div class="dd">
+					<div class="imitate-select" id="staff">
+						<span class="select-txt">请选择</span>
+						<span class="triangle-down"></span>
+						<input type="hidden" name="staff">
+						<ul data-sign="staff"></ul>
+					</div>
+				</div>
+			</div>
+			<div class="select-group">
+				<div class="dt">报工时间：</div>
+				<div class="dd">
+					<input type="text" id="bgdate" placeholder="请选择时间" value=""/>
+				</div>
+			</div>
+			<div class="select-group">
+				<button class="layui-btn layui-btn-sm select_btn" onclick="selectTime()">确认</button>
+			</div>
+		</div>
+		<div class="view" id="view"></div>
+	</div>
+</body>
+<script type="text/javascript">
+
+	var layer , laydate;
+	layui.use(['layer','laydate'],function(){
+		layer = layui.layer;
+		laydate = layui.laydate;
+		laydate.render({
+			elem: '#bgdate'
+			,range: true
+		});
+	})
+	// 确认
+	function selectTime(){
+		showGxPrint();
+	}
+	// 获取二级班组
+	function secondTeam(){
+		$("#team_two").children('ul').empty();
+		$("#staff").children('ul').empty();
+		var id = $("#team").children('input[name=team]').val();
+		var type = 1;
+		if(id!=''){
+			$.ajax({
+				url:"{:url('Index/man_gx_print')}",
+				data:{id,type},
+				dataType: 'json',
+				success:function(res){
+					if(res.code==0){
+						$("#team_two").children('.select-txt').html("请选择");
+						$("#team_two").children('input[type=hidden]').val('');
+						$.each(res.list,function(i,n){
+							$("#team_two").children('ul').append("<li data-value=" + n.id + ">" + n.team_name + "</li>")
+						})
+					}
+				}
+			})
+		}
+	}
+	// 获取员工列表
+	function getStaff(){
+		$("#staff").children('ul').empty();
+		var id = $("#team_two").children('input[name=team_two]').val();
+		var type = 2;
+		if(id!=''){
+			$.ajax({
+				url:"{:url('Index/man_gx_print')}",
+				data:{id,type},
+				dataType: 'json',
+				success:function(res){
+					if(res.code==0){
+						$("#staff").children('.select-txt').html("请选择");
+						$("#staff").children('input[type=hidden]').val('');
+						$.each(res.list,function(i,n){
+							$("#staff").children('ul').append("<li data-value=" + n.id + ">" + n.uname + "</li>")
+						})
+					}
+				}
+			})
+		}
+	}
+	// 显示工序数据
+	function showGxPrint(){
+		layer.load();
+		$("#view").empty();
+		var id = $("#staff").children('input[name=staff]').val();
+		var time = $('#bgdate').val();
+		var data = {};
+		if(time==''){
+			data['uid']=id;
+		}else{
+			var starttime = time.slice(0,10);
+			var endtime = time.slice(13);
+			data['uid']=id;
+			data['starttime']=starttime;
+			data['endtime']=endtime;
+		}
+		//查询员工当天的报工记录
+		if( id != ''){
+			$.ajax({
+				url:"{:url('Index/staff_detail')}",
+				data:data,
+				dataType:"json",
+				success:function(res){
+					layer.closeAll();
+					var obj = res.data;
+					var uname = res.uname;
+					var time = res.time;
+					var list = res.list;
+					var complete_field = res.complete_field;
+					var field = res.field;
+					if(obj.length==0 && list.length==0){
+						layer.msg("暂无数据导出")
+					}else{
+						$('.view').append("<div class='title'>员工产量日报表（员工名称：" + uname + "）</div>");
+					}
+					if(obj.length!=0){
+						var html = '';
+						$.each(obj,function(i,n){
+							html += "<div class='gx-list'>";
+							html +="<div class='list-top'>";
+							html +="<p>工序："+n.dname+"</p><p>报工时间："+time+"</p></div>";
+							html +="<table class='layui-table' border='1'>";
+							html +=	"<thead>"
+							html +="<tr><th>序号</th>";
+							for(var s in field){
+								html +="<th>"+field[s].explains+"</th>";
+							}
+							html +="<th>产品名称</th><th>单价</th><th>报工数量</th>";
+							for(var s in complete_field){
+								html += "<th>"+complete_field[s]['explains']+"</th>";	
+							}
+							html += "</tr></thead>";
+							var list = n.order;
+
+							html += "<tbody>";
+							for(var i=0;i<list.length;i++){
+								html +="<tr><td>"+(i+1)+"</td>";
+								for(var s in field){
+									html +="<td>"+list[i][field[s].fieldname]+"</td>";
+								}
+								html +="<td>"+list[i].pname+"</td><td>"+list[i].price+"</td><td>"+list[i].count+"</td>";
+								for(var s in complete_field){
+									list[i][complete_field[s].fieldname]?html += "<td>"+list[i][complete_field[s].fieldname]+"</td>":html += "<td></td>";	
+								}
+								html +=" </tr>";
+							}
+							html +="<tr><td>总计</td>";
+							for(var s in field){
+								html +="<td></td>";
+							}
+							html +="<td></td><td></td>";
+							for(var s in n.str){
+								if(n.str[s]>0){
+									html += "<td>"+n.str[s].toFixed(2)+"</td>";
+								}else{
+									html += "<td>"+n.str[s]+"</td>";
+								}
+							}
+							html +="</tr>";
+							html += "</tbody>";
+							html +="</table>";
+							html +="</div>";
+						})
+						$('.view').append(html);
+					}
+
+					if(list.length!=0){
+						var text = '';
+						text += "<div class='gx-list'>";
+						text +="<div class='list-top'>";
+						text +="<p>上报异常情况汇总</p><p>上报时间："+time+"</p></div>";
+						text +="<table class='layui-table' border='1'>";
+						text +="<tr><td>序号</td>";
+						for(var s in field){
+							text +="<td>"+field[s].explains+"</td>";
+						}
+						text +="<td>异常工序</td><td>异常问题</td></tr>";
+						$.each(list,function(e,v){
+							text +="<tr><td>"+(e+1)+"</td>";
+							for(var s in field){
+								text +="<td>"+v[field[s].fieldname]+"</td>";
+							}
+							text +="<td>"+v.dname+"</td><td>"+v.stext+"</td></tr>";
+						})
+						text +="</table>";
+						text +="</div>";
+						$('.view').append(text);
+					}
+					if(obj.length!=0 || list.length!=0){
+						$('.view').append("<div class='man-check'><label>员工签名：</label><label>班长复核：</label><label>跟单确认：</label><label>厂长审核：</label></div>");
+						$('.view').append("<div class='btns'><button class='print-btn' onclick='printData()'>确认打印</button></div>")
+					}
+				}
+			})
+		}
+	}
+
+	function printData(){
+		$('.search').hide();
+		$('button').hide();
+		$('.toIndex').hide();
+		$('.select-box').hide();
+		$('#view').css({
+			color: '#000000'
+		})
+		window.print();
+		setTimeout(function(){
+			$('.search').show();
+			$('button').show();
+			$('.toIndex').show();
+			$('.select-box').show();
+			$('#view').css({
+				color: '#ffffff'
+			})
+		},1500)
+	}
+</script>
+<script type="text/javascript">
+	// 下拉列表
+	$('.imitate-select').click(function(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		var _this = $(this);
+		var clickSign = _this.attr('data-sign');
+		$('.imitate-select').removeAttr('data-sign').children('ul').hide();
+		if (clickSign == 'true') {
+			_this.children('ul').hide();
+			_this.removeAttr('data-sign');
+		} else {
+			_this.children('ul').show();
+			_this.attr('data-sign', 'true');
+		}
+	});
+	
+
+	$('.imitate-select ul').delegate('li','click',function(e){
+		e.preventDefault();
+		e.stopPropagation();
+		var _this = $(this);
+		var tempTxt = _this.html();
+		var _thisValue = _this.attr('data-value');
+		_this.parent().parent().children('.select-txt').attr('data-value',_thisValue).html(tempTxt);
+		_this.parent().hide();
+		_this.parent().parent().removeAttr('data-sign');
+		var _clickTarget = _this.parent().attr('data-sign');
+		_this.parent().siblings('input[type=hidden]').val(_thisValue);
+		switch (_clickTarget) {
+			case 'team':	// 列表排序
+				secondTeam();
+				break;
+			case 'team_two':	// 选择工序
+				getStaff();
+				break;
+			case 'staff':	// 选择工序
+				showGxPrint();
+				break;
+			default:
+				break;
+		}
+	});
+	$(window).click(function(){
+		$('.imitate-select').removeAttr('data-sign').children('ul').hide();
+	})
+</script>
+</html>

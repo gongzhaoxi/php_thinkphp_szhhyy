@@ -1,0 +1,151 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD HTML 4.01 Strict//EN' 'http://www.w3.org/TR/html4/strict.dtd'>
+<html>
+<head>
+<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>
+{include file="public/header" /}
+
+<title>设置</title>
+</head>
+<body class="team_bind_modal">
+	<div class="modal-body">
+		<div class="modal-body-middle">
+			<div class="team-bind-box">
+				{volist name="gx_line" id="cl"}
+				{if condition="!in_array($cl['id'],[1,2])"}
+				<div class="teambind-group">
+					<div class="teambind-title">工艺路线 &raquo; {$cl.title}</div>
+					<div class="teambind-list">
+						<div  class="checkbox">
+							<div class="imitate-checkbox-all">
+								<span></span>
+							</div>
+							<div>全选</div>
+						</div>
+						<ul>
+							{volist name="cl['gx_list']" id="lv"}
+							<li>
+								{php}
+									$checked="";
+									$lid=$cl['id'];
+									if(isset($person['ngx_id'][$lid])&&in_array($lv['id'],$person['ngx_id'][$lid])){
+										$checked="checked='checked'";
+									}
+								{/php}
+								<div data-value="{$lv.id}" data-lid="{$cl['id']}" class="imitate-checkbox-small" {if(isset($person['ngx_id'][$lid])&&in_array($lv['id'],$person['ngx_id'][$lid]))} data-checked="true"{/if}>
+									<span></span>
+								</div>
+								<div>{$lv.dname}</div>
+							</li>
+							{/volist}
+						</ul>
+					</div>
+				</div>
+				{/if}
+				{/volist}
+			</div>
+		</div>
+		<div class="modal-body-bottom">
+			<div class="btne">确认保存</div>
+		</div>
+	</div>
+</body>
+<script type="text/javascript">
+	$('#usernameTxt', window.parent.document).html("当前班组名称：{present name='parent'}{$parent['team_name']} - {/present}{$person['team_name']}");
+	// 确认保存
+	// var layer;
+	// layui.use(['layer'],function(){
+	// 	layer = layui.layer;
+	// })
+	$('.btne').click(function(){
+		var tid = "{$person.id}";
+		var select_val = [];
+		$("input[name='ath']").each(function(){
+			if($(this).attr("checked")=='checked'||$(this).attr("checked")==true){
+				select_val=select_val.concat($(this).val());
+			}
+		})
+		var newgy = new Array();
+		$(".teambind-list ul").find("li .imitate-checkbox-small[data-sign=true]").each(function(){
+			let _this = $(this);
+			var lid = _this.attr("data-lid");
+			var gxid = _this.attr('data-value');
+			var t = new Object();
+				t.lid = lid;
+				t.gxid = gxid;
+			newgy.push(t);
+		})
+		 $.ajax({
+			url:"{:Url('Setting/team_gxbind')}",
+			data:{"groud":select_val,'newgy':newgy,"tid":tid},
+			type: 'POST',
+			dataType:'json',
+			success:function(res){
+				if(res.status==1){
+					layer.msg('修改成功');
+					setTimeout(function(){
+						parent.location.reload();
+						parent.layer.closeAll();
+					},2000);
+				}
+			}
+			
+		},'json')
+			
+	});
+	$(document).ready(function(){
+		// 显示当前已经选中
+		$('.teambind-list ul li').each(function(){
+			let _this = $(this);
+			let clickTarget = _this.children('.imitate-checkbox-small');
+			let clickSign = clickTarget.attr('data-checked');
+			if (clickSign == 'true') {
+				clickTarget.attr('data-sign','true');
+				clickTarget.children('span').show();
+			}
+			let allCheckBoxSmallLength = _this.parent().find('.imitate-checkbox-small').length;
+			let selectCheckBoxSmallLength = _this.parent().find('.imitate-checkbox-small[data-sign=true]').length;
+			if(allCheckBoxSmallLength == selectCheckBoxSmallLength){	// 当前全部选中
+				_this.parent().siblings('.checkbox').children('.imitate-checkbox-all').attr('data-sign','true').children().show();
+			} else{
+				_this.parent().siblings('.checkbox').children('.imitate-checkbox-all').removeAttr('data-sign','true').children().hide();
+			}
+		})
+		// 工艺路线全选
+		$('.checkbox').click(function(){
+			let _this = $(this);
+			let clickTarget = $(this).children('.imitate-checkbox-all');
+			var clickSign = clickTarget.attr('data-sign');
+			if (clickSign == 'true') {
+				clickTarget.children('span').hide();
+				clickTarget.removeAttr('data-sign');
+				_this.siblings('ul').children('li').children('.imitate-checkbox-small').removeAttr('data-sign','true').children().hide();
+			} else {	// 选中
+				clickTarget.children('span').show();
+				clickTarget.attr('data-sign', 'true');
+				_this.siblings('ul').children('li').children('.imitate-checkbox-small').attr('data-sign','true').children().show();
+			}
+		})
+		// 单选
+		$('.teambind-list ul li').click(function(){
+			let _this = $(this);
+			let clickTarget = _this.children('.imitate-checkbox-small');
+			let clickSign = clickTarget.attr('data-sign');
+			if (clickSign == 'true') {
+				clickTarget.removeAttr('data-sign');
+				clickTarget.children('span').hide();
+			} else {
+				clickTarget.children('span').show();
+				clickTarget.attr('data-sign', 'true');
+			}
+			let allCheckBoxSmallLength = _this.parent().find('.imitate-checkbox-small').length;
+			let selectCheckBoxSmallLength = _this.parent().find('.imitate-checkbox-small[data-sign=true]').length;
+			if(allCheckBoxSmallLength == selectCheckBoxSmallLength){	// 当前全部选中
+				_this.parent().siblings('.checkbox').children('.imitate-checkbox-all').attr('data-sign','true').children().show();
+			} else{
+				_this.parent().siblings('.checkbox').children('.imitate-checkbox-all').removeAttr('data-sign','true').children().hide();
+			}
+		})
+		
+	});
+</script>
+</html>

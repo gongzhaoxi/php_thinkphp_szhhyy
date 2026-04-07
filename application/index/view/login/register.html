@@ -1,0 +1,60 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>注册</title>
+<link href="__STATIC__index/css/vip.css" rel="stylesheet" type="text/css" />
+<link href="__STATIC__index/css/skin_01.css" rel="stylesheet" type="text/css" id="skin">
+</head>
+<body>
+<div class="main">
+<div class="main_t"></div>
+<div class="main_m">
+    <div class="main_bd">
+        <div class="yskj step1">
+            <div class="yskj_tt"><b>管理员注册</b></div>
+            <form action="{:Url('Login/reg')}" method="post">
+                <input type="hidden" name="pid" value="10046">
+                <input type="hidden" name="parentid" value="">
+                <div class="yskj_bd">
+                    <ul class="ul">
+                        <li><label>账户名称：</label><input id="account" name="account" type="text" class="txt1 txt" placeholder="请输入账户"></li>
+                        <li><label>设置密码：</label><input id="password" name="password" type="password" class="txt1 txt" /></li>
+                        <li><label>确认密码：</label><input id="passwordto" name="passwordto" type="password" class="txt1 txt" /></li>
+                      
+                    </ul>
+                    <div class="reg"><input type="submit" name="dosubmit" value="立即注册" class="btn2"></div>
+  
+                </div>
+            </form>
+        </div>
+        <div class="main_bg opcity"></div>
+    </div>
+</div>
+<div class="main_b"></div>
+</div>
+<script src="__STATIC__index/js/jquery.min.js"></script>
+<script type="text/javascript">
+     function reg(){
+	   var _account = $("#account").val();
+	   var _pwd = $("#password").val();
+	   var _again = $("#passwordto").val();
+	 
+	   if(_account==''){
+		   alert('账户不能为空！');
+		   return false;
+	   }
+	   if(_pwd==''){
+		   alert('密码不能为空！');
+		   return false;
+	   }
+	   if(_pwd != _again){
+		   alert('密码不一致，请重新输入！');
+		   return false;
+	   }
+	   $(".dosubmit").submit();
+     }
+	   
+</script>
+</body>
+</html>

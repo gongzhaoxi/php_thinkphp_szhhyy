@@ -1,0 +1,263 @@
+<?php $current='6'; ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>微元生产工序报工管理系统,建材行业生产管理系统,门窗生产管理系统,微元科技,佛山市微元科技有限公司</title>
+{include file="public/header" /}
+
+</head>
+<body>
+	<div class="baogong_parameterSetting popup-box">
+		<div class="popup-header">
+			<div>参数设置</div>
+		</div>
+		<div class="popup-body">
+			{php}$index = 7;{/php}
+			{include file="setting/menu" /}
+			<div class="body-center">
+				<!-- 权限管理 -->
+				<div class="body-content-box body-nav-active">
+					<div class="content-header">
+						<div class="content-header-left">
+							<span class="header-left-item" id="addPermissionCategoryBtn">
+								<img src="__STATIC__/theme/index/img/icon_tv.png">
+								<span>添加权限分类</span>
+							</span>
+						</div>
+					</div>
+					<div class="content-center">
+						<div class="content-center-inner">
+							<table class="layui-table permission-table" border="1" cellpadding="0" cellspacing="0">
+								<thead>
+									<tr>
+										<th width="10%">权限名称</th>
+										<th width="80%">权限内容</th>
+										<th width="10%">操作</th>
+									</tr>
+								</thead>
+								<tbody>
+									{volist name="role_li" id="rl"}
+									<tr>
+										<td>{$rl.title}</td>
+										<td>
+											<ul class="permission-list">
+										{volist name="rule_li" id="cl"}
+										{if in_array($cl.id,$rl.rules)}
+											<li>
+												<div>{$cl.title}</div>
+												<div>
+													{volist name="$cl.second" id="sl"}{if in_array($sl.id,$rl.rules)} <span>{$sl.title}</span> {/if}{/volist}
+												</div>
+											</li>
+											{/if}
+											{/volist}
+										</ul>
+										</td>
+										<td class="operate-box">
+											<span class="btn-normal editPermissionBtn edit" data-id="{$rl.id}">修改</span>/
+											<span class="btn-normal btn-danger del" data-id="{$rl.id}">删除</span>
+										</td>
+									</tr>
+
+									{/volist}
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<!-- 添加权限分类 -->
+	<div class="modal-box" id="addPermissionrCategoryModal">
+		<div class="modal-content">
+			<div class="modal-header">
+				<div class="modal-header-left">
+					<div class="modal-header-title">
+						<img src="__STATIC__/theme/index/img/icon_permission.png">
+						<span>添加权限分类</span>
+					</div>
+				</div>
+				<div class="modal-header-right">
+					<span class="close-modal-btn"></span>
+				</div>
+			</div>
+			<div class="modal-body">
+				<div class="modal-body-middle">
+					<form class="permission-box">
+						<div class="permission-box-top">
+							<span>权限名称</span>
+							<input type="text" id="rname" name="rname" placeholder="输入权限名称" autocomplete="off">
+						</div>
+						<ul class="permission-box-list">
+							{volist name="rule_li" id="lv"}
+							<li>
+								<div class="imitate-checkbox-all permission-list-icon">
+									<span></span>
+									<input type="hidden" name="ath" value="{$lv.id}" />
+								</div>
+								<div class=" permission-list-right">
+									<div>{$lv.title}</div>
+									<ul>
+										{volist name="lv['second']" id="v"}
+										<li>
+											<div class="imitate-checkbox-small permission-select-icon">
+												<span></span>
+												<input type="hidden" name="ath" value="{$v.id}" />
+											</div>
+											<span>{$v.title}</span>
+										</li>
+										{/volist}
+									</ul>
+								</div>
+							</li>
+							{/volist}
+						</ul>
+					</form>
+					<div class="modal-body-bottom">
+						<div class="btne">确认添加</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- 修改权限分类 -->
+	<div class="modal-box" id="editPermissionrCategoryModal">
+		<div class="modal-content">
+			<div class="modal-header">
+				<div class="modal-header-left">
+					<div class="modal-header-title">
+						<span>修改权限分类</span>
+					</div>
+				</div>
+				<div class="modal-header-right">
+					<span class="close-modal-btn layui-icon layui-icon-close"></span>
+				</div>
+			</div>
+			<div class="modal-body">
+				<div class="iframe-box">
+					<iframe class="myIframe" id="editPermissionrCategoryIframe" frameborder="0"></iframe>
+				</div>
+			</div>
+		</div>
+	</div>
+	{include file="setting/timeset" /}
+</body>
+<script type="text/javascript">
+	$('.btne').click(function(){
+		var rname = $('#rname').val();
+		var select_val = [];
+		// 遍历已选择权限
+		$('.permission-box').find('input[name=ath]').each(function(){
+			var _this = $(this);
+			if(_this.parent().attr('data-sign') == 'true'){
+				select_val.push(_this.val());
+			}
+		})
+		if(rname == ''){
+			layer.msg('请输入权限名称');
+			return false;
+		}else if(select_val == [] || select_val == ""){
+			layer.msg('请选择权限类别');
+			return false;
+		}
+		
+		var groud = select_val.toString();
+		$.ajax({
+			url:"{:Url('Setting/inrole')}",
+			data:{"rname": rname, "groud": groud},
+			dataType:'json',
+			success:function(res){
+				if(res.status==1){
+					layer.msg('添加成功');
+					setTimeout(function(){
+						window.location.reload();	
+					},1000);
+				}
+			}
+		},'json')
+		
+	})
+	
+	$('.edit').click(function(e){
+		e.preventDefault();
+		e.stopPropagation();
+		var id = $(this).data('id');
+		$('#editPermissionrCategoryModal').fadeIn();
+		$('#editPermissionrCategoryIframe').attr('src','change_role?id='+id);
+	})
+	
+	$('.del').click(function(){
+		var id = $(this).data('id');
+		layer.confirm('是否删除',{icon:3,title:'提示'},function(index){
+			$.ajax({
+				url: "{:Url('Setting/del')}",
+				data:{kid:id,kind:2},
+				dataType: "json",
+				success:function(obj){
+					if(obj.code==0){
+						layer.msg('删除成功');
+					}
+					setTimeout(function(){
+						window.location.reload();
+					},2000)
+				}
+			})
+			layer.close(index);
+		})
+	});
+	
+	$('.close-modal-btn').click(function () {
+		$('.modal-box').fadeOut();
+	});
+	
+	$('#addPermissionCategoryBtn').click(function (e) {
+		e.preventDefault();
+		e.stopPropagation();
+		$('#addPermissionrCategoryModal').fadeIn();
+	});
+	// 多选框
+	$('.imitate-checkbox-small').click(function(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		let _this = $(this);
+		let clickSign = _this.attr('data-sign');
+		if (clickSign == 'true') {
+			_this.removeAttr('data-sign');
+			_this.children('span').hide();
+		} else {
+			_this.children('span').show();
+			_this.attr('data-sign', 'true');
+		}
+	});
+	$(window).click(function(){
+		var elem = event.srcElement ? event.srcElement : event.target;
+		while (elem) { //循环判断至跟节点，防止点击的是div子元素 
+			if (elem.id && elem.id == 'orderScreenBox') {
+				return;
+			}
+			if($(elem).hasClass('modal-content')){
+				return;
+			}
+			elem = elem.parentNode;
+		}
+		$('.modal-box').fadeOut();
+	});
+	$('.imitate-checkbox-all').click(function(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		let _this = $(this);
+		let clickSign = _this.attr('data-sign');
+		if (clickSign == 'true') {
+			_this.removeAttr('data-sign');
+			_this.children('span').hide();
+		} else {
+			_this.children('span').show();
+			_this.attr('data-sign', 'true');
+		}
+	});
+
+</script>
+</html>

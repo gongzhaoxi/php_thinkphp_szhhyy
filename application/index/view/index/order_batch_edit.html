@@ -1,0 +1,173 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD HTML 4.01 Strict//EN' 'http://www.w3.org/TR/html4/strict.dtd'>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>订单删除</title>
+{include file="public/header" /}
+<style>
+form{
+	display: flex;
+}
+.select-time{
+	margin: 20px 0;
+	margin-left: 20px;
+	float: left;
+}
+.select-time span{
+	color: #fff;
+}
+.select-time input{
+	width: 200px;
+	line-height: 28px;
+}
+.del-btn{
+    width: 96px;
+    line-height: 36px;
+    background: #20B2AA;
+    border: none;
+    color: #fff;
+	margin: 20px 0;
+	margin-left: 48%;
+}
+.search-btn{
+	border: none;
+	width: 48px;
+	line-height: 26px;
+	background: #00BFFF;
+	color: #fff;
+	margin: 20px 0;
+}
+#is-dowork{
+	display:flex;
+	align-items: center;
+	margin: 20px;
+}
+ #is-dowork .imitate-select{
+	width: 120px;
+	line-height:28px;
+}
+.select-li li{
+	display: inline-block;
+	padding: 12px;
+}
+.select-li li div{
+	float: left;
+}
+.checkbox{
+	display: flex;
+	padding: 8px;
+}
+</style>
+</head>
+<body class="del_order_modal">
+	<div class="">
+		<form id="" action="{:url('index/order_batch_edit')}" method="post">
+		<div class="select-time">
+			<span>添加时间：</span>
+			<input  type="text" id="addtime" name="addtime" value="{$addtime}" autocomplete="off" placeholder="时间段选择" />
+		</div>
+		<div class="select-time">
+			<span>销售单号：</span>
+			<input  type="text" name="produce_no" value="{$produce_no}" autocomplete="off" placeholder="请输入" />
+		</div>
+		<button class="search-btn">搜索</button>
+		</form>
+	</div>
+	<div class="teambind-title">单号列表：</div>
+		<div class="teambind-list">
+			<div class="checkbox">
+				<div class="imitate-checkbox-all">
+					<span></span>
+				</div>
+				<div>全选</div>
+			</div>
+			<ul class="select-li">
+				{volist name="list" id="lt"}
+				<li>
+					<div data-value="{$lt.id}" class="imitate-checkbox-small">
+						<span></span>
+					</div>
+					<div>{$lt.unique_sn}</div>
+				</li>
+				{/volist}
+			</ul>
+		</div>
+	<button class="del-btn" onclick="orderEdit()">确认修改</button>
+</body>
+<script>
+	$(document).ready(
+			function() {
+				var layer, laydate;
+				layui.use([ 'layer', 'laydate' ], function() {
+					laydate = layui.laydate;
+					layer = layui.layer;
+					laydate.render({
+						elem : '#addtime',//指定元素
+						range : true,
+						trigger : 'click'
+					});
+				})
+			})
+	// 全选
+	$('.checkbox').click(function(){
+		let _this = $(this);
+		let clickTarget = $(this).children('.imitate-checkbox-all');
+		var clickSign = clickTarget.attr('data-sign');
+		if (clickSign == 'true') {
+			clickTarget.children('span').hide();
+			clickTarget.removeAttr('data-sign');
+			_this.siblings('ul').children('li').children('.imitate-checkbox-small').removeAttr('data-sign','true').children().hide();
+		} else {	// 选中
+			clickTarget.children('span').show();
+			clickTarget.attr('data-sign', 'true');
+			_this.siblings('ul').children('li').children('.imitate-checkbox-small').attr('data-sign','true').children().show();
+		}
+	})
+	// 多选框
+	$('.imitate-checkbox-small').click(function(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		let _this = $(this);
+		let clickSign = _this.attr('data-sign');
+		if (clickSign == 'true') {
+			_this.removeAttr('data-sign');
+			_this.children('span').hide();
+		} else {
+			_this.children('span').show();
+			_this.attr('data-sign', 'true');
+		}
+	});
+	function orderEdit(){
+		var idL = [];
+		$(".teambind-list ul").find("li .imitate-checkbox-small[data-sign=true]").each(function(){
+			let _this = $(this);
+			var id = _this.attr('data-value');
+			idL.push(id);
+		})
+		var ids = idL.join(',');
+		layer.confirm('是否刷新', {
+			icon: 3,
+			title: '提示',
+			move: false,
+		}, function (index) {
+			$.ajax({
+				url: "{:url('index/order_gxline_edit')}",
+				data: {'ids':ids},
+				dataType: 'json',
+				success:function(res){
+					if(res.code==0){
+						layer.msg(res.msg)
+					}else{
+						layer.msg(res.msg)
+					}
+					setTimeout(function(){
+						parent.window.location.reload();
+						$('.modal-box').fadeOut();
+					},1500)
+				}
+			})
+			layer.close(index);
+		})
+	}
+</script>
+</html>

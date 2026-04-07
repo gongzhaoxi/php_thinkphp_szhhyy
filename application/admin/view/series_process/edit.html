@@ -1,0 +1,67 @@
+{include file="public/header"/}
+<link rel="stylesheet" href="__STATIC__/css/select.css">
+<div class="layui-fluid">
+	<div class="layui-row">
+		<form class="layui-form">
+			<div class="layui-form-item" >
+				<label class="layui-form-label">工序</label>
+				<div class="layui-input-block" >
+					<select name="process_id" xm-select="process_id" required  lay-verify="required" xm-select-search  xm-select-search-type="dl" xm-select-radio>
+						<option value="">请选择</option>
+						{volist name="process" id="vo"}
+						<option {if condition="$vo['id'] == $model['process_id']"}selected{/if} value="{$vo['id']}">{$vo['name']}</option>
+						{/volist}
+					</select>
+				</div>
+			</div>	
+			<div class="layui-form-item" >
+				<label class="layui-form-label">系列</label>
+				<div class="layui-input-block" >
+					<select name="series_id" xm-select="series_id" required  lay-verify="required" xm-select-search  xm-select-search-type="dl" xm-select-radio>
+						<option value="">请选择</option>
+						{volist name="series" id="vo"}
+						<option {if condition="$vo['id'] == $model['series_id']"}selected{/if} value="{$vo['id']}">{$vo['name']}</option>
+						{/volist}
+					</select>
+				</div>
+			</div>				
+			<div class="layui-form-item">
+				<label for="sort" class="layui-form-label">
+					排序
+				</label>
+				<div class="layui-input-block">
+					<input type="text" id="sort" name="sort" value="{$model['sort']}" required="" lay-verify="required" class="layui-input" >
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label for="sort" class="layui-form-label">
+					备注
+				</label>
+				<div class="layui-input-block">
+					<input type="text" id="sort" name="remark" value="{$model['remark']}" class="layui-input" >
+				</div>
+			</div>			
+			<div class="layui-form-item">
+				<label for="L_repass" class="layui-form-label"></label>
+				<input name="id" type="hidden" value="{$model.id}"/>
+				<button class="layui-btn" lay-filter="save" lay-submit="">保存</button>
+			</div>
+		</form>
+	</div>
+</div>
+<script>
+layui.config({
+	base: "/static/js/",
+}).extend({
+	select: "select",
+}).use(['form','select'],function() {
+	$ = layui.jquery;
+	form = layui.form,select = layui.select;
+	form.on('submit(save)',function(data) {
+		ajaxform("{:url('edit')}",data.field,3);
+		return false;
+	});  
+});
+</script>
+</body>
+</html>

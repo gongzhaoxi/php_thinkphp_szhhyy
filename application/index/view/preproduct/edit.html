@@ -1,0 +1,307 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+        <title>微元生产工序报工管理系统,建材行业生产管理系统,门窗生产管理系统,微元科技,佛山市微元科技有限公司</title>
+        {include file="public/header" /}
+        <script src="__STATIC__index/js/erp.js"></script>
+    </head>
+<body class="glassplan_modal noschedule_modal">
+    <div class="modal-body">
+        <form class="layui-form edit-plan" id="form1">
+            <div class="select-box">
+                <div class="layui-input-inline layui-show-xs-block">
+                    <input type="text" name="search_start_date"  placeholder="筛选整单预生产日期" autocomplete="off" class="layui-input time-class" value="{$search.search_start_date}">
+                </div>
+                <div class="layui-input-inline layui-show-xs-block">
+                    <input type="text" name="endtime" placeholder="选择工序预生产日期" autocomplete="off" class="layui-input time-class"  value="{$search.endtime}">
+                </div>
+                <div class="layui-input-inline layui-show-xs-block">
+                    <div class="imitate-select" style="width: 140px;">
+                        <span class="select-txt">选择工序名称</span>
+                        <span class="triangle-down"></span>
+                        <input type="hidden" name="gxid" />
+                        <ul>
+                            <li data-value="">选择工序名称</li>
+                            {volist name='gx_list' id='v'}
+                                <li data-value='{$v.id}' {if condition="$search['gxid'] eq $v['id']"}data-selected="true"{/if}>{$v.dname}</li>
+                            {/volist}
+                        </ul>
+                    </div>
+                </div>
+                <div class="layui-input-inline layui-show-xs-block">
+                    <input type="text" name="ordernum"  placeholder="输入销售单号筛选" autocomplete="off" class="layui-input" value="{$search.ordernum}">
+                </div>
+                <div class="layui-input-inline layui-show-xs-block">
+                    <input type="text" name="unique_sn"  placeholder="输入生产单号筛选" autocomplete="off" class="layui-input" value="{$search.unique_sn}">
+                </div>
+                <div class="layui-input-inline layui-show-xs-block">
+                    <input type="text" name="uname" placeholder="输入客户名称筛选" autocomplete="off" class="layui-input" value="{$search.uname}">
+                </div><div class="layui-input-inline layui-show-xs-block">
+                    <input type="text" name="pname" placeholder="输入物料名称筛选" autocomplete="off" class="layui-input" value="{$search.pname}">
+                </div>
+                <div class="layui-input-inline layui-show-xs-block" style="width: auto;">
+                    <button class="layui-btn layui-btn-normal layui-btn-sm" type="submit" style="background-color: #284d9d">
+                        立即查找
+                    </button>
+                </div>
+                <div class="layui-input-inline layui-show-xs-block" style="width: auto;">
+                    <button class="layui-btn layui-btn-sm" type="button" id="convert-btn">
+                        转化成有效排产
+                    </button>
+                </div>
+                <div class="layui-input-inline layui-show-xs-block">
+                    <button class="layui-btn layui-btn-sm" type="button" style="background-color: 	#4169E1" id="calculate_btn">
+                        计算排产值
+                    </button>
+                </div>
+            </div>
+            <table class="layui-table" id="editPlanTable">
+                <thead>
+                    <tr>
+                        <td width="15%">销售单号</td>
+                        <td width="15%">生产单号</td>
+                        <td width="15%">客户名称</td>
+                        <td width="15%">物料名称</td>
+                        <td width="8%">颜色</td>
+                        <td width="20%">整单预生产第一工序-开始日期</td>
+                        <td width="5%">
+                            <div class="imitate-checkbox-all" id="checkall">
+                                <span></span>
+                            </div>
+                        </td>
+                        <td>
+                            操作
+                        </td>
+                    </tr>
+                </thead>
+                <tbody>
+                    {volist name='list' id='v'}
+                    <tr>
+                        <td width="15%">{$v.ordernum}</td>
+                        <td width="15%">{$v.unique_sn}</td>
+                        <td width="15%">{$v.uname}</td>
+                        <td width="15%">{$v.pname}</td>
+                        <td width="8%">{$v.color}</td>
+                        <td width="20%">
+                            <input name="start_date" type="text" value="{$v.start_date}" class="time-class" />
+                            <button class="layui-btn layui-btn-normal layui-btn-sm refresh_date" type="button" ids="{$v.orderid}" start_date="{$v.start_date}">
+                            刷新所有工序时间
+                            </button>
+                        </td>
+                        <td width="5%">
+                            <div class="imitate-checkbox-small checkBoxBtn">
+                                <input type="hidden" class="checked_id" data-id="{$v.id}" name="convert_check" value="{$v.id}">
+                                <span></span>
+                            </div>
+                        </td>
+                        <td>
+                            <button class="layui-btn layui-btn-danger layui-btn-sm" type="button" onclick="del({$v.id})">删除</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="7">
+                            <div class="gxlist">
+                                {volist name="v['pregxlist']" id='v2'}
+                                <span>
+                                    <label>{$v2.dname}</label>
+                                    <input type="text" value="{$v2.endtime}" readonly="{if condition="$v2['edit'] eq false"}false{/if}" {if condition="$v2['edit'] eq true"}class="time-class"{/if} />
+                                    {if condition="$v2['edit'] eq true"}
+                                    <i class="layui-icon layui-icon-refresh one-refresh" ids="{$v2['id']}" gxid="{$v2.gxid}" orderid="{$v2.orderid}"></i>
+                                    {/if}
+                                </span>
+                                {/volist}
+                            </div>
+                        </td>
+                    </tr>
+                    {/volist}
+                </tbody> 
+            </table>
+            <div class="page-box">
+                <div class="pages">
+                    {$page|raw}
+                </div>
+            </div>
+        </form>
+    </div>
+    <!-- 添加预生产计划 -->
+		<div class="modal-box" id="calculateBtn">
+			<div class="modal-content" style="width:40%;height:90%;position:fixed">
+				<div class="modal-header">
+					<div class="modal-header-left">
+						<div class="modal-header-title" style="padding-left: 20px;font-size:16px">
+							<span>计算排产值</span>
+						</div>
+					</div>
+					<div class="modal-header-right">
+						<span class="close-modal-btn"></span>
+					</div>
+				</div>
+				<div class="modal-body">
+					<div class="iframe-box">
+						<iframe class="myIframe" id="myIframe_calculate" frameborder="0"></iframe>
+					</div>
+				</div>
+			</div>
+        </div>
+</body>
+<script>
+    //  转化成有效排产
+    $('#convert-btn').click(function () {
+        var id = [];
+        var start_time = [];
+        $('.checkBoxBtn').each(function(){
+            var _this = $(this);
+            var clickSign = _this.attr('data-sign');
+            if(clickSign == 'true'){
+                start_time.push(_this.parent().prev().find('input[name=start_date]').val())
+                id.push(_this.children('.checked_id').val());
+            }
+        });
+        ajaxform("{:url('convert')}",{id:id,time:start_time},1);
+    });
+    var layer, laydate;
+    layui.use(['layer','laydate'],function(){
+        laydate = layui.laydate;
+        layer = layui.layer;
+        // 设置时间
+        $('.time-class').each(function() {
+            laydate.render({
+                elem: this
+            });
+        })
+    })
+    // 刷新所有工序时间
+    $('.refresh_date').on('click',function(){
+        var id = $(this).attr('ids');
+        var start_date = $(this).prev().val();
+        ajaxform("{:url('refresh')}",{start_date:start_date,id:id},1);
+    })
+    //单个刷新
+    $('.one-refresh').on('click',function(){
+        var id = $(this).attr('ids');
+        var start_date = $(this).prev().val();
+        var gxid = $(this).attr('gxid');
+        var orderid = $(this).attr('orderid');
+        ajaxform("{:url('oneRefresh')}",{start_date:start_date,id:id,orderid:orderid,gxid:gxid},1);
+    })
+    $('#form1').find('.imitate-select').each(function(){
+        var _this = $(this);
+        if(_this.children('ul').children('li[data-selected=true]')){
+            var tempTxt = _this.children('ul').children('li[data-selected=true]').html();
+            var tempVal = _this.children('ul').children('li[data-selected=true]').attr('data-value');
+            if(tempTxt != null && tempVal != null){
+                _this.children('.select-txt').attr('data-value',tempVal).html(tempTxt);
+                _this.children('input[type=hidden]').val(tempVal);
+            }
+        }
+    })
+    $('.imitate-select').click(function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var _this = $(this);
+        var clickSign = _this.attr('data-sign');
+        $('.imitate-select').removeAttr('data-sign').children('ul').hide();
+        if (clickSign == 'true') {
+            _this.children('ul').hide();
+            _this.removeAttr('data-sign');
+        } else {
+            _this.children('ul').show();
+            _this.attr('data-sign', 'true');
+        }
+    });
+    $(window).click(function(){
+        $('.modal-box').fadeOut();
+        var elem = event.srcElement ? event.srcElement : event.target;
+        while (elem) { //循环判断至跟节点，防止点击的是div子元素 
+            if (elem.id && elem.id == 'orderScreenBox') {
+                return;
+            }
+            elem = elem.parentNode;
+        }
+        $('.imitate-select').removeAttr('data-sign').children('ul').hide();
+        $('.content-header-left').removeAttr('data-click').css({
+            top: '0',
+        }).children('.filter-orders').removeClass('filter-orders-active');
+        $('.content-header-left').siblings('.order-screen-box').css({
+            height: '0',
+            overflow: 'hidden'
+        })
+    });
+    $('.imitate-select ul').delegate('li','click',function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        var _this = $(this);
+        var tempTxt = _this.html();
+        var _thisValue = _this.attr('data-value');
+        _this.parent().parent().children('.select-txt').attr('data-value',_thisValue).html(tempTxt);
+        _this.parent().hide();
+        _this.parent().parent().removeAttr('data-sign');
+        _this.parent().siblings('input[type=hidden]').val(_thisValue);
+        var _clickTarget = _this.parent().attr('data-sign');
+    });
+
+    // 全选
+    $('#checkall').click(function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var _this = $(this);
+        var clickSign = _this.attr('data-sign');
+        if (clickSign == 'true') {
+            _this.children('span').hide();
+            _this.removeAttr('data-sign');
+            $('.checkBoxBtn').removeAttr('data-sign').children('span').hide();
+        } else {
+            _this.children('span').show();
+            _this.attr('data-sign', 'true');
+            $('.checkBoxBtn').attr('data-sign','true').children('span').show();
+        }
+    });
+    // 单选框
+    $('#editPlanTable tbody').delegate('tr td .checkBoxBtn', 'click',function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        var _this = $(this);
+        var clickSign = _this.attr('data-sign');
+        if (clickSign == 'true') {	// 取消选中
+            _this.children('span').hide();
+            _this.removeAttr('data-sign');
+        } else {	// 选中
+            _this.children('span').show();
+            _this.attr('data-sign', 'true');
+        }
+        // 当前全部订单
+        var tempLength = $('.checkBoxBtn').length;
+        var selectLength = $('.checkBoxBtn[data-sign="true"]').length;
+        if(tempLength == selectLength){	// 全部选中
+            $('#checkall').attr('data-sign', 'true').children('span').show();
+        } else{
+            $('#checkall').removeAttr('data-sign').children('span').hide();
+        }
+    });
+    $('#calculate_btn').click(function(e){
+    	e.preventDefault();
+        e.stopPropagation();
+        $('#calculateBtn').fadeIn();
+        var id = [];
+        var start_time = [];
+        $('.checkBoxBtn').each(function(){
+            var _this = $(this);
+            var clickSign = _this.attr('data-sign');
+            if(clickSign == 'true'){			
+                start_time.push(_this.parent().prev().find('input[name=start_date]').val());
+                id.push(_this.children('.checked_id').val());
+            }
+        });
+        $('#myIframe_calculate').attr('src',"{:url('calculate')}?order="+id+"&time="+start_time);
+    })
+    // 删除
+    function del(id){
+        layer.confirm('确认要删除吗？', function(index) {
+            //发异步删除数据
+            ajaxform("{:url('del_plan')}", {id:id},1);
+        });
+    }
+</script>
+</html>

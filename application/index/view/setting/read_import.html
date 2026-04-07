@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+	{include file="public/header" /}
+
+    <title>切割方案</title>
+</head>
+<body class="cut_plan_detail">
+<div class="modal-body">
+    <div class="parameter">
+        <table width="100%" border="1" id="cutTable" class="layui-table">
+            <thead>
+                <tr class="title">
+                    <th width="5%">切割顺序</th>
+                    <th width="10%">尺寸</th>
+                    <th width="12%">角度</th>
+                    <th width="10%">生产单号</th>
+                    <th width="10%">名称</th>
+                    <th width="12%">生产日期</th>
+                </tr>
+            </thead>
+            <tbody>
+                {volist name='list' id='v'}
+                <tr>
+                    <td>{$v.sort}</td>
+                    <td>{$v.size}</td>
+                    <td>{$v.angle}</td>
+                    <td>{$v.ordernum}</td>
+                    <td>{$v.name}</td>
+                    <td>{$v.date|date='Y-m-d'}</td>
+                </tr>
+                {/volist}
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>

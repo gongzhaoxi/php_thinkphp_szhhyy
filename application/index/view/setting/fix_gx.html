@@ -1,0 +1,231 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>固定流水工序</title>
+{include file="public/header" /}
+</head>
+<style>
+	.greenborder{
+		border: solid 1px #88ec2c !important;
+	}
+	.orderby{
+		margin-right: 10px;
+	}
+	.orderby input{width:36px;height:30px;text-align:center}
+	ul{dispaly:block}
+	li{display:inline-block}
+</style>
+<body class="transation_modal">
+	<div class="modal-body">
+		<div class="modal-body-middle">
+			<div class="optional-procedure">
+				<div class="procedure-box">
+					<div class="procedure-box-text">
+						<span>可选择的工序：</span>
+					</div>
+					<div class="optional-procedure-content" id="labelItem">
+						<ul class="label-item">
+							{foreach name="gx_list" item="gl" key="gp"}
+							<div>
+							<label>{$gp}：</label>
+							{volist name="gl" id="vo"}
+							<li data="{$vo['id']}" {php} if(in_array($vo['id'],$group_gx)){ echo 'class="selected"';}{/php}><span>{$vo['dname']} - {if condition="$vo['line_name'] neq ''"}({$vo['line_name']}){/if}</span></li>
+							{/volist}
+							</div>
+							{/foreach}
+						</ul>
+					</div>
+				</div>
+				<div class="add-group">
+					<div id="cell">
+						<img src="__STATIC__/theme/index/img/icon_+.png">
+						<span>创建固定工序组合</span>
+					</div>
+				</div>
+			</div>
+			<div class="fixed-procedure procedure-box">
+				<div class="procedure-box-text">
+					<span>固定工序组合：</span>
+				</div>
+				<div class="fixed-procedure-content">
+					<ul class="procedure-outer">
+						{volist name="group_gx" id="vo"}
+						<li class="combine">
+							<div class="orderby">排序：<input type="text" name="sort" value="{$vo['orderby']}" autocomplete="off" /></div>
+							<ul class="procedure-inner cloumn" onclick="usecolumn(this)">
+								{volist name="vo['parent']" id="cvo"}
+								<li onclick='removeli(this);' data='{$cvo['gx_id']}' data-name='{$cvo['gx_name']}'>
+									<span>{$cvo['gx_name']}</span>
+									<span class="li-close-icon">×</span>
+								</li>
+								{/volist}
+							</ul>
+							<img class="img_arrow" src="__STATIC__/theme/index/img/arrow_img.png">
+							<ul class="procedure-inner cloumn" onclick="usecolumn(this)">
+								{volist name="vo['child']" id="cvo"}
+									<li onclick='removeli(this);' data='{$cvo['gx_id']}' data-name='{$cvo['gx_name']}'>
+										<span>{$cvo['gx_name']}</span>
+										<span class="li-close-icon">×</span>
+									</li>
+								{/volist}
+							</ul>
+							<div class="procedure-outer-close" onclick="close_cloumn(this)"></div>
+						</li>
+						{/volist}
+					</ul>
+				</div>
+			</div>
+			<div class="modal-body-bottom">
+				<div onclick="save()">确认保存</div>
+			</div>
+		</div>
+	</div>
+	<div style="display: none;" id="content_modular">
+		<li class="combine">
+			<div class="orderby">排序：<input type="text" name="sort" value="" autocomplete="off" /></div>
+			<ul class="procedure-inner cloumn" onclick="usecolumn(this)"></ul>
+			<img class="img_arrow" src="__STATIC__/theme/index/img/arrow_img.png">
+			<ul class="procedure-inner cloumn" onclick="usecolumn(this)"></ul>
+			<div class="procedure-outer-close" onclick="close_cloumn(this)"></div>
+		</li>
+	</div>
+<script type="text/javascript">	
+var gx_array=new Array();//记录当前已选择工序
+var all_order=new Array();//全部排序
+var all_gp=new Array();//全部固定工序组
+function usecolumn(_obj){
+	$(".procedure-outer  .cloumn").removeClass("greenborder");
+	var _column=$(_obj);
+		_column.addClass("greenborder");
+}
+//判断数组元素是否已存在
+function contains(arr, obj) {  
+    var i = arr.length;  
+    while (i--) {  
+        if (arr[i] === obj) {  
+            return true;  
+        }  
+    }  
+    return false;  
+} 
+
+//删除组合
+function close_cloumn(_obj){
+	$(_obj).parent().remove();
+}
+
+//保存按钮
+function save(){
+	var _data=[];//提交到php的数组
+	var _url="{:url('Setting/save_fix_gx')}";
+	var combines=$(".procedure-outer .combine").length;
+	var sort_list = [];
+	$('.procedure-outer').find("input[name='sort']").each(function(){
+		sort_list.push($(this).val())
+	})
+	for(var i=0;i<combines;i++){
+		var cloumns=$(".procedure-outer .combine").eq(i).children(".cloumn");
+		if(cloumns<=0){
+			continue;
+		}
+		var pidArray=[];
+		for(var k=0;k<2;k++){
+			
+			var lis=cloumns.eq(k).find("li");
+			if(lis.length<=0){
+				layer.msg("请在固定工序组合内设置工序");
+				return;
+			}
+			
+			lis.each(function(){
+				
+				var t=new Object();
+				t.gxid=$(this).attr("data");
+				t.gxname=$(this).attr("data-name");
+				t.gxorderby=i+1;
+				t.orderby=sort_list[i];
+				if(k==0){	//第一列
+					pidArray.push(	$(this).attr("data")	);
+					t.pid="0";
+				}else{
+					t.pid=pidArray.join(",");
+				}
+				
+				_data.push(t);
+			})
+		}//end of for
+	}
+	var delAll=0;
+	if(_data.length<=0){
+		delAll=1;
+	}
+	var index = layer.load(0, {shade: false});
+	
+	$.ajax({
+		url:_url,
+		type: 'post',
+		data:{'data':_data,'delall':delAll},
+		dataType: "JSON",
+		success:function(obj){
+			layer.closeAll();
+			if(obj.status==1){
+				layer.msg('保存成功');
+			}else{
+				layer.msg(obj.msg);
+			}
+		}
+	});
+}
+
+//在组合内点击删除工序
+function removeli(_obj){
+	var _id=$(_obj).attr("data");
+	$(_obj).remove();
+	$("#labelItem").find("li.selected").each(function(){
+		var _d=$(this).attr("data");
+		if(_id==_d){
+			$(this).attr("class","");
+		}
+	});
+}
+
+$(function(){
+	// 把工序添加到当前组合
+	$("#labelItem .label-item").on("click","li",function(){
+		var _length=$(".procedure-outer .greenborder").length;
+		if(_length==0){
+			layer.msg("请选择要填加工序的固定工序组合");
+			return false;
+		}	
+		var id = $(this).attr("data");
+		var text = $(this).children("span").html();
+		var labelHTML = "<li onclick='removeli(this);' data='"+id+"' data-name='"+text+"'><span>" + text + "</span><span class='li-close-icon'>×</span></li>";
+		var brother_exist=false
+		$(".procedure-outer .greenborder").siblings(".cloumn").find("li").each(function(){
+			var _id=$(this).attr("data");
+			if(_id==id){
+				brother_exist=true;
+			}
+		});
+		var exist=false;
+		$(".procedure-outer .greenborder li").each(function(){
+			var _id=$(this).attr("data");
+			if(_id==id){
+				exist=true;
+			}
+		})
+		if(!exist&&!brother_exist){
+			$(".procedure-outer .greenborder").append(labelHTML);
+		}
+	});
+  
+  //获取标签
+	$("#cell").on("click",function(){
+		var _html=$("#content_modular").html();
+		$(".procedure-outer").append(_html);
+	})
+})
+</script>
+</body>
+</html>

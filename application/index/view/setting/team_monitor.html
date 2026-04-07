@@ -1,0 +1,217 @@
+<?php $current='6'; ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>微元生产工序报工管理系统,建材行业生产管理系统,门窗生产管理系统,微元科技,佛山市微元科技有限公司</title>
+{include file="public/header" /}
+
+</head>
+<body>
+	<div class="baogong_parameterSetting popup-box">
+		<div class="popup-header">
+			<div>参数设置</div>
+		</div>
+		<div class="popup-body">
+			{php}$index = 6;{/php}
+			{include file="setting/menu" /}
+			<div class="body-center">
+				<!-- 屏幕管理 -->
+				<div class="body-content-box body-nav-active">
+					<div class="content-header">
+						<div class="content-header-left">
+							<span class="header-left-item" id="screenManagementBtn">
+								<img src="__STATIC__/theme/index/img/icon_tv.png">
+								<span>添加屏幕</span>
+							</span>
+						</div>
+					</div>
+					<div class="content-center">
+						<div class="content-center-inner">
+							<table class="layui-table parameter-table" border="1" cellpadding="0" cellspacing="0">
+								<thead>
+									<tr>
+										<th>ID</th>
+										<th>屏幕代码</th>
+										<th>屏幕名称</th>
+										<th>班组显示</th>
+										<th>屏幕样式</th>
+										<th>创建时间</th>
+										<th>操作</th>
+									</tr>
+								</thead>
+								<tbody>
+									{volist name="monitors" id="e"}
+									<tr>
+										<td>{$e.id}</td>
+										<td>{$e.code}</td>
+										<td>{$e.vname}</td>
+										<td>{$e.team_name}</td>
+										<td>{$monitor_style[$e['style']]['name']}</td>
+										<td>{$e.addtime|date="Y-m-d"}</td>
+										<td class="operate-box">
+											<span class="btn-normal editScreenrBtn edit" data-id="{$e.id}">修改</span>/
+											<span class="btn-normal btn-danger del" data-id="{$e.id}" data-master="{$e.master}">删除</span>
+										</td>
+									</tr>
+									{/volist}
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- 添加屏幕 -->
+	<div class="modal-box" id="addScreenModal">
+		<div class="modal-content">
+			<div class="modal-header">
+				<div class="modal-header-left">
+					<div class="modal-header-title">
+						<img src="__STATIC__/theme/index/img/icon_tv.png">
+						<span>添加班组</span>
+					</div>
+				</div>
+				<div class="modal-header-right">
+					<span class="close-modal-btn"></span>
+				</div>
+			</div>
+			<div class="modal-body">
+				<div class="iframe-box">
+					<iframe class="myIframe" id="addScreenIframe" frameborder="0"></iframe>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- 编辑屏幕 -->
+	<div class="modal-box" id="editScreenModal">
+		<div class="modal-content">
+			<div class="modal-header">
+				<div class="modal-header-left">
+					<div class="modal-header-title">
+						<span>修改屏幕</span>
+					</div>
+				</div>
+				<div class="modal-header-right">
+					<span class="close-modal-btn layui-icon layui-icon-close"></span>
+				</div>
+			</div>
+			<div class="modal-body">
+				<div class="iframe-box">
+					<iframe class="myIframe" id="editScreenIframe" frameborder="0"></iframe>
+				</div>
+			</div>
+		</div>
+	</div>
+	{include file="setting/timeset" /}
+</body>
+<script type="text/javascript">
+	// 添加屏幕管理
+	$('#screenManagementBtn').click(function(e){
+		e.preventDefault();
+		e.stopPropagation();
+		$('#addScreenModal').fadeIn();
+		$('#addScreenIframe').attr('src','edit_monitor');
+	});
+	// 编辑屏幕管理
+	$('.editScreenrBtn').click(function (e) {
+		e.preventDefault();
+		e.stopPropagation();
+		$('#editScreenModal').fadeIn();
+		var id = $(this).data('id');
+		$('#editScreenIframe').attr('src','edit_monitor?id=' + id);
+	});
+	//删除
+	$('.del').click(function(){
+		var id = $(this).data('id');
+		layer.confirm('是否删除',{icon:3,title:'提示'},function(index){
+			$.ajax({
+				url: "{:Url('Setting/del_monitor')}",
+				data: {"id":id},
+				dataType:"json",
+				success:function(obj){
+					if(obj.status==2){
+						layer.alert('删除失败，请重试',{icon:1});
+					}else{
+						layer.msg('删除成功');	
+					}
+					setTimeout(function(){
+						window.location.reload();	
+					},2000);
+				}
+			})
+			layer.close(index);
+		})
+	});
+
+</script>
+<script type="text/javascript">
+	$('.close-modal-btn').click(function () {
+		$('.modal-box').fadeOut();
+	});
+	
+	// 下拉列表
+	$('.imitate-select').click(function(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		var _this = $(this);
+		var clickSign = _this.attr('data-sign');
+		$('.imitate-select').removeAttr('data-sign').children('ul').hide();
+		if (clickSign == 'true') {
+			_this.children('ul').hide();
+			_this.removeAttr('data-sign');
+		} else {
+			_this.children('ul').show();
+			_this.attr('data-sign', 'true');
+		}
+	});
+	$(window).click(function(){
+		var elem = event.srcElement ? event.srcElement : event.target;
+		while (elem) { //循环判断至跟节点，防止点击的是div子元素 
+			if (elem.id && elem.id == 'orderScreenBox') {
+				return;
+			}
+			if($(elem).hasClass('modal-content')){
+				return;
+			}
+			elem = elem.parentNode;
+		}
+		$('.modal-box').fadeOut();
+		$('.imitate-select').removeAttr('data-sign').children('ul').hide();
+		$('.content-header-left').removeAttr('data-click').css({
+			top: '0',
+		}).children('.filter-orders').removeClass('filter-orders-active');
+		$('.content-header-left').siblings('.order-screen-box').css({
+			height: '0',
+			overflow: 'hidden'
+		})
+	});
+	$('.imitate-select ul').delegate('li','click',function(e){
+		e.preventDefault();
+		e.stopPropagation();
+		var _this = $(this);
+		var tempTxt = _this.html();
+		var _thisValue = _this.attr('data-value');
+		_this.parent().parent().children('.select-txt').attr('data-value',_thisValue).html(tempTxt);
+		_this.parent().hide();
+		_this.parent().parent().removeAttr('data-sign');
+		var _clickTarget = _this.parent().attr('data-sign');
+		_this.parent().siblings('input[type=hidden]').val(_thisValue);
+	});
+	// 多选框
+	$('.imitate-checkbox-small').click(function(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		let _this = $(this);
+		let clickSign = _this.attr('data-sign');
+		if (clickSign == 'true') {
+			_this.removeAttr('data-sign');
+			_this.children('span').hide();
+		} else {
+			_this.children('span').show();
+			_this.attr('data-sign', 'true');
+		}
+	});
+</script>
+</html>

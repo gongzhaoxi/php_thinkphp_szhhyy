@@ -1,0 +1,110 @@
+<!-- 预警时间 -->
+<div class="modal-box" id="setWarningTimeModal">
+	<div class="modal-content">
+		<div class="modal-header">
+			<div class="modal-header-left">
+				<div class="modal-header-title">
+					<img src="__STATIC__/theme/index/img/icon_time.png">
+					<span>预警时间设置</span>
+				</div>
+			</div>
+			<div class="modal-header-right">
+				<span class="close-modal-btn"></span>
+			</div>
+		</div>
+		<div class="modal-body">
+			<div class="iframe-box">
+				<iframe class="myIframe" id="setWarningTimeIframe" frameborder="0"></iframe>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- 批量刷新订单 -->
+<div class="modal-box" id="orderBatchEditModal">
+	<div class="modal-content" style="width:60%;height:80%">
+		<div class="modal-header">
+			<div class="modal-header-left">
+				<div class="modal-header-title">
+					<img src="__STATIC__/theme/index/img/icon_add.png">
+					<span>编辑订单工序</span>
+				</div>
+			</div>
+			<div class="modal-header-right">
+				<span class="close-modal-btn"></span>
+			</div>
+		</div>
+		<div class="modal-body">
+			<div class="modal-body-middle" style="height: 100%;">
+				<div class="iframe-box">
+					<iframe class="myIframe" id="myIframe_editOrderBatch" ></iframe>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- 批量删除订单 -->
+<div class="modal-box" id="delOrderBatchModal">
+	<div class="modal-content" style="width:60%;height:80%">
+		<div class="modal-header">
+			<div class="modal-header-left">
+				<div class="modal-header-title">
+					<img src="__STATIC__/theme/index/img/icon_add.png">
+					<span>删除订单</span>
+				</div>
+			</div>
+			<div class="modal-header-right">
+				<span class="close-modal-btn"></span>
+			</div>
+		</div>
+		<div class="modal-body">
+			<div class="modal-body-middle" style="height: 100%;">
+				<div class="iframe-box">
+					<iframe class="myIframe" id="myIframe_delOrder" ></iframe>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+//预警
+$('#setWaringTime').click(function(e){
+	e.preventDefault();
+	e.stopPropagation();
+	$('#setWarningTimeModal').fadeIn();
+	$('#setWarningTimeIframe').attr('src','warmtime');
+});
+// 更新缓存
+$('.clearcache').click(function(){
+	layer.load(0, {
+		shade: [0.1,'#fff']
+	});
+	$.ajax({
+		url: "{:Url('Setting/clear_cache')}",
+		data:{},
+		dataType:"json",
+		type:'POST',
+		success:function(obj){
+			layer.closeAll();
+			layer.msg("更新缓存成功");
+		},error:function(){
+			layer.closeAll();
+			layer.msg("更新缓存失败，请重试");
+		}
+	})
+});
+// 批量刷新订单
+$('#orderBatchEditBtn').click(function (e) {
+		e.preventDefault();
+		e.stopPropagation();
+		$('#orderBatchEditModal').fadeIn();
+		$('#myIframe_editOrderBatch').attr('src',"{:url('Index/order_batch_edit')}");
+	})
+// 批量删除订单
+$('#delOrderBatchBtn').click(function (e) {
+	e.preventDefault();
+	e.stopPropagation();
+	$('#delOrderBatchModal').fadeIn();
+	$('#myIframe_delOrder').attr('src',"{:url('Index/batch_order_del')}");
+})
+</script>
+

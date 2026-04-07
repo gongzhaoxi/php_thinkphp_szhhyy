@@ -1,0 +1,62 @@
+{include file="public/header"/}
+        <div class="layui-fluid">
+            <div class="layui-row">
+                <form class="layui-form">
+                    <div class="layui-form-item">
+                        <label for="username" class="layui-form-label">
+                            所属栏目
+                        </label>
+                        <div class="layui-input-inline">
+                            <select name="parent_id">
+                                {if condition="$group_id eq 1"}<option value="0">顶级栏目</option>{/if}
+                                {$category}
+                            </select>
+                        </div>
+                        
+                    </div>
+                    <div class="layui-form-item">
+                        <label for="username" class="layui-form-label">
+                            部门名称
+                        </label>
+                        <div class="layui-input-inline">
+                            <input type="text" id="name" name="name" required="" lay-verify="required" class="layui-input" value="{$res.name}">
+                        </div>
+                        <div class="layui-form-mid layui-word-aux">
+                            <span class="x-red">*</span>不可重复，不能为空
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">是否启用</label>
+                        <div class="layui-input-block">
+                          <input type="radio" name="status" value="0" title="启用" {if condition="$res['status'] eq 0"}checked{/if}>
+                          <input type="radio" name="status" value="1" title="不启用" {if condition="$res['status'] eq 1"}checked{/if}>
+                        </div>
+                      </div>
+                   
+                    
+                    <div class="layui-form-item">
+                        <label for="L_repass" class="layui-form-label"></label>
+                        <input name="id" type="hidden" value="{$res.id}"/>
+                        <button class="layui-btn" lay-filter="add" lay-submit="">增加</button>
+                    </div>
+        </form>
+        </div>
+        </div>
+        <script>layui.use(['form', 'layer'],
+            function() {
+                $ = layui.jquery;
+                var form = layui.form,
+                layer = layui.layer;
+                
+                //监听提交
+                form.on('submit(add)',
+                function(data) {
+                    ajaxform("{:url('user/addDepart')}",data.field);
+                    return false;
+                });
+                
+            });</script>
+
+    </body>
+
+</html>

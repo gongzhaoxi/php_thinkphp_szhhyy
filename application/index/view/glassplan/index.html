@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+        <title>微元生产工序报工管理系统,建材行业生产管理系统,门窗生产管理系统,微元科技,佛山市微元科技有限公司</title>
+		{include file="public/header" /}
+        <script src="__STATIC__index/js/erp.js"></script>
+    </head>
+    <style>
+        .search-box input{
+            margin: 0 5px !important;
+        }
+        .search-box .search-btn{
+            width: 60px !important;
+        }
+    </style>
+	<body>
+		<div class="baogong_scheduling popup-box" id="baogongScheduling">
+			<div class="popup-header">
+				<div>排产</div>
+			</div>
+			<div class="popup-nav" style="padding-left: 110px;">
+				<li class="header-left-item" id="setPlanFieldBtn">
+					<img src="/static//theme/index/img/icon_setting.png">
+					<span>设置计划字段</span>
+				</li>
+				<li class="header-left-item"  id="importPlanBtn">
+					<img src="/static//theme/index/img/icon_export_data.png">
+					<span>导入新/回计划</span>
+				</li>
+			</div>
+			<div class="popup-body">
+				{include file="schedule/menu" /}
+				<div class="body-center">
+					<!-- 未排产订单 -->
+					<div class="body-content-box body-nav-active">
+						<div class="content-header">
+							<form id="form1" class="content-header-right positionRight">
+                                <div class="search-box" style="margin-top: 10px;">
+                                    <div class="imitate-select" style="width:168px;height:25px;">
+                                        <span class="select-txt" data-value="id_desc">请选择是否完成</span>
+                                        <span class="icon-arrow triangle-down"></span>
+                                        <input type="hidden" name="status">
+                                        <ul data-sign="status">
+                                            <li data-value="">请选择是否完成</li>
+                                            <li data-value="1" {if condition="$search['status'] == 1"}data-selected="true"{/if}>未完成</li>
+                                            <li data-value="2" {if condition="$search['status'] == 1"}data-selected="true"{/if}>完成</li>
+                                        </ul>
+                                    </div>
+                                    <input type="text" name="batch" placeholder="请输入计划批次号" autocomplete="off" value="{$search.batch}">
+                                    <input type="text" name="product_no"  placeholder="请输入批次包含的生产单号" autocomplete="off" value="{$search.product_no}">
+                                    <input type="text" name="addtime" id="addtime"  placeholder="请输入提交时间" autocomplete="off" value="{$search.addtime}">
+                                    <input type="text" class="se01" name="xordersn" value="" placeholder="请输入生产流水号/客户名称/销售单编码" autocomplete="off">
+                                    <span  class="search-btn se02">立即查找</span>
+                                </div>
+							</form>
+						</div>
+						<div class="content-center tab-content-active">
+							<div class="content-center-inner">
+								<table class="layui-table" border="1" cellspacing="0" cellpadding="0">
+									<thead>
+                                        
+                                        <tr>
+                                            <th width="10%">批次号</th>
+                                            <th width="10%">订购总片数</th>
+                                            <th width="12%">已回厂片数</th>
+                                            <th width="10%">包含生产单数</th>
+                                            <th width="10%">提交时间</th>
+                                            <th width="12%">状态</th>
+                                            <th width="12%">操作</th>
+                                        </tr>
+									</thead>
+									<tbody>
+                                        {volist name='list' id='v'}
+                                            <tr>
+                                                <td width="10%">{$v.batch}</td>
+                                                <td width="10%" style=' color: red'>{$v.all_book}</td>
+                                                <td width="12%" style=' color: red'>{$v.all_back}</td>
+                                                <td width="10%">{$v.all_count}</td>
+                                                <td width="10%">{$v.addtime|date='Y-m-d'}</td>
+                                                <td width="12%">{if condition="$v['status'] eq 1"}未回厂{elseif condition="$v['status'] eq 2"}部分回厂{else/}已回厂{/if}</td>
+                                                <td width="12%" class="operate-box">
+                                                    <div class=" operate-btn">
+                                                        <a class="btn-normal" href="javascript:void(0)" onclick="showGlassDetailFn('{:url('Glassplan/detail',array('batch'=>$v['batch']))}')">查看</a>
+                                                        <a class="btn-normal btn-danger" href="javascript:void(0)" onclick="del('{$v.batch}')">删除</a>
+                                                        <a class="btn-normal" href="{:url('export',array('batch'=>$v['batch']))}" >导出全部</a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        {/volist}
+                                    </tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- 设置计划字段 -->
+		<div class="modal-box" id="setPlanFieldModal">
+			<div class="modal-content">
+				<div class="modal-header">
+					<div class="modal-header-left">
+						<div class="modal-header-title" style="padding-left: 20px;">
+							<span>设置计划字段</span>
+						</div>
+					</div>
+					<div class="modal-header-right">
+						<span class="close-modal-btn"></span>
+					</div>
+				</div>
+				<div class="modal-body">
+					<div class="iframe-box">
+						<iframe class="myIframe" id="myIframe_setPlan" frameborder="0"></iframe>
+					</div>
+				</div>
+			</div>
+        </div>
+		<!-- 导入新/回计划 -->
+		<div class="modal-box" id="importPlanFieldModal">
+			<div class="modal-content">
+				<div class="modal-header">
+					<div class="modal-header-left">
+						<div class="modal-header-title" style="padding-left: 20px;">
+							<span>导入新/回计划</span>
+						</div>
+					</div>
+					<div class="modal-header-right">
+						<span class="close-modal-btn"></span>
+					</div>
+				</div>
+				<div class="modal-body">
+					<div class="iframe-box">
+						<iframe class="myIframe" id="myIframe_importPlan" frameborder="0"></iframe>
+					</div>
+				</div>
+			</div>
+        </div>
+        <!-- 查看详情 -->
+		<div class="modal-box" id="glassplanDetailModal">
+			<div class="modal-content">
+				<div class="modal-header">
+					<div class="modal-header-left">
+						<div class="modal-header-title" style="padding-left: 20px;">
+							<span>计划明细</span>
+						</div>
+					</div>
+					<div class="modal-header-right">
+						<span class="close-modal-btn"></span>
+					</div>
+				</div>
+				<div class="modal-body">
+					<div class="iframe-box">
+						<iframe class="myIframe" id="myIframe_detail" frameborder="0"></iframe>
+					</div>
+				</div>
+			</div>
+		</div>
+    </body>
+    <script>
+		var layer, laydate;
+		layui.use(['layer','laydate'],function(){
+			laydate = layui.laydate;
+			layer = layui.layer;
+			laydate.render({
+                elem: '#addtime' //指定元素
+            });
+		})
+        function del(batch) {
+            layer.confirm('确认要通过删除吗？将会删除此批次号的全部订单',
+            function(index) {
+                //发异步删除数据
+                ajaxform("{:url('del')}", {batch:batch},1);
+            });
+        }
+        // 提交表单
+        $('.search-btn').click(function(){
+            $('#form1').submit();
+        })
+        // 查看明细
+        function showGlassDetailFn(url){
+            var e = window.event;
+            e.preventDefault();
+            e.stopPropagation();
+            $('#glassplanDetailModal').fadeIn();
+            $('#myIframe_detail').attr('src',url);
+        }
+        // 设置计划字段
+        $('#setPlanFieldBtn').click(function(e){
+            e.preventDefault();
+            e.stopPropagation();
+            $('#setPlanFieldModal').fadeIn();
+            $('#myIframe_setPlan').attr('src','{:url('Glassplan/set_plan_field')}');
+        });
+        // 导入新/回计划
+        $('#importPlanBtn').click(function(e){
+            e.preventDefault();
+            e.stopPropagation();
+            $('#importPlanFieldModal').fadeIn();
+            $('#myIframe_importPlan').attr('src','{:url('Glassplan/import_plan')}');
+        })
+    </script>
+    <script type="text/javascript">
+        $('#form1').find('.imitate-select').each(function(){
+			var _this = $(this);
+			if(_this.children('ul').children('li[data-selected=true]')){
+				var tempTxt = _this.children('ul').children('li[data-selected=true]').html();
+				var tempVal = _this.children('ul').children('li[data-selected=true]').attr('data-value');
+				if(tempTxt != null && tempVal != null){
+					_this.children('.select-txt').attr('data-value',tempVal).html(tempTxt);
+					_this.children('input[type=hidden]').val(tempVal);
+				}
+			}
+		})
+		$('.close-modal-btn').click(function(){
+			$('.modal-box').fadeOut();
+		})
+		// 选择订单排序
+		$('.imitate-select').click(function(e) {
+			e.preventDefault();
+			e.stopPropagation();
+			var _this = $(this);
+			var clickSign = _this.attr('data-sign');
+			$('.imitate-select').removeAttr('data-sign').children('ul').hide();
+			if (clickSign == 'true') {
+				_this.children('ul').hide();
+				_this.removeAttr('data-sign');
+			} else {
+				_this.children('ul').show();
+				_this.attr('data-sign', 'true');
+			}
+		});
+		$(window).click(function(){
+			var elem = event.srcElement ? event.srcElement : event.target;
+			while (elem) { //循环判断至跟节点，防止点击的是div子元素 
+				if (elem.id && elem.id == 'orderScreenBox') {
+					return;
+				}
+				if($(elem).hasClass('modal-content')){
+					return;
+				}
+				elem = elem.parentNode;
+			}
+			$('.modal-box').fadeOut();
+			$('.imitate-select').removeAttr('data-sign').children('ul').hide();
+			$('.content-header-left').removeAttr('data-click').css({
+				top: '0',
+			}).children('.filter-orders').removeClass('filter-orders-active');
+			$('.content-header-left').siblings('.order-screen-box').css({
+				height: '0',
+				overflow: 'hidden'
+			})
+		});
+		$('.imitate-select ul').delegate('li','click',function(e){
+			e.preventDefault();
+			e.stopPropagation();
+			var _this = $(this);
+			var tempTxt = _this.html();
+			var _thisValue = _this.attr('data-value');
+			_this.parent().parent().children('.select-txt').attr('data-value',_thisValue).html(tempTxt);
+			_this.parent().hide();
+			_this.parent().parent().removeAttr('data-sign');
+			_this.parent().siblings('input[type=hidden]').val(_thisValue);
+			var _clickTarget = _this.parent().attr('data-sign');
+		});
+
+
+		
+	</script>
+</html>

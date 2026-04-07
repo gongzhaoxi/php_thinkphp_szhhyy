@@ -1,0 +1,396 @@
+<?php $current='4'; ?>
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>出库订单</title>
+		<link rel="stylesheet" href="__STATIC__/theme/index/js/selectjs/select.css"> <!--   默认主题CSS   -->
+		{include file="public/header" /}
+		<script src="__STATIC__/theme/index/js/selectjs/select.js"></script>
+	</head>
+	<style>
+		#search-box{background-color: #fff;z-index: 9999;width:100%;margin: 0;height: 80px; overflow-y: auto;}
+		#search-box div{margin-top: 0;height: 20px;line-height: 20px;text-align: left;padding: 0 3%; color: #666;cursor: pointer;}
+	</style>
+	<body>
+		<div class="baogong_warehousing popup-box">
+			<div class="popup-header">
+				<div>出库订单</div>
+			</div>
+			{include file="public/menu" /}
+			<div class="popup-body">
+				<div class="body-center">
+					<div class="body-content-box body-nav-active">
+						<div class="content-header">
+							<div class="content-header-left positionLeft">
+								<div class="filter-orders">订单筛选</div>
+							</div>
+							<form id="searchForm" class="content-header-right positionRight" action="{:url($current_position)}" method="get">
+                                <div class="search-box">
+                                    <input type="text" class="se01" name="xordersn" placeholder="请输入{$fieldList[$unique_field]['explains']}/{$fieldList['uname']['explains']}/{$fieldList['ordernum']['explains']}" value="{$post['xordersn']}" autocomplete="off">
+                                    <span id="searchBtn_order" class="search-btn">搜索</span>
+								</div>
+							</form>
+							{include file="public/search" /}
+						</div>
+						<div class="content-center">
+							<div class="content-center-inner urgentPrintBox">
+								<table id="t_title" class="layui-table urgent-table" border="1" cellpadding="0" cellspacing="0">
+									<thead>
+										<tr>
+											{volist name="fieldList" id="vo"}
+											<th class="title-icon" data="{$vo['fieldname']}">
+												<span>{$vo['explains']}</span>
+												<div class="bg_mask">
+													<div class="search-icon layui-icon layui-icon-search"></div>
+												</div>
+											</th>
+											{/volist}
+											<th>状态</th>
+										</tr>
+									</thead>
+									<tbody>
+										{volist name="orderl" id="ol"}
+										<tr>
+											{php}
+												foreach($fieldList as $field=>$name){
+												{/php}
+												<td>{php} echo $ol[$field]!=''?$ol[$field]:'&nbsp;';{/php}
+												</td>
+											{php}
+												}
+											{/php}
+											<td class="operate-box">
+												<ul class="warehousing-status-list">
+													{volist name="ol['inouts']" id="vo"}
+													<!-- 动态出库工序 -->
+														{if condition="$fix_gx neq 1"}
+															{if condition="$vo['is_out'] eq '1'"}
+															<li class="li-status-finish">
+																<div class="status-left">
+																	<span>{$vo['name']} 【{$vo['count']}】</span>
+																	<span></span>
+																	<span>已出库 {$vo['out_time']}</span>
+																</div>
+																<div class="status-right">
+																	<span class="status-reject">[<span onclick="jjavascript:toRefuse({$vo['id']},{$vo['orderid']});" title="驳回">驳回</span>]</span>
+																</div>
+															</li>
+															{elseif condition="$vo['is_into'] eq 1 and $vo['is_out'] neq '1'" /}
+															<li class="li-status-stay">
+																<div class="status-left">{$vo['name']} 【{$vo['count']}】</div>
+																<div class="status-right">
+																	<span title="待出库">[待出库]</span>
+																</div>
+															</li>
+															{/if}
+														{/if}
+														<!-- 固定工序出库 -->
+														{if condition="$fix_gx eq 1"}
+															{if condition="$vo['issend'] eq '1'"}
+															<li class="li-status-finish">
+																<div class="status-left">
+																	<span>{$vo['dname']} 【{$vo['in_num']}】</span>
+																	<span></span>
+																	<span>已出库 {php}echo date('Y-m-d',$vo['sendtime']){/php}</span>
+																</div>
+																<div class="status-right">
+																	<span class="status-reject">[<span onclick="javascript:toRefuse({$vo['fid']},{$vo['orderid']});" title="驳回">驳回</span>]</span>
+																</div>
+															</li>
+															{elseif condition="$vo['endtime'] gt 0 and $vo['issend'] neq '1'" /}
+															<li class="li-status-stay">
+																<div class="status-left">{$vo['dname']}({$vo['in_num']})</div>
+																<div class="status-right">
+																	<span title="待出库">[待出库]</span>
+																</div>
+															</li>
+															{else /}
+															<li class="li-status-unfinish unset-border-bottom">
+																<div class="status-left">
+																	{$vo['dname']}
+																</div>
+																<div class="status-right">
+																	<span>[未入库]</span>
+																</div>
+															</li>
+															{/if}
+														{/if}
+													{/volist}
+												</ul>
+											</td>
+										</tr>
+										{/volist}
+									</tbody>
+								</table>
+								<div class="page-box">
+									<div class="pages">
+										{$page|raw}
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		{include file="public/popup" /}
+	</body>
+	<script type="text/javascript">
+		// 出库 
+		function toReport(gxid,orderid){
+			layer.confirm('确认要执行出库吗？',{icon:3,title:'提示'},function(index){
+				$.ajax({
+					url: "{:Url('Index/batch_send')}",
+					data:{"gxid":gxid,"orderid":orderid},
+					dataType:"json",
+					type:'POST',
+					success:function(obj){
+						if(obj.status==1){
+							layer.msg('出库完成');
+							setTimeout(function(){
+									window.location.reload();	
+								},1500);
+						}else{
+							layer.msg(obj.msg);
+						}
+					}
+				});
+				layer.close(index);
+			})
+		}
+		// 一键出库
+		function allReport(e){
+			var gxid = $(e).data('inouts');
+			var orderid = $(e).data('id');
+			layer.confirm('确认要执行出库吗？',{icon:3,title:'提示'},function(index){
+				$.ajax({
+					url: "{:Url('Index/batch_send')}",
+					data:{"gxid":gxid,"orderid":orderid},
+					dataType:"json",
+					type:'POST',
+					success:function(obj){
+						if(obj.status==1){
+							layer.msg('出库完成');
+							setTimeout(function(){
+									window.location.reload();	
+								},1500);
+						}else{
+							layer.msg(obj.msg);
+						}
+					}
+				});
+				layer.close(index);
+			})
+		}
+		// 驳回
+		function toRefuse(flow_check_id,orderid){
+			var type="<?php echo $fix_gx;?>";
+			var _url = "";
+			if(type==1){
+				_url = "{:Url('Index/out_refuse')}";
+			}else{
+				_url = "{:Url('Index/out_refuse2')}";
+			}
+			layer.confirm('确认要驳回吗？',{icon:3,title:'提示'},function(index){
+				$.ajax({
+					url: _url,
+					data:{"fid":flow_check_id,"orderid":orderid},
+					dataType:"json",
+					type:'POST',
+					success:function(obj){
+						if(obj.status==1){
+							layer.msg(obj.msg);
+							setTimeout(function(){
+									window.location.reload();	
+								},1500);
+						}else{
+							layer.msg(obj.msg);
+						}
+					}
+				});
+				layer.close(index);
+			})
+		}
+	</script>
+	<!-- 导出数据 -->
+	<script type="text/javascript">
+
+		// 导出员工报工
+		$('.man_ex_btn').click(function(e){
+			e.preventDefault();
+			e.stopPropagation();
+			$('#orderScreenBox').attr('action',"{:Url('Export/manExcel')}")
+			$('#orderScreenBox').submit();
+			$('#orderScreenBox').attr('action',"{:Url('Export/export')}")
+		});
+		// 导出订单汇总
+		$('#dataset_btn').click(function(e){
+			e.preventDefault();
+			e.stopPropagation();
+			$('#orderScreenBox').attr('action',"{:Url('Export/orderGxlist')}")
+			$('#orderScreenBox').submit();
+			$('#orderScreenBox').attr('action',"{:Url('Export/export')}")
+		})
+	</script>
+	<script type="text/javascript">
+		// 搜索
+		$('#searchBtn_order').click(function(e){
+			e.preventDefault();
+			e.stopPropagation();
+			$('#searchForm').submit();
+		})
+		// 表头搜索
+		$('.searchBtn').click(function(e){
+			e.preventDefault();
+			e.stopPropagation();
+			$('#tdFindForm').submit();
+		})
+		// 关闭弹窗
+		$('.close-modal-btn').click(function (e) {
+			e.preventDefault();
+			e.stopPropagation();
+			$('.modal-box').fadeOut();
+		});
+
+		$('.imitate-select').click(function(e) {
+			e.preventDefault();
+			e.stopPropagation();
+			var _this = $(this);
+			var clickSign = _this.attr('data-sign');
+			$('.imitate-select').removeAttr('data-sign').children('ul').hide();
+			if (clickSign == 'true') {
+				_this.children('ul').hide();
+				_this.removeAttr('data-sign');
+			} else {
+				_this.children('ul').show();
+				_this.attr('data-sign', 'true');
+			}
+		});
+		$(window).click(function(){
+			
+			var elem = event.srcElement ? event.srcElement : event.target;
+			while (elem) { //循环判断至跟节点，防止点击的是div子元素 
+				if (elem.id && elem.id == 'orderScreenBox') {
+					return;
+				}
+				if($(elem).hasClass('modal-content')){
+					return;
+				}
+				elem = elem.parentNode;
+			}
+			$('.modal-box').fadeOut();
+			$('.imitate-select').removeAttr('data-sign').children('ul').hide();
+			$('.content-header-left').removeAttr('data-click').css({
+				top: '0',
+			}).children('.filter-orders').removeClass('filter-orders-active');
+			$('.content-header-left').siblings('.order-screen-box').css({
+				height: '0',
+				overflow: 'hidden'
+			})
+		});
+		$('.imitate-select ul').delegate('li','click',function(e){
+			e.preventDefault();
+			e.stopPropagation();
+			var _this = $(this);
+			var tempTxt = _this.html();
+			var _thisValue = _this.attr('data-value');
+			_this.parent().parent().children('.select-txt').attr('data-value',_thisValue).html(tempTxt);
+			_this.parent().hide();
+			_this.parent().parent().removeAttr('data-sign');
+			var _clickTarget = _this.parent().attr('data-sign');
+			_this.parent().siblings('input[type=hidden]').val(_thisValue);
+			switch (_clickTarget) {
+				case 'rating':	// 列表排序
+					changeListOrderby(_thisValue);
+					break;
+				default:
+					break;
+			}
+		});
+		$('.imitate-checkbox-all').click(function(e) {
+			e.preventDefault();
+			e.stopPropagation();
+			let _this = $(this);
+			let clickSign = _this.attr('data-sign');
+			if (clickSign == 'true') {
+				_this.removeAttr('data-sign');
+				_this.children('span').hide();
+				_this.siblings('input[type=hidden]').val(0);
+			} else {
+				_this.children('span').show();
+				_this.attr('data-sign', 'true');
+				_this.siblings('input[type=hidden]').val(1);
+			}
+		});
+		
+		// 订单筛选
+		$('.content-header-left').click(function(e){
+			e.preventDefault();
+			e.stopPropagation();
+			let _this = $(this);
+			let clickIndex = _this.attr('data-index');
+			let clickSign = _this.attr('data-click');
+			if(clickSign == 'true'){
+				_this.removeAttr('data-click').css({
+					top: '0',
+				}).children('.filter-orders').removeClass('filter-orders-active');
+				_this.siblings('.order-screen-box').css({
+					height: '0',
+					overflow: 'hidden'
+				})
+			} else{
+				_this.siblings('.order-screen-box').css({
+					height: 'auto',
+					overflow: 'unset'
+				});
+				var _top = _this.siblings('.order-screen-box').css('height');
+				_this.attr('data-click', 'true').css({
+					top: _top,
+				}).children('.filter-orders').addClass('filter-orders-active');
+			}
+		});
+
+		// 点击表格标题时 , 显示内容显示框
+		$('table thead').delegate('tr th .bg_mask', 'click', function (e) {
+			e.preventDefault();
+			e.stopPropagation();
+			var _this = $(this);
+			var clickTarget = _this.parent().attr('data');	// 对应字段名字
+			$('#td_field').val(clickTarget);
+			$('#searchDataModal').fadeIn();
+			$('#td_keyword').val('');
+		});
+		//点击搜索框数据显示在搜索框上
+	$('#search-box').on('click','div',function(){
+		$('#td_keyword').val($(this).text());
+		$('#search-box').hide();
+	})
+	//点击表头搜索异步查找
+	$('#td_keyword').keyup(function(){
+		console.log('keyup');
+		var data = {td_keyword:$('#td_keyword').val(),td_field:$('#td_field').val()}
+		console.log(data);
+		$.ajax({
+			url:"{:url('td_find')}",
+			data: {td_keyword:$('#td_keyword').val(),td_field:$('#td_field').val()},
+			type: 'POST',
+			dataType: 'json',
+			success:function(res){
+				console.log(res);
+				if(res!=''){
+					$("#search-box").show();
+					$("#search-box").html('');
+					var html = '';
+					$.each(res,function(k,v){
+						html += "<div>"+v.value+"</div>"
+					})
+					$('#search-box').append(html);
+				}else{
+					$("#search-box").hide();
+				}
+			}
+		})
+	});
+	</script>
+</html>

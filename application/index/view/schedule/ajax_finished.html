@@ -1,0 +1,88 @@
+
+<div class="loading-float">
+	<div class="loading-text">完成率</div>
+	<div class="loading-speed">{$complete['finish_rate']}%</div>
+	<div class="loading-all">总{$complete['total']}</div>
+	<div class="loading-finish">完{$complete['finish']} </div>
+</div>
+<div class="content-center-inner">
+	<div class="content-center-top">
+		<div class="top-start"></div>
+		<div class="top-middle">
+			<div>未完成订单</div>
+			<p>UNFINISH ORDER</p>
+		</div>
+		<div class="top-end"></div>
+	</div>
+	<div class="content-center-middle">
+		<ul class="unfinish-list">
+			{present name="yestoday_unfinish"}
+				{volist name="yestoday_unfinish" id="vo"}
+					<li>
+						<div class="li-txt">{$vo['ordernum']}-{$vo['gx_name']}</div>
+						<div class="li-operation">
+							<div class="li-operation-before">往期</div>
+							<div class="li-operation-line"></div>
+							<div class="li-operation-edit" onclick="change_team({$vo['id']});">修改</div>
+							<div class="li-operation-line"></div>
+							<div class="li-operation-del" onclick="deleteItem({$vo['id']},this);">删除</div>
+						</div>
+					</li>
+				{/volist}
+			{/present}
+			{present name="today_urgent"}
+				{volist name="today_urgent" id="vo"}
+					<li>
+						<div class="li-txt">{$vo['ordernum']}-{$vo['gx_name']}</div>
+						<div class="li-operation">
+							<div class="li-operation-before">往期</div>
+							<div class="li-operation-line"></div>
+							<div class="li-operation-edit" onclick="change_team({$vo['id']});">修改</div>
+							<div class="li-operation-line"></div>
+							<div class="li-operation-del" onclick="deleteItem({$vo['id']},this);">删除</div>
+						</div>
+					</li>
+				{/volist}
+			{/present}
+			{present name="today_unfinish"}
+				{volist name="today_unfinish" id="vo"}
+					<li>
+						<div class="li-txt">{$vo['ordernum']}-{$vo['gx_name']}</div>
+						<div class="li-operation">
+							<div class="li-operation-before">往期</div>
+							<div class="li-operation-line"></div>
+							<div class="li-operation-edit" onclick="change_team({$vo['id']});">修改</div>
+							<div class="li-operation-line"></div>
+							<div class="li-operation-del" onclick="deleteItem({$vo['id']},this);">删除</div>
+						</div>
+					</li>
+				{/volist}
+			{/present}
+		</ul>
+	</div>
+	<div class="content-center-bottom">
+		<div class="top-start bottom-start"></div>
+		<div class="top-middle">
+			<div>当天完成订单</div>
+			<p>FINISH ORDER</p>
+		</div>
+		<div class="top-end bottom-end"></div>
+	</div>
+	<div class="content-center-middle">
+		<ul class="finish-list">
+			{present name="today_finish"}
+				{volist name="today_finish" id="vo"}
+					<span class="pfqdn">{$vo['ordernum']}-{$vo['gx_name']}</span>
+					<li>
+						<div class="li-txt">{$vo['ordernum']}-{$vo['gx_name']}</div>
+						<div class="li-operation">
+							<span>{$vo['finished_time']|date='Y/m/d H:i:s'}</span>
+							<span>{$vo['do_uname']}</span>
+						</div>
+					</li>
+				{/volist}
+			{/present}
+			
+		</ul>
+	</div>
+</div>

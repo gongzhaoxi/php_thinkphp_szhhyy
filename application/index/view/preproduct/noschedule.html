@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+        <title>微元生产工序报工管理系统,建材行业生产管理系统,门窗生产管理系统,微元科技,佛山市微元科技有限公司</title>
+        {include file="public/header" /}
+        <script src="__STATIC__index/js/erp.js"></script>
+    </head>
+<body class="glassplan_modal noschedule_modal">
+    <div class="modal-body">
+        <form class="layui-form" id="form1">
+            <div class="select-box">
+                <div class="layui-input-inline layui-show-xs-block" style="width: 140px">
+                    <input type="text" name="ordernum"  placeholder="输入销售单号筛选" autocomplete="off" class="layui-input" value="{$search.ordernum}">
+                </div>
+                <div class="layui-input-inline layui-show-xs-block" style="width: 140px">
+                    <input type="text" name="unique_sn"  placeholder="输入生产单号筛选" autocomplete="off" class="layui-input" value="{$search.unique_sn}">
+                </div>
+                <div class="layui-input-inline layui-show-xs-block">
+                    <button class="layui-btn layui-btn-normal layui-btn-sm" style="background-color: #284d9d;">
+                        立即查找
+                    </button>
+                </div>
+            </div>
+            <table class="layui-table">
+                <thead>
+                    <tr>
+                        <th>销售单号</th>
+                        <th>生产单号</th>
+                        <th>备注</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {volist name='list' id='v'}
+                    <tr>
+                        <td>{$v.ordernum}</td>
+                        <td>{$v.unique_sn}</td>
+                        <td><input name="pre_note" type="text" autocomplete="off" value="{$v.pre_note}"></td>
+                        <td class="operate-box">
+                            <div class="operate-btn">
+                                <a href="javascript:;" class="btn-normal save-btn" data-id="{$v.id}">保存备注</a>
+                            </div>
+                        </td>
+                    </tr>
+                {/volist}
+                </tbody>
+            </table>
+            <div class="page-box">
+                <div class="pages">
+                    {$page|raw}
+                </div>
+            </div>
+        </form>
+    </div>	
+</body>
+<script>
+    $('.save-btn').on('click',function () {
+        var id=$(this).data('id');
+        var pre_note = $(this).parent().parent().prev().find('input').val();
+        console.log(pre_note);
+        ajaxform("{:url('savePrenote')}",{id:id,pre_note:pre_note},1);
+    });
+</script>
+</html>

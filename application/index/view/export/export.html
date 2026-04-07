@@ -1,0 +1,652 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>微元生产工序报工管理系统,建材行业生产管理系统,门窗生产管理系统,微元科技,佛山市微元科技有限公司</title>
+	<link rel="stylesheet" href="__STATIC__/theme/index/js/selectjs/select.css"> <!--   默认主题CSS   -->
+	{include file="public/header" /}
+	<script src="__STATIC__/theme/index/js/selectjs/select.js"></script>
+</head>
+<style>
+	.screen-list{display:flex}
+	.screen-group{display:flex;align-items:center}
+	ul li{margin-right:22px}
+	.imitate-select{width:128px;height:28px}
+	.layui-form-select{
+		margin: 0 15px;
+		color: #333333;
+	}
+</style>
+<body>
+	<div class="export_order_data">
+		<div class="modal-body">
+			<div class="export-group">
+				<div class="eg-dt"> <i class="layui-icon layui-icon-addition"></i> 员工报表</div>
+				<div class="eg-dd">
+				<form id="mangxexcel" class="order-screen-box layui-form" action="{:Url('Export/manExcel')}" method="get">
+					<div class="search-box">
+						<div class="search-item">
+							<div class="i-dt">选择员工：</div>
+							<div class="i-dd">
+								<select name="staff" id="staff" lay-verify="required" lay-search lay-filter="staff">
+									<option value="">全部员工</option>
+									{volist name="man" id="ml"}
+									<option value="{$ml.id}" {if condition="$ml['id'] eq $uid" }selected="selected"{/if}>{$ml.uname}</option>
+									{/volist}
+								</select>
+							</div>
+						</div>
+						<div class="search-item">
+							<div class="i-dt">选择工序：</div>
+							<div class="i-dd">
+								<select name="gx" id="gx" lay-verify="required" lay-search lay-filter="gx">
+									<option value="">全部工序</option>
+									{volist name="gx_list" id="gl"}
+									<option value="{$gl.dname}">{$gl.dname}</option>
+									{/volist}
+								</select>
+							</div>
+						</div>
+						<div class="search-item">
+							<div class="i-dt">选择报工完成时间：</div>
+							<div class="i-dd">
+								<input type="text" name="gx_start" id="staff_date_s" autocomplete="off" placeholder="开始日期" value="{$msg['gx_start']}">
+								<input type="text" name="gx_end" id="staff_date_d" autocomplete="off" placeholder="结束日期" value="{$msg['gx_end']}">
+							</div>
+						</div>
+						<div class="search-item">
+							<div class="i-dt">不导出已发货：</div>
+							<div class="i-dd">
+								<div class="imitate-checkbox-all" {if $msg['nosend']==1}data-sign="true"{/if}>
+									<span></span>
+									<input type="hidden" name="nosend" id="nosend" value="0">
+								</div>
+							</div>
+						</div>
+						<div class="search-item">
+							<div class="i-dt">不导出全部入库：</div>
+							<div class="i-dd">
+								<div class="imitate-checkbox-all" {if $msg['nointo']==1}data-sign="true"{/if}>
+									<span></span>
+									<input type="hidden" name="nointo" id="nointo" value="0">
+								</div>
+							</div>
+						</div>
+						</form>
+					</div>
+					<div class="operate-box">
+						<div class="layui-btn layui-btn-sm layui-btn manexcel">导出数据</div>
+					</div>
+				</div>
+			</div>
+			<div class="export-group">
+				<div class="eg-dt"><i class="layui-icon layui-icon-addition"></i>进度报表</div>
+				<div class="eg-dd">
+					<form id="orderScreenBox" class="order-screen-box" action="{:Url('Export/orderGxlist')}" method="get">
+						<input name="senior" value="1" id="formsenior" type="hidden"/>
+						<input name="orderby" id="formorderby" type="hidden" value="{$post['orderby']}"/>
+						<div class="search-box">
+							<div class="search-item">
+								<div class="i-dt">订单状态：</div>
+								<div class="i-dd">
+									<div class="imitate-select">
+										<span class="select-txt" data-value="">点击选择订单状态</span>
+										<span class="triangle-down"></span>
+										<input type="hidden" name="order_status" class="select-common">
+										<ul data-sign="order_status">
+											<li data-value="">默认状态</li>
+											<li data-value="1" {if condition="$post['order_status'] eq 1"}data-selected="true"{/if}>正常</li>
+											<li data-value="2" {if condition="$post['order_status'] eq 2"}data-selected="true"{/if}>暂停</li>
+											<li data-value="3" {if condition="$post['order_status'] eq 3"}data-selected="true"{/if}>作废</li>
+										</ul>
+									</div>
+								</div>
+							</div>
+							{php}
+								$time_field=array();
+								foreach($searchField as $value){
+									if($value['type']=='date'){
+										$time_field[]=$value['fieldname'];
+									}
+								}
+							{/php}
+							{volist name="searchField" id="vo"}
+							<div class="search-item">
+								<div class="i-dt">{$vo['explains']}：</div>
+								<div class="i-dd">
+									<input name="{$key}" id="{$key}" type="text" placeholder="请填写{$vo['explains']}" autocomplete="off" value="{$searchpost[$key]}">
+								</div>
+							</div>
+							{php}
+								if(in_array($key,$time_field)){
+								{/php}
+								<script type="text/javascript">
+									var laydate;
+									layui.use(['laydate'],function(){
+										laydate = layui.laydate;
+										laydate.render({
+										elem: '#{$key}'
+										});
+									})
+									</script>
+								{php}
+										}
+								{/php}
+							{/volist}
+						</div>
+						
+						<div class="search-box">
+							<div class="search-item">
+								<div class="i-dt">下单时间：</div>
+								<div class="i-dd">
+									<input type="text" id="s_date1" name="s_date1" value="{$post['s_date']}" autocomplete="off" placeholder="开始时间">
+									<input type="text" id="e_date1" name="e_date" value="{$post['e_date']}" autocomplete="off"  placeholder="结束时间">
+								</div>
+							</div>
+							<div class="search-item">
+								<div class="i-dt">{$endtime_field}：</div>
+								<div class="i-dd">
+									<input id="k_date" name="k_date" type="text" value="{$post['k_date']}" placeholder="开始时间" autocomplete="off">
+									<input id="ke_date" name="ke_date" type="text" value="{$post['ke_date']}" placeholder="结束时间" autocomplete="off">
+								</div>
+							</div>
+							<div class="search-item">
+								<div class="i-dt">入库时间：</div>
+								<div class="i-dd">
+									<input type="text" id="in_date1" name="in_date1" value="{$post['in_date1']}" autocomplete="off" placeholder="开始时间">
+									<input type="text" id="in_date2" name="in_date2" value="{$post['in_date2']}" autocomplete="off"  placeholder="结束时间">
+								</div>
+							</div>
+						</div>
+						<div class="search-box">
+						<ul class="screen-list">
+						      <li class="screen-group">
+						        <div class="screen-group-left">预警订单：</div>
+						        <div class="screen-group-right">
+						          <div class="imitate-select">
+						            <span class="select-txt" data-value="">全部订单</span>
+						            <span class="triangle-down"></span>
+						            <input type="hidden" name="iswarn">
+						            <ul data-sign="warntime">
+						              <li data-value="1" {if condition="$post['iswarn'] eq 1"} data-selected="true"{/if}>是</li>
+						              <li data-value="2" {if condition="$post['iswarn'] eq 2"} data-selected="true"{/if}>否</li>
+						            </ul>
+						          </div>
+						        </div>
+						      </li>
+						      <div class="search-item">
+						        <div class="i-dt">预警时间：</div>
+						        <div class="i-dd">
+						          <input type="text" id="warntime_s" name="warntime_s" value="{$post['warntime_s']}" autocomplete="off" placeholder="预警开始时间">
+						          <span>-</span>
+						          <input type="text" id="warntime_e" name="warntime_e" value="{$post['warntime_e']}" autocomplete="off"  placeholder="预警结束时间">
+						        </div>
+						      </div>
+						      <li class="screen-group">
+						        <div class="screen-group-left">工序状态：</div>
+						        <div class="screen-group-right">
+						          <div class="imitate-select">
+						            <span class="select-txt" data-value="">请选择工序状态</span>
+						            <span class="triangle-down"></span>
+						            <input type="hidden" name="gx_status" id="gx_status_form" value="">
+						            <ul data-sign="gxStatus">
+						              <li data-value="1" {if condition="$post['gx_status'] eq 1"}data-selected="true"{/if}>未开始</li>
+						              <li data-value="2" {if condition="$post['gx_status'] eq 2"}data-selected="true"{/if}>进行中</li>
+						              <li data-value="3" {if condition="$post['gx_status'] eq 3"}data-selected="true"{/if}>已完成</li>
+						              <li data-value="4" {if condition="$post['gx_status'] eq 4"}data-selected="true"{/if}>已超时</li>
+						              <li data-value="5" {if condition="$post['gx_status'] eq 5"}data-selected="true"{/if}>有异常</li>
+						              <li data-value="6" {if condition="$post['gx_status'] eq 6"}data-selected="true"{/if}>异常未处理</li>
+						              <li data-value="7" {if condition="$post['gx_status'] eq 7"}data-selected="true"{/if}>异常已处理-未竣工</li>
+						            </ul>
+						          </div>
+						        </div>
+						      </li>
+						      </ul>
+      					<div class="search-item">
+							<div class="i-dt">不导出已发货：</div>
+							<div class="i-dd">
+								<div class="imitate-checkbox-all">
+									<span></span>
+									<input type="hidden" name="nosend" id="nosend" value="0">
+								</div>
+							</div>
+						</div>
+						<div class="search-item">
+							<div class="i-dt">不导出全部入库：</div>
+							<div class="i-dd">
+								<div class="imitate-checkbox-all">
+									<span></span>
+									<input type="hidden" name="nointo" id="nointo" value="0">
+								</div>
+							</div>
+						</div>
+      					</div>
+						<div class="search-box">
+							<div class="search-item">
+								<div class="i-dt">未开始工序：</div>
+								<div class="i-dd">
+									<div id="select1"  class="selectPickerWrapper"> 
+										<input type="hidden" id="select_gx" name="gname" value="{$post['gname']}" >
+										<select name="gname" id="gname" multiple="multiple" style="display:none;">
+											{foreach($endg as $key=>$li)}
+											<option  value="{$li.dname}"><?php echo htmlspecialchars_decode($li['dname']) ?></option>
+											{/foreach}
+											</select>
+									</div>
+								</div>
+							</div>
+							<div class="search-item">
+								<div class="i-dt">进行中工序：</div>
+								<div class="i-dd">
+									<div id="select3"  class="selectPickerWrapper"> 
+										<input type="hidden" id="doing_gx" name="doing_gx" value="{$post['dogx']}" >
+										<select name="doingGx" id="doingGx" multiple="multiple" style="display:none;">
+											{foreach($endg as $li)}
+											<option  value="{$li.dname}"><?php echo htmlspecialchars_decode($li['dname']) ?></option>
+											{/foreach}
+											</select>
+									</div>
+								</div>
+							</div>
+							<div class="search-item">
+								<div class="i-dt">已完成工序：</div>
+								<div class="i-dd">
+									<div id="select2" class="selectPickerWrapper"> 
+										<input type="hidden" id="finish_gx" name="finish_gx" value="{$post['finish_gx']}" >
+										<select name="finishGx" id="finishGx" multiple="multiple" style="display:none;">
+											{foreach($endg as $li)}
+											<option  value="{$li.dname}"><?php echo htmlspecialchars_decode($li['dname']) ?></option>
+											{/foreach}
+											</select>
+									</div>
+								</div>
+							</div>
+							<div class="search-item">
+        						<div class="i-dt">工序结束时间：</div>
+        						<div class="i-dd">
+          						<input type="text" id="xs_date1" name="xs_date" value="{$post['xs_date']}" autocomplete="off" placeholder="开始时间">
+          						<span>-</span>
+          						<input type="text" id="xe_date1" name="xe_date" value="{$post['xe_date']}" autocomplete="off"  placeholder="结束时间">
+        						</div>
+      						</div>
+						</div>
+					</form>
+					<div class="operate-box">
+						<div class="layui-btn layui-btn-sm layui-btn" id="orderexcel" onclick="searchData()">导出数据</div>
+					</div>
+				</div>
+			</div>
+			<div class="export-group">
+				<div class="eg-dt"><i class="layui-icon layui-icon-addition"></i>异常报表</div>
+				<div class="eg-dd">
+					<form id="badexcel" action="{:url('Export/exceptionData')}" method="get">
+					<div class="search-box">
+						<div class="search-item">
+							<div class="i-dt">选择报工完成时间：</div>
+							<div class="i-dd">
+								<input type="text" name="time_start" id="warm_date_s" autocomplete="off" placeholder="开始日期">
+								<input type="text" name="time_end" id="warm_date_e" autocomplete="off" placeholder="结束日期">
+							</div>
+						</div>
+						<div class="search-item">
+							<div class="i-dt">不导出已竣工异常：</div>
+							<div class="i-dd">
+								<div class="imitate-checkbox-all">
+									<span></span>
+									<input type="hidden" name="isending" id="warm" value="0">
+								</div>
+							</div>
+						</div>
+						</form>
+					</div>
+					<div class="operate-box">
+						<div class="layui-btn layui-btn-sm layui-btn bad_btn">导出数据</div>
+					</div>
+				</div>
+			</div>
+			<div class="export-group">
+				<div class="eg-dt"><i class="layui-icon layui-icon-addition"></i>其他数据</div>
+				<div class="eg-dd">
+				<form id="other_sub" action="{:url('Export/otherData')}" method="get">
+					<div class="search-box">
+						<div class="search-item">
+							<div class="i-dt">选择报工完成时间：</div>
+							<div class="i-dd">
+								<input type="text" id="other_date_s" name="other_start" autocomplete="off" placeholder="开始日期">
+								<input type="text" id="other_date_e" name="other_end" autocomplete="off" placeholder="结束日期">
+							</div>
+						</div>
+					</div>
+					<div class="search-box">
+						<div class="search-item">
+							<div class="i-dt">超时完成工序：</div>
+							<div class="i-dd">
+								<div class="imitate-radio diff">
+									<span></span>
+									<input type="hidden" name="overtime_finish" id="overtime_finish" value="0">
+								</div>
+							</div>
+						</div>
+						<div class="search-item">
+							<div class="i-dt">按时完成达成率：</div>
+							<div class="i-dd">
+								<div class="imitate-radio diff">
+									<span></span>
+									<input type="hidden" name="ontime_finish" id="ontime_finish" value="0">
+								</div>
+							</div>
+						</div>
+						<div class="search-item">
+							<div class="i-dt">工序人均产值：</div>
+							<div class="i-dd">
+								<div class="imitate-radio diff">
+									<span></span>
+									<input type="hidden" name="staff_average" id="staff_average" value="0">
+								</div>
+							</div>
+						</div>
+						<div class="search-item">
+							<div class="i-dt">生产计划达成率：</div>
+							<div class="i-dd">
+								<div class="imitate-radio diff">
+									<span></span>
+									<input type="hidden" name="reach" id="reach" value="0">
+								</div>
+							</div>
+						</div>
+						<div class="search-item">
+							<div class="i-dt">部分/整单入库订单：</div>
+							<div class="i-dd">
+								<div class="imitate-radio diff">
+									<span></span>
+									<input type="hidden" name="them_order" id="them_order" value="0">
+								</div>
+							</div>
+						</div>
+						<div class="search-item">
+							<div class="i-dt">生产中订单：</div>
+							<div class="i-dd">
+								<div class="imitate-radio diff">
+									<span></span>
+									<input type="hidden" name="production_order" id="production_order" value="0">
+								</div>
+							</div>
+						</div>
+						</form>
+					</div>
+					<div class="operate-box">
+						<div class="layui-btn layui-btn-sm layui-btn other_data">导出数据</div>
+					</div>
+				</div>
+			</div>
+		<div class="export-group">
+				<div class="eg-dt"> <i class="layui-icon layui-icon-addition"></i>入库&接单数量</div>
+				<div class="eg-dd">
+				<form id="intoexcel" class="order-screen-box" action="{:Url('Export/into_order_excel')}" method="get">
+					<div class="search-box">
+						<div class="search-item">
+							<div class="i-dt">选择时间：</div>
+							<div class="i-dd">
+								<input type="text" name="into_start" id="into_date_s" autocomplete="off" placeholder="开始日期" value="">
+								<input type="text" name="into_end" id="into_date_d" autocomplete="off" placeholder="结束日期" value="{$today}">
+							</div>
+						</div>
+						</form>
+					</div>
+					<div class="operate-box">
+						<div class="layui-btn layui-btn-sm layui-btn intoexcel">导出数据</div>
+					</div>
+				</div>
+		</div>
+		<div class="export-group">
+				<div class="eg-dt"> <i class="layui-icon layui-icon-addition"></i>预排产汇总</div>
+				<div class="eg-dd">
+				<form id="form-sub" class="order-screen-box" action="{:Url('')}" method="get">
+					<div class="search-box">
+						<div class="search-item">
+							<div class="i-dt">选择预排产时间：</div>
+							<div class="i-dd">
+								<input type="text" name="addtime" id="addtime" autocomplete="off" placeholder="请选择" value="" style="width:220px">
+							</div>
+						</div>
+						</form>
+					</div>
+					<div class="operate-box">
+						<div class="layui-btn layui-btn-sm layui-btn" id="export_filter">导出数据</div>
+						<div class="layui-btn layui-btn-sm layui-btn " id="review_filter">预览</div>
+					</div>
+				</div>
+	</div>
+</body>
+<script type="text/javascript">
+	var layer , laydate, form;
+	layui.use(['layer','laydate','form'],function(){
+		laydate = layui.laydate;
+		layer = layui.layer;
+		form = layui.form;
+		var date = new Date();
+		laydate.render({
+			elem: '#staff_date_s'
+		});  
+		laydate.render({
+			elem: '#staff_date_d'
+		});
+		laydate.render({
+			elem: '#warm_date_s',
+			trigger: 'click',
+		});  
+		laydate.render({
+			elem: '#warm_date_e',
+			trigger: 'click',
+		});
+		laydate.render({
+			elem: '#laydate'
+		});
+		laydate.render({
+			elem: '#laydates'
+		});
+		laydate.render({
+			elem: '#s_date'
+		});
+		laydate.render({
+			elem: '#e_date'
+		});
+		laydate.render({
+			elem: '#k_date'
+		});
+		laydate.render({
+			elem: '#ke_date'
+		});
+		laydate.render({
+			elem: '#s_date1'
+		});
+		laydate.render({
+			elem: '#e_date1'
+		});
+		laydate.render({
+			elem: '#in_date1'
+		});
+		laydate.render({
+			elem: '#in_date2'
+		});  
+		laydate.render({
+			elem: '#warntime_s'
+		});  
+		laydate.render({
+			elem: '#warntime_e'
+		});
+		laydate.render({
+			elem: '#other_date_s',
+			trigger: 'click',
+		});
+		laydate.render({
+			elem: '#other_date_e',
+			trigger: 'click',
+		});
+		laydate.render({
+			elem: '#into_date_s',
+			min: date.getFullYear()+'-'+(date.getMonth()-1)+'-'+date.getDate(),
+			max: date.getFullYear()+'-'+(date.getMonth()+1)+'-'+date.getDate(),
+			trigger: 'click',
+		});
+		laydate.render({
+			elem: '#addtime',
+			range: '~',
+			trigger: 'click',
+		});
+		form.on('select(staff)', function(data){
+			$('#form1').submit();
+		})
+	})
+
+	// 下拉列表
+	$('.imitate-select').click(function(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		var _this = $(this);
+		var clickSign = _this.attr('data-sign');
+		$('.imitate-select').removeAttr('data-sign').children('ul').hide();
+		if (clickSign == 'true') {
+			_this.children('ul').hide();
+			_this.removeAttr('data-sign');
+		} else {
+			_this.children('ul').show();
+			_this.attr('data-sign', 'true');
+		}
+	});
+	$(window).click(function(){
+		$('.imitate-select').removeAttr('data-sign').children('ul').hide();
+	})
+	$('.imitate-select ul').delegate('li','click',function(e){
+		e.preventDefault();
+		e.stopPropagation();
+		var _this = $(this);
+		var tempTxt = _this.html();
+		var _thisValue = _this.attr('data-value');
+		_this.parent().parent().children('.select-txt').attr('data-value',_thisValue).html(tempTxt);
+		_this.parent().hide();
+		_this.parent().parent().removeAttr('data-sign');
+		var _clickTarget = _this.parent().attr('data-sign');
+		_this.parent().siblings('input[type=hidden]').val(_thisValue);
+	});
+
+	$('.imitate-checkbox-all').click(function(e) {
+		// 获取选中的值	$('.imitate-checkbox-all[data-sign=true] input[type=hidden]').val();
+		e.preventDefault();
+		e.stopPropagation();
+		let _this = $(this);
+		let clickSign = _this.attr('data-sign');
+		if (clickSign == 'true') {
+			_this.removeAttr('data-sign');
+			_this.children('span').hide();
+			_this.children('input[type=hidden]').val(0);
+		} else {
+			_this.children('span').show();
+			_this.attr('data-sign', 'true');
+			_this.children('input[type=hidden]').val(1);
+		}
+	});
+	// 单选框
+	$('.imitate-radio').click(function(e){
+		
+		e.preventDefault();
+		e.stopPropagation();
+		var _this = $(this);
+		_this.addClass('imitate-radio-active');
+		_this.removeClass('diff');
+		$('.imitate-radio-active input[type=hidden]').val(1);
+		_this.parent().parent().siblings('.search-item').find('.imitate-radio').addClass("diff");
+		$('.diff input[type=hidden]').val(0);
+		_this.parent().parent().siblings('.search-item').find('.imitate-radio').removeClass('imitate-radio-active');
+	})
+
+
+
+
+	var widthArray=new Array();
+	$(document).ready(function(){
+		$("#t_title tr td").each(function(){
+			widthArray.push($(this).width());
+		});
+		
+		$("table.list tr td").each(function(index){
+			
+			$(this).width(widthArray[index]);
+			
+		})
+		
+		 $('#exceptionprint').click(function(){
+			 
+		 });
+		var select_gx = "<?php echo $post['gname'];?>";
+		var finish_gx = "<?php echo $post['finishgx'];?>";
+		var dogx = "<?php echo $post['dogx'];?>";
+		select_gx==''?select_gx='请选择':'';
+		finish_gx==''?finish_gx='请选择':'';
+		dogx==''?dogx='请选择':'';
+		$("#select1").mySelect();
+		$("#select2").mySelect();
+		$("#select3").mySelect();
+		$("#select1").find(".select-picker-search-checked").html(select_gx);
+		$("#select2").find(".select-picker-search-checked").html(finish_gx);
+		$("#select3").find(".select-picker-search-checked").html(dogx);
+	});
+
+	  $('.ex_btn').click(function(){
+		  $('#seniorform').attr('action',"{:Url('Export/dataExcel')}")
+		  $('#seniorform').submit();
+		  $('#seniorform').attr('action',"{:Url('Export/export')}")
+		  /* setTimeout(function(){
+			  window.location.reload();
+		  },3000) */
+	  });
+	  
+	  $('.manexcel').click(function(){
+		  $('#mangxexcel').submit()
+		  /* setTimeout(function(){
+			  window.location.reload();
+		  },3000) */
+	  });
+      $('#orderexcel').click(function(){
+		  $('#orderScreenBox').submit()
+	  })
+	  $('.bad_btn').click(function(){
+		  $('#badexcel').submit()
+	  })
+	  $('.other_data').click(function(){
+		  $('#other_sub').submit()
+	  })
+   //高级搜索提交表单
+   function searchData(){
+	   var gname=$("#select1").find(".select-picker-search-checked").html();
+	   var finishGx=$("#select2").find(".select-picker-search-checked").html();
+	   var dogx=$("#select3").find(".select-picker-search-checked").html();
+	   gname=='请选择'?gname='':gname;
+	   finishGx=='请选择'?finishGx='':finishGx;
+	   dogx=='请选择'?dogx='':dogx;
+	   $("#select_gx").attr("value",gname);
+	   $("#finish_gx").attr("value",finishGx);
+	   $("#doing_gx").attr("value",dogx);
+	   $('#orderScreenBox').submit();
+   }
+      $('.intoexcel').click(function(){
+    	  $('#intoexcel').submit();
+      })
+      $('#export_filter').click(function(){
+                $('#form-sub').attr('action',"{:url('preproduct/export_plan_data')}");
+                $('#form-sub').submit();
+                $('#form-sub').attr('action','');
+            });
+      $('#review_filter').click(function(){
+            	var _addtime = $('input[name="addtime"]').val();
+            	layer.open({
+    				type: 2,
+    				  title: '预览导出数据',
+    				  shadeClose: true,
+    				  shade: 0.8,
+    				  area: ['99%', '99%'],
+    				  content: "{:url('preproduct/review_excel')}?addtime="+_addtime //iframe的url
+    			})
+            });
+   </script>
+</html>

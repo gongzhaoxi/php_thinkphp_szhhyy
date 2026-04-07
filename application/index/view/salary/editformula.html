@@ -1,0 +1,191 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD HTML 4.01 Strict//EN' 'http://www.w3.org/TR/html4/strict.dtd'>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+{include file="public/header" /}
+<title>编辑</title>
+<style>
+	.layui-form-select{
+		color: #333333;
+	}
+	select:disabled {
+		opacity: 1;
+	}
+</style>
+</head>
+<body class="edit_formula_modal">
+	<div class="modal-body">
+		<div class="modal-body-middle">
+			<div class="formula-box layui-form">
+				<ul class="formula-box-list">
+					<li class="formula-list-group">
+						<div class="formula-list-group-left">排序：</div>
+						<div class="formula-list-group-right">
+							<input type="text" id="sort" autocomplete="off" placeholder="如：0" value="{$res.sort}">
+						</div>
+					</li>
+					<li class="formula-list-group">
+						<div class="formula-list-group-left">工序：</div>
+						<div class="formula-list-group-right">
+							<select name="gx" id="gx" lay-verify="required" lay-search lay-filter="gx" disabled>
+								<option value="">选择工艺路线</option>
+								{volist name="gxList" id="eg"}
+									{if condition="$eg['dname'] neq ''"}
+									<option data-type="0" value="{$eg.id}" {if condition="$eg['id'] eq $res['gxid']&&$res['is_into'] eq 0"} selected="selected"{/if}>工艺路线：{$eg.title}&nbsp;|&nbsp;工序：{$eg.dname}</option>
+									{else}
+									<option data-type="1" value="{$eg.id}" {if condition="$eg['id'] eq $res['gxid']&&$res['is_into'] eq 1"} selected="selected"{/if}>入库工序：{$eg.name}</option>
+									{/if}
+								{/volist}
+							</select>
+						</div>
+					</li>
+					<li class="formula-list-group">
+						<div class="formula-list-group-left">判断内容：</div>
+						<div class="formula-list-group-right">
+							<textarea name="" id="content" placeholder="请输入判断内容：&#10;&#10;注：每个数据之间请加“|”竖杠区分，最后一个数据不用加竖杠。&#10;&#10;&#10;&#10;无需判断直接为空">{$res.text}</textarea>
+						</div>
+					</li>
+					<li class="formula-list-group addFirstFormulabox">
+						<div class="formula-list-group-left">判断字段：</div>
+						<div class="formula-list-group-right judge-field">
+							<select name="field" id="field" lay-verify="required" lay-search lay-filter="field">
+								<option value="">请选择</option>
+								{volist name="qrcodeList" id="ql"}
+									<option value="{$ql.fieldname}" {if condition="$ql['fieldname'] eq $res['fieldname']"}selected="selected"{/if}>{$ql.explains}</option>
+								{/volist}
+							</select>
+						</div>
+					</li>
+					<li class="formula-list-group formulaSecondBox" style="display: {$res.sid>0?'flex':'none'}">
+						<div class="formula-list-group-left">判断内容：</div>
+						<div class="formula-list-group-right">
+							<textarea name="" id="contents" placeholder="请输入判断内容：&#10;&#10;注：每个数据之间请加“|”竖杠区分，最后一个数据不用加竖杠。&#10;&#10;&#10;&#10;无需判断直接为空">{$res.content}</textarea>
+						</div>
+					</li>
+					<li class="formula-list-group formulaSecondBox" style="display: {$res.sid>0?'flex':'none'}">
+						<div class="formula-list-group-left">判断字段：</div>
+						<div class="formula-list-group-right judge-field">
+							<select name="fields" id="fields" lay-verify="required" lay-search lay-filter="fields">
+								<option value="">请选择判断字段</option>
+								{volist name="qrcodeList" id="ql"}
+									<option value="{$ql.fieldname}" {if condition="$ql['fieldname'] eq $res['fields']"}selected="selected"{/if}>{$ql.explains}</option>
+								{/volist}
+							</select>
+						</div>
+					</li>
+					<li class="formula-list-group">
+						<div class="formula-list-group-left">计件单位：</div>
+						<div class="formula-list-group-right">
+							<input type="text" id="unit" autocomplete="off" placeholder="如：平方/日" value="{$res.unitname}">
+						</div>
+					</li>
+					<li class="formula-list-group">
+						<div class="formula-list-group-left">计件公式：</div>
+						<div class="formula-list-group-right download-formula">
+							<input type="text"  placeholder="$area*$snum" id="gs-inp"  autocomplete="off" value="{$res.formula_text}">
+							<div class="download-formula-btn"><a href="{:url('Salary/fieldexcel')}">数据对应字段表下载</a></div>
+						</div>
+					</li>
+					<li class="formula-list-group">
+						<div class="formula-list-group-left">单价：</div>
+						<div class="formula-list-group-right unit-price">
+							<input type="text" id="price" style="width: 300px;" placeholder="如：2.7" value="{$res.price}">
+							<span>单位：元</span>
+						</div>
+					</li>
+				</ul>
+			</div>
+		</div>
+		<div class="modal-body-bottom">
+			<div onclick="sub()">确认添加</div>
+		</div>
+	</div>
+<script type="text/javascript">
+	layui.use('form',function(){
+		var form = layui.form;
+		form.render();
+	})
+	$(document).ready(function(){
+		// 显示默认工序
+		$('.formula-box').find('.setDefaultSelect').each(function(){
+			var _this = $(this);
+			var _val = _this.children('ul').children('li[data-selected=true]').attr('data-value');
+			var _type = _val = _this.children('ul').children('li[data-selected=true]').attr('data-type');
+			var _html = _this.children('ul').children('li[data-selected=true]').html();
+			_this.children('input[type=hidden]').val(_val).attr('data-value',_type);
+			_this.children('.select-txt').attr('data-value',_val).html(_html);
+		})
+	});
+	//修改计件公式
+	function sub(){
+		var e = window.event;
+		e.preventDefault();
+		e.stopPropagation();
+		var data = {};
+		data['id'] = "<?php echo $res['id'] ?>";
+		data['sid'] = "<?php echo $res['sid'] ?>";
+		data['content'] = $('#content').val();
+		data['field'] = $('#field').val();
+		data['price'] = $('#price').val();
+		data['gongshi'] = $('#gs-inp').val();
+		data['fields'] = $('#fields').val();
+		data['sort'] = $('#sort').val();
+		data['contents'] = $('#contents').val();
+		data['unitname'] = $('#unit').val();
+		if(data['gongshi']==''){
+			layer.msg('请填写计件公式');
+			return false;
+		}
+		if(data['price']==''){
+			layer.msg('请填写单价');
+			return false;
+		}
+		layer.confirm('是否修改',{icon:3,title:'提示',move:false},function(index){
+			$.ajax({
+				url:"{:url('Salary/addformula')}",
+				data:data,
+				dataType: 'json',
+				success:function(res){
+					console.log(res)	
+					if(res.code==0){
+						var indx=parent.layer.getFrameIndex(window.name);
+						layer.msg(res.msg);
+						setTimeout(function(){
+							parent.layer.close(indx);
+							window.parent.location.reload();
+						},1500)
+						
+					}else{
+						layer.msg(res.msg);
+					}
+				}
+				
+			},'json')
+			layer.close(index)
+		})
+		
+	}
+	$(window).click(function(){
+		
+		var elem = event.srcElement ? event.srcElement : event.target;
+		while (elem) { //循环判断至跟节点，防止点击的是div子元素 
+			if (elem.id && elem.id == 'orderScreenBox') {
+				return;
+			}
+			if($(elem).hasClass('modal-content')){
+				return;
+			}
+			elem = elem.parentNode;
+		}
+		$('.modal-box').fadeOut();
+		$('.content-header-left').removeAttr('data-click').css({
+			top: '0',
+		}).children('.filter-orders').removeClass('filter-orders-active');
+		$('.content-header-left').siblings('.order-screen-box').css({
+			height: '0',
+			overflow: 'hidden'
+		})
+	});
+</script>
+</body>
+</html>

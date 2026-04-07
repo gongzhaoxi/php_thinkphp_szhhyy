@@ -1,0 +1,187 @@
+{include file="public/header"/}
+    <link rel="stylesheet" href="__STATIC__/css/select.css">
+    <body>
+         <div class="x-nav">
+            <span class="layui-breadcrumb">
+               <a href="javascript:void(0)">待处理订单</a>
+            </span> 
+            
+            <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" onclick="location.reload()" title="刷新">
+                <i class="layui-icon layui-icon-refresh" style="line-height:30px"></i>
+            </a>
+        </div>
+        <div class="layui-fluid">
+            <div class="layui-row layui-col-space15">
+                <div class="layui-col-md12">
+                    <div class="layui-card">
+                        <div class="layui-card-body ">
+                            
+                        </div>
+                        <div class="layui-card-header">
+                            <form class="layui-form layui-col-space5" id="form1">
+                                
+                                <div class="layui-input-inline layui-show-xs-block">
+                                    <input type="text" name="keyword" id="keyword" placeholder="请输入订单号/经销商名称" autocomplete="off" class="layui-input" value='{$name}'>
+                                </div>
+                                <div class="layui-input-inline layui-show-xs-block">
+                                    <input type="text" name="starttime" id="starttime" placeholder="下单开始时间" autocomplete="off" class="layui-input" value="{$start_time}">
+                                </div>
+                                <div class="layui-input-inline layui-show-xs-block">
+                                    <input type="text" name="endtime" id="endtime" placeholder="下单结束时间" autocomplete="off" class="layui-input" value="{$end_time}">
+                                </div>  
+                               <div class="layui-input-inline layui-show-xs-block">
+                                    <select name='type' xm-select="type" xm-select-show-count="1">
+                                        <option value=''>订单类型</option>
+                                        {foreach $order_type as $k=>$v}
+                                        <option value='{$k}' {if condition="in_array($k,$type)"}selected{/if}>{$v}</option>
+                                        {/foreach}
+                                    </select>
+                                </div>									
+                                <div class="layui-input-inline layui-show-xs-block">
+                                    <button class="layui-btn" lay-submit="" lay-filter="sreach">
+                                        <i class="layui-icon">&#xe615;</i>
+                                    </button>
+                                </div>
+								<div class="layui-input-inline layui-show-xs-block">
+                                    <button class="layui-btn layui-btn-normal" type='button' id='export_price2'>
+                                        导出数据
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="layui-card-body ">
+                            <table class="layui-table layui-form" lay-filter="demo">
+                                <thead>
+                                    <tr>                                       
+                                        <th lay-data="{field:'number', minWidth:90}">订单编号</th>
+                                        <th lay-data="{field:'type', minWidth:80}">订单类型</th>
+                                        <th lay-data="{field:'dealer', minWidth:80}">经销商</th>
+										<th lay-data="{field:'send_address', minWidth:300}">地址</th>
+                                        <th lay-data="{field:'addtime', minWidth:60}">下单时间</th>
+                                        <th lay-data="{field:'count', minWidth:60,width:60}">数量</th>
+                                        <th lay-data="{field:'area',minWidth:60}">面积</th>
+                                        <th lay-data="{field:'total_price', minWidth:80}">总金额</th>
+                                        <th lay-data="{field:'have_pay', minWidth:80}">已收款</th>
+										<th lay-data="{field:'paidRecord', minWidth:90}">收款备注</th>
+                                        <th lay-data="{field:'no_pay', minWidth:80}">未收款</th>
+                                        <th lay-data="{field:'finance_rebate_price', minWidth:80}">折让(优惠)</th>
+                                        <th lay-data="{field:'sign_time', minWidth:80}">是否签收</th>
+<!--                                        <th>收款方式</th>-->
+                                        <th lay-data="{field:'operate', minWidth:80}">操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {volist name="list" id="v"}
+                                    <tr>
+                                        <td>{$v.number}</td>
+                                        <td>{$order_type[$v['type']]}</td>
+                                        <td>{$v.dealer}</td>
+										<td>{$v.send_address}</td>
+                                        <td>{$v.addtime|date='Y/m/d',###}</td>
+                                        <td>{$v.count}</td>
+                                        <td>{$v.area}</td>
+                                        <td>{$v.total_price}</td>
+                                        <td>{$v.have_pay}
+                                            <a href="javascript:void(0)" onclick="xadmin.open('收款记录 订单编号:{$v.number}','{:url('finance/paidRecord',array('id'=>$v['id']))}',750,500)" style="margin-left: 15px;color: #1b96c8">收款详细</a>
+                                        </td>
+										<td>
+											<div>
+											{foreach $v['paidRecord'] as $vv}
+											<p>{$vv['finance_remark']}</p>
+											{/foreach}
+										   </div>
+                                        </td>	
+                                        <td>{php}echo round($v['total_price']-$v['have_pay']-$v['finance_rebate_price'],2){/php}</td>
+                                        <td>{$v.finance_rebate_price}</td>
+                                        <td>{if condition="$v['sign_time'] neq 0"}已签收{else/}未签收{/if}</td>
+<!--                                        <td>{$pay_type[$v['pay_type']]}</td>-->
+                                        <td class="td-manage">
+                                            <a title="查看详细" href="{:url('finance/readOrder',array('id'=>$v['id']))}">
+                                                <i class="layui-icon">&#xe63c;</i></a>
+                                            </a>
+                                            {if condition="$action eq 'nohandle'"}
+                                            <a title="返回营运" href="javascript:void(0)" onclick="back({$v.id})">
+                                                <i class=" layui-icon">&#xe633;</i></a>
+                                            </a>
+                                            {/if}
+                                        </td>
+                                    </tr>
+                                     {/volist}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="layui-card-body ">
+                            <div class="page">
+                                    {$page}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div><iframe name="imgiframe" width="0" height="0"></iframe>
+    </body>
+    <script>
+	layui.config({
+		base: "/static/js/",
+	}).extend({
+		select: "select",
+	}).use(['laydate', 'form','table','layer','select'],
+        function() {
+            $ = layui.jquery;
+            var laydate = layui.laydate;
+            var  form = layui.form;
+			var table = layui.table;
+			var layer = layui.layer,select= layui.select;
+			//转换静态表格
+			table.init('demo', {
+    			//height: 689 //设置高度
+    			limit: 15 //注意：请务必确保 limit 参数（默认：10）是与你服务端限定的数据条数一致
+    			//支持所有基础参数
+			}); 
+            
+            //设置左侧菜单栏的提示数量
+            $(function(){
+                 $.post("{:url('order/financeNoHandle')}",{id:1},function(obj){                         
+                    $('#finance-no-handle',parent.document).text(obj.data);                      
+                 },'json');
+            })
+            
+            //执行一个laydate实例
+            laydate.render({
+                elem: '#starttime' //指定元素
+            });
+            laydate.render({
+                elem: '#endtime' //指定元素
+            });
+			
+			$('#export_price2').click(function(){
+					
+				 var start = $('#starttime').val();
+				 var end = $('#endtime').val();
+				 var keword = $('#keyword').val();
+				 if(start=='' && end=='' && keword==''){
+					//layer.msg('至少选择一个筛选条件',{icon:2});
+					//return;
+				 }
+				 $('#form1').attr('action',"{:url('exportNoHandle')}")
+				 $('#form1').submit();
+				 $('#form1').attr('action',"")
+			 })
+			
+			
+        });
+     function back(id){
+            layer.confirm('确认要返回营运吗？',
+            function(index) {
+                ajaxform("{:url('back')}",{id:id},1);
+            });
+       }    
+    
+        
+    </script>
+<style>
+.layui-table-cell {
+  height: auto;white-space: wrap;
+}
+</style>
+</html>

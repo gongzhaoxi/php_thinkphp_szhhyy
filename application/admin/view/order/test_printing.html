@@ -1,0 +1,421 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>报价单打印</title>
+<style>
+body{ width:610px; height:auto; color:#000; font-family:"黑体"; background:#999; padding:0px; margin:0px;}
+.body{ width:610px; height:391px; padding:3px 0; overflow:hidden; background:#fff;}
+div{ width:100%;overflow:hidden;}
+/*aq*/
+.top{ height:71px;}/*单头总高->71px：25毫米*/
+.t_title{ height:41px; overflow:hidden; font-size:21px; font-weight:bold;line-height:41px;}
+.qr{ width:40px; height:40px; float:left; margin:0 30px}
+.t_img{ width:40px; height:30px; float:left; margin-top:6px; margin-right:8px;}
+.t_text{ width:462px; height:41px; float:left;}
+.t_info{ height:30px; font-size:12px; line-height:15px;}
+.bottom{ height:121px;}/*单尾高->121px：28毫米*/
+.b_left{ width:470px; height:83px;font-size:12px; line-height:11px; float:left;}
+.b_right{width:140px; height:41px; padding-top:30px;font-size:14px; line-height:15px; text-align:center; float:left; }
+.content{ height:199px;}/*内容高->199px：28毫米*/
+.content table{ text-align: center; border-collapse: collapse;}
+.content table tr td { border:1px solid #000; font-size:12px; line-height:10px;}
+.summary{ height:37px; float:left; overflow:hidden; padding-bottom:5px;}
+.summary table{ text-align: center; border-collapse: collapse;}
+.summary table tr td { border:1px solid #000; font-size:12px; line-height:10px;}
+</style>
+</head>
+
+<body>
+<div class="body">
+<!--    单头高->71px    开始 -->
+<div class="top">
+<div class="t_title">
+<div class="qr"><img src="/static/images/qr.png" width="40" /></div>
+<div class="t_img"><img src="/static/images/logo.png" /></div>
+<div class="t_text">广东恒辉窗花制品有限公司订购清单</div>
+</div>
+<div class="t_info">
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td width="55%">客户名称:创野 杨R</td>
+    <td width="25%">客户电话:13632734403</td>
+    <td width="20%" align="right">订单日期:2019-11-16</td>
+  </tr>
+  <tr>
+    <td>送货地址:龙岗区横岗深峰路</td>
+    <td>订单编号:2019111697975254</td>
+    <td align="right">预交货期:2019-11-22</td>
+  </tr>
+</table>
+</div>
+</div>
+<!--    单头高->71px  结束 -->
+<!--    内容高->199px    开始 -->
+<div class="content">
+<table width="100%">
+<tr>                                       
+<td width="15">编号</td>
+<td width="160">材质 - 花类</td>
+<td width="100">铝型/花件颜色</td>
+<td width="15">单位</td>
+<td width="25">宽</td>
+<td width="25">高</td>
+<td width="15">个数</td>
+<td width="30">面积</td>
+<td width="150">单价清单</td>
+<td width="15">折扣</td>
+<td width="30">折后价</td>
+<td width="30">总金额</td>
+</tr>
+<tr>
+<td>1</td>
+<td>1.6 室外大护栏/H18/16*20</td>
+<td>青铜/青铜</td>
+<td>㎡</td>
+<td>2500</td>
+<td>1150</td>
+<td>1</td>
+<td>2.88</td>
+<td>单价:150.00                               
+</td>
+<td>1</td>
+<td>150.00</td>
+<td>432.00</td>
+</tr>
+<tr>
+<td>2</td>
+<td>1.6 室外大护栏/H-ST/16*20</td>
+<td>青铜/青铜</td>
+<td>㎡</td>
+<td>3200</td>
+<td>1250</td>
+<td>1</td>
+<td>4</td>
+<td>单价:298.00</td>
+<td>1</td>
+<td>298.00</td>
+<td>1192.00</td>
+</tr>
+<tr>
+<td>3</td>
+<td>1.6 室外大护栏/H18/16*20</td>
+<td>青铜/青铜</td>
+<td>㎡</td>
+<td>2500</td>
+<td>1150</td>
+<td>1</td>
+<td>2.88</td>
+<td>单价:150.00                               
+</td>
+<td>1</td>
+<td>150.00</td>
+<td>432.00</td>
+</tr>
+<tr>
+<td>4</td>
+<td>1.6 室外大护栏/H-ST/16*20</td>
+<td>青铜/青铜</td>
+<td>㎡</td>
+<td>3200</td>
+<td>1250</td>
+<td>1</td>
+<td>4</td>
+<td>单价:298.00</td>
+<td>1</td>
+<td>298.00</td>
+<td>1192.00</td>
+</tr>
+<tr>
+<td>5</td>
+<td>1.6 室外大护栏/H18/16*20</td>
+<td>青铜/青铜</td>
+<td>㎡</td>
+<td>2500</td>
+<td>1150</td>
+<td>1</td>
+<td>2.88</td>
+<td>单价:150.00                               
+</td>
+<td>1</td>
+<td>150.00</td>
+<td>432.00</td>
+</tr>
+<tr>
+<td>6</td>
+<td>1.6 室外大护栏/H-ST/16*20</td>
+<td>青铜/青铜</td>
+<td>㎡</td>
+<td>3200</td>
+<td>1250</td>
+<td>1</td>
+<td>4</td>
+<td>单价:298.00</td>
+<td>1</td>
+<td>298.00</td>
+<td>1192.00</td>
+</tr>
+<tr>
+<td>7</td>
+<td>1.6 室外大护栏/H-ST/16*20</td>
+<td>青铜/青铜</td>
+<td>㎡</td>
+<td>3200</td>
+<td>1250</td>
+<td>1</td>
+<td>4</td>
+<td>单价:298.00</td>
+<td>1</td>
+<td>298.00</td>
+<td>1192.00</td>
+</tr>
+<tr>
+<td>8</td>
+<td>H-ST/16*20</td>
+<td>青铜/青铜</td>
+<td>㎡</td>
+<td>3200</td>
+<td>1250</td>
+<td>1</td>
+<td>4</td>
+<td>单价:298.00</td>
+<td>1</td>
+<td>298.00</td>
+<td>1192.00</td>
+</tr>
+</table>
+
+</div>
+<!--    内容高->199px  结束 --
+<!--    单尾高->121px    开始 -->
+<div class="bottom">
+<div class="summary">
+<table>
+<tr>
+<td width="15">备注</td>
+<td colspan="5" width="595">
+<div style=" height:20px; overflow:hidden; text-align:left;">112312323<br/>123123</div>
+</td>
+</tr>
+<tr>
+<td colspan="2" width="435">汇总</td>
+<td width="15">5</td>
+<td width="30">14.14</td>
+<td width="190"></td>
+<td width="30">3330.48</td>
+</tr>
+</table>
+</div>
+<div class="b_left">
+特别说明<br />
+1.敬请核对价格表中各种型号及结算方式，此单一旦签字认可及作为欠条凭证，汇款账户如下：户名：唐萍，中国农业银行深圳罗岗支行银行卡号：6228 4301 2001 4745 811；中国建设银行深圳罗岗支行卡号：6227007200240598021<br />
+2.客户核对顶订单后，给予50%订金，订货生效，订单核对并确认3小时后不可修改，如需修改，费用另计。<br />
+咨询电话：4007776388 25735065 传真：0755-25736017 业务代表：张颖新<br />
+</div>
+<div class="b_right">客户已收货<br />未付款签字</div>
+</div>
+<!--    单尾高->121px    开始 -->
+</div>
+<div class="body">
+<!--    单头高->71px    开始 -->
+<div class="top">
+<div class="t_title">
+<div class="qr"><img src="/static/images/qr.png" width="40" /></div>
+<div class="t_img"><img src="/static/images/logo.png" /></div>
+<div class="t_text">广东恒辉窗花制品有限公司订购清单</div>
+</div>
+<div class="t_info">
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td width="55%">客户名称:创野 杨R</td>
+    <td width="25%">客户电话:13632734403</td>
+    <td width="20%" align="right">订单日期:2019-11-16</td>
+  </tr>
+  <tr>
+    <td>送货地址:龙岗区横岗深峰路</td>
+    <td>订单编号:2019111697975254</td>
+    <td align="right">预交货期:2019-11-22</td>
+  </tr>
+</table>
+</div>
+</div>
+<!--    单头高->71px  结束 -->
+<!--    内容高->199px    开始 -->
+<div class="content">
+<table width="100%">
+<tr>                                       
+<td width="15">编号</td>
+<td width="160">材质 - 花类</td>
+<td width="100">铝型/花件颜色</td>
+<td width="15">单位</td>
+<td width="25">宽</td>
+<td width="25">高</td>
+<td width="15">个数</td>
+<td width="30">面积</td>
+<td width="150">单价清单</td>
+<td width="15">折扣</td>
+<td width="30">折后价</td>
+<td width="30">总金额</td>
+</tr>
+<tr>
+<td>1</td>
+<td>1.6 室外大护栏/H18/16*20</td>
+<td>青铜/青铜</td>
+<td>㎡</td>
+<td>2500</td>
+<td>1150</td>
+<td>1</td>
+<td>2.88</td>
+<td>单价:150.00                               
+</td>
+<td>1</td>
+<td>150.00</td>
+<td>432.00</td>
+</tr>
+<tr>
+<td>2</td>
+<td>1.6 室外大护栏/H-ST/16*20</td>
+<td>青铜/青铜</td>
+<td>㎡</td>
+<td>3200</td>
+<td>1250</td>
+<td>1</td>
+<td>4</td>
+<td>单价:298.00</td>
+<td>1</td>
+<td>298.00</td>
+<td>1192.00</td>
+</tr>
+<tr>
+<td>3</td>
+<td>1.6 室外大护栏/H18/16*20</td>
+<td>青铜/青铜</td>
+<td>㎡</td>
+<td>2500</td>
+<td>1150</td>
+<td>1</td>
+<td>2.88</td>
+<td>单价:150.00                               
+</td>
+<td>1</td>
+<td>150.00</td>
+<td>432.00</td>
+</tr>
+<tr>
+<td>4</td>
+<td>1.6 室外大护栏/H-ST/16*20</td>
+<td>青铜/青铜</td>
+<td>㎡</td>
+<td>3200</td>
+<td>1250</td>
+<td>1</td>
+<td>4</td>
+<td>单价:298.00</td>
+<td>1</td>
+<td>298.00</td>
+<td>1192.00</td>
+</tr>
+<tr>
+<td>5</td>
+<td>1.6 室外大护栏/H18/16*20</td>
+<td>青铜/青铜</td>
+<td>㎡</td>
+<td>2500</td>
+<td>1150</td>
+<td>1</td>
+<td>2.88</td>
+<td>单价:150.00                               
+</td>
+<td>1</td>
+<td>150.00</td>
+<td>432.00</td>
+</tr>
+<tr>
+<td>6</td>
+<td>1.6 室外大护栏/H-ST/16*20</td>
+<td>青铜/青铜</td>
+<td>㎡</td>
+<td>3200</td>
+<td>1250</td>
+<td>1</td>
+<td>4</td>
+<td>单价:298.00</td>
+<td>1</td>
+<td>298.00</td>
+<td>1192.00</td>
+</tr>
+<tr>
+<td>7</td>
+<td>1.6 室外大护栏/H-ST/16*20</td>
+<td>青铜/青铜</td>
+<td>㎡</td>
+<td>3200</td>
+<td>1250</td>
+<td>1</td>
+<td>4</td>
+<td>单价:298.00</td>
+<td>1</td>
+<td>298.00</td>
+<td>1192.00</td>
+</tr>
+<tr>
+<td>8</td>
+<td>H-ST/16*20</td>
+<td>青铜/青铜</td>
+<td>㎡</td>
+<td>3200</td>
+<td>1250</td>
+<td>1</td>
+<td>4</td>
+<td>单价:298.00</td>
+<td>1</td>
+<td>298.00</td>
+<td>1192.00</td>
+</tr>
+</table>
+
+</div>
+<!--    内容高->199px  结束 --
+<!--    单尾高->121px    开始 -->
+<div class="bottom">
+<div class="summary">
+<table>
+<tr>
+<td width="15">备注</td>
+<td colspan="5" width="595">
+<div style=" height:20px; overflow:hidden; text-align:left;">112312323<br/>123123</div>
+</td>
+</tr>
+<tr>
+<td colspan="2" width="435">汇总</td>
+<td width="15">5</td>
+<td width="30">14.14</td>
+<td width="190"></td>
+<td width="30">3330.48</td>
+</tr>
+</table>
+</div>
+<div class="b_left">
+特别说明<br />
+1.敬请核对价格表中各种型号及结算方式，此单一旦签字认可及作为欠条凭证，汇款账户如下：户名：唐萍，中国农业银行深圳罗岗支行银行卡号：6228 4301 2001 4745 811；中国建设银行深圳罗岗支行卡号：6227007200240598021<br />
+2.客户核对顶订单后，给予50%订金，订货生效，订单核对并确认3小时后不可修改，如需修改，费用另计。<br />
+咨询电话：4007776388 25735065 传真：0755-25736017 业务代表：张颖新<br />
+</div>
+<div class="b_right">客户已收货<br />未付款签字</div>
+<script>
+		function print_page(){
+//			try{
+
+//			}catch(e){
+				window.print();
+//			}
+		}
+	</script>
+
+    <button id="print" type='button' onClick="print_page()" style="margin-left: 40%; position: absolute;">立即打印</button>              
+
+</div>
+<!--    单尾高->121px    开始 -->
+</div>
+</body>
+</html>

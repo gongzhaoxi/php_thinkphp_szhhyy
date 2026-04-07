@@ -1,0 +1,489 @@
+<?php $current='7'; ?>
+<!DOCTYPE html
+	PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>微元生产工序报工管理系统,建材行业生产管理系统,门窗生产管理系统,微元科技,佛山市微元科技有限公司</title>
+	<link href="__STATIC__/theme/index/css/font-awesome.min.css" rel="stylesheet">
+	{include file="public/header" /}
+</head>
+<style>
+	#day_schedule{display:none;}
+	#ab_left,#ab_enough{display:none;}
+	#team_ab{font-size: 14px; font-weight: bold;display:none;}
+	.utjgutce{
+		padding: 0 10px;
+		margin-top: 10px;
+	}
+	.utjgutce p{
+		margin: 5px 0;
+	}
+</style>
+<body class="add_schedule_modal">
+	<div class="modal-body">
+		<div class="modal-body-middle">
+			<div class="scheduling-box">
+				<div class="scheduling-box-top">
+					<div>
+						订单数：<span class="order-num">{$order_count}</span>条
+					</div>
+					<div class="dividing-line"></div>
+					<div>
+						总面积：<span class="order-area">{$square}</span>㎡
+					</div>
+					<div class="dividing-line"></div>
+					<div>
+						总扇数：<span class="order-doornum">{$doornum}</span>
+					</div>
+				</div>
+				<div class="scheduling-box-center" id="senior_form">
+					<div>工序班组：</div>
+					<div class="imitate-select">
+						<span class="select-txt">请选择班组</span>
+						<span class="triangle-down"></span>
+						<input type="hidden" name="team" id="team">
+						<ul data-sign="team">
+							{notpresent name="limitTeam"}
+							{volist name="team[0]" id="e"}
+							<li {if condition="$select_tid eq $e['id']" }data-selected="true" {/if} data-value="{$e.id}">+
+								{$e.team_name}</li>
+							{php}
+							if(isset($team[$e['id']])){
+							$childs=$team[$e['id']];
+							foreach($childs as $val){
+							{/php}
+							<li {if condition="$select_tid eq $val['id']" }data-selected="true" {/if} data-value="{$val.id}">
+								&nbsp;&nbsp;&nbsp;-{$val.team_name}</li>
+							{php}
+							}
+							}
+							{/php}
+							{/volist}
+							{else/}
+							{volist name="limitTeam" id="val"}
+							<li {if condition="$select_tid eq $val['id']" }data-selected="true" {/if} data-value="{$val.id}">
+								&nbsp;&nbsp;&nbsp;-{$val.team_name}</li>
+							{/volist}
+							{/notpresent}
+						</ul>
+					</div>
+					<div class="imitate-select">
+						<span class="select-txt">选择对应工序</span>
+						<span class="triangle-down"></span>
+						<input type="hidden" name="team_gx" id="team_gx">
+						<ul data-sign="team_gx"></ul>
+					</div>
+					<div class="producte-time">
+						<span>安排生产日期：</span>
+						<input type="text" id="schedule_date" placeholder="选择生产日期">
+					</div>
+				</div>
+				<div class="utjgutce">
+					<p id="team_ab">
+						当前工序日产值：
+						<span id="t_ability">-</span>
+					</p>
+					<p id="day_schedule">
+					工序当日已排产/进行中(未完成)：
+					<span id="t_count">-</span>条 | 面积：
+					<span id="t_square">-</span>㎡ | 扇数：
+					<span id="t_snum">-</span>扇 | 纱扇数：
+					<span id="s_snum">-</span>扇
+					</p>
+					<p style=" color: #ff0000">
+						<div id="ab_left">可追加产量：<span id="t_left">-</span><span class="t_unit">-</span></div>
+						<div id="ab_enough">已饱和产能/已超出</div>      
+					<!-- 注：有两种状态，如超出或饱和时，显示“已超出/已饱和产能” -->
+					</p>
+				</div>
+				<p style="text-align: right;"><span style="color: #ff0000;">如需调整生产顺序，请填写顺序，如不需，系统默认当前顺序。</span></p>
+			</div>
+			<div class="scheduling-table">
+				<table class="layui-table" id="addScheduleTable" border="1">
+					<thead>
+						<tr>
+							<td>{$unique_field_name}</td>
+							<td>{$fieldList['uname']['explains']}</td>
+							<td>{$fieldList['pname']['explains']}</td>
+							<td>{$fieldList['color']['explains']}</td>
+							<td>{$fieldList['area']['explains']}</td>
+							<td>{$fieldList['snum']['explains']}</td>
+							<td>{$fieldList['doornum']['explains']}</td>
+							<td>{$fieldList['ordertime']['explains']}</td>
+							<td>{$fieldList['endtime']['explains']}</td>
+							<td>备注</td>
+							<td style="display:none;">加急</td>
+							<td>操作</td>
+							<td style="display:none;">生产顺序</td>
+						</tr>
+					</thead>
+					<tbody>
+						{volist name="list" id="vo"}
+						<tr class="lsit" id="line{$vo['id']}">
+							<td>{$vo[$unique_field]}</td>
+							<td>{$vo['uname']}</td>
+							<td>{$vo['pname']}</td>
+							<td>{$vo['color']}</td>
+							<td class="area-sum">{$vo['area']}</td>
+							<td>{$vo['snum']}</td>
+							<td class="door-num">{$vo['doornum']}</td>
+							<td>{$vo['ordertime']}</td>
+							<td>{$vo['endtime']}</td>
+							<td>{$vo['tip']}</td>
+							<td style="display: none;"><input class="urgent" value="1" type="checkbox" id="urgent{$vo['id']}" /></td>
+							<td>
+								<a href="javascript:void(0)" onclick="removeLine({$vo['id']})">移除</a>
+							</td>
+							<td style="display: none;"><input type="text" id="orderby{$vo['id']}" value="{$key+1}" style="width:30px; min-width: 30px; text-align: center;padding: 0;"></td>
+						</tr>
+						{/volist}
+					</tbody>
+				</table>
+				<div class="modal-footer">
+					<div onclick="save_order();">确认保存</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+</body>
+<script type="text/javascript">
+	{php}
+	$orderid = array();
+	foreach($list as $value) {
+		$orderid[] = $value['id'];
+	}
+	$ids = implode(",", $orderid);
+	{/php}
+	var ids = [{$ids}];
+	{php}
+		if (count($limitGx) > 0) {
+		$limitGx = simplode($limitGx); {/php}
+		var limitGx = [{
+			{php} $limitGx {/php}
+		}]; 
+		{php} } else { {/php}
+	var limitGx = []; {php} } {/php}
+	var isDateChange = false;
+	
+	var layer, laydate;
+	layui.use(['layer','laydate'],function(){
+		laydate = layui.laydate;
+		layer = layui.layer;
+		laydate.render({
+			elem: '#schedule_date',
+			done: function () {
+				getinfo();
+				getdata();
+				isDateChange = true;
+			}
+		});
+		$("#team").change(function () {
+			isDateChange = false;
+			getinfo();
+		});
+		{if condition = "$select_tid gt 0"}
+		isDateChange = false;
+		getinfo(); {/if}
+		//选择工序
+		$("#team_gx").change(function(){
+			getdata();
+		})
+	})
+	function getinfo() {
+		var id = $("#team").val();
+		var _day = $("#schedule_date").val();
+		if (id == '' || id == 0) {
+			//layer.msg("请选择班组");
+			return;
+		}
+		if (_day == '') {
+			//layer.msg("请选择生产日期");
+			//return;
+		}
+		layer.load(0, {
+			shade: [0.1, '#fff']
+		});
+		$.ajax({
+			url: "{:Url('Schedule/ajax_teaminfo')}",
+			data: {
+				"id": id,
+				'day': _day,
+				'orderid': ids
+			},
+			dataType: "json",
+			type: 'POST',
+			success: function (obj) {
+				layer.closeAll();
+				if (obj.status == 2) {
+					$("#team_gx").siblings('ul').empty();
+					return;
+				}
+				show_info(obj.data);
+			},
+			error: function (res) {
+				layer.closeAll();
+			}
+		})
+	}
+
+	function show_info(data) {
+		if (!isDateChange) {
+			//工序
+			var _html = '<li data-value="0">选择对应工序</li>';
+			var gx_list = data['gx_list'];
+			var tempindex = 0;
+			for (var i in gx_list) {
+				tempindex++
+				if(tempindex == 1){
+					$("#team_gx").siblings('.select-txt').html(gx_list[i]);
+					$("#team_gx").val(i);
+				}
+				if (limitGx.length > 0) {
+					if (contains(limitGx, i)) {
+						_html += '<li data-value="' + i + '">' + gx_list[i] + '</li>';
+					}
+				} else {
+					_html += '<li data-value="' + i + '">' + gx_list[i] + '</li>';
+				}
+			}
+			$("#team_gx").siblings('ul').empty().append(_html);
+		}
+		//小组日产能
+		/* $("#t_ability").html(data['ability']);
+		$(".t_unit").html(data['unit']);
+		$("#t_count").html(data['order_count']);
+		$("#t_square").html(data['order_count']);
+		$("#t_snum").html(data['fans']);
+		$("#team_ab").show();
+		var _day=$("#schedule_date").val();
+		if(_day!=''){
+			$("#day_schedule").show();
+			$("#t_left").html(data['left']);
+			if(data['left']<=0){
+				var tip="已饱和产能";
+				if(data['left']<0){
+					tip="已超出产能";
+				}
+				$("#ab_enough").html(tip).show();
+			}else{
+				$("#ab_left").show();
+			}
+		} */
+	}
+	
+	//计算该工序产值
+	function getdata(){
+		var id=$("#team_gx").val();
+		var _day=$("#schedule_date").val();
+		if(id==''){
+			return
+		}
+		if(_day==''){
+			return
+		}
+		$.ajax({
+			url: "{:Url('schedule/getgxdata')}",
+			data: {id,'day':_day},
+			dataType: 'json',
+			success:function(res){
+				if(res.data!=''){
+					var data = res.data;
+					$("#t_ability").html(data['day_value']);
+					$("#t_count").html(data['order_num']);
+					$("#t_square").html(data['area']);
+					$("#t_snum").html(data['snum']);
+					$("#s_snum").html(data['s_num']);
+					$("#team_ab").show();
+					$("#day_schedule").show();
+				}
+			}
+		})
+	}
+	
+	//判断数组元素是否已存在
+	function contains(arr, obj) {
+		var i = arr.length;
+		while (i--) {
+			if (arr[i] === obj) {
+				return true;
+			}
+		}
+		return false;
+	}
+	var isLock = false;
+	//保存排产单
+	function save_order() {
+		if (isLock) {
+			return;
+		}
+		var tid = $("#team").val();
+		var gxid = $("#team_gx").val();
+		var gxname = $("#team_gx").siblings(".select-txt").html();
+		var do_time = $("#schedule_date").val();
+		if (tid == null || tid == 0 || tid == undefined) {
+			layer.msg("请选择工序班组");
+			return;
+		}
+		if (gxid == null || gxid == 0 || gxid == undefined) {
+			layer.msg("请选择工序");
+			return;
+		}
+		if (do_time == null || do_time == '' || do_time == undefined) {
+			layer.msg("请选择生产日期");
+			return;
+		}
+		//锁定不准重复提交
+		isLock = true;
+		var urgent = {};
+		var orderby = {};
+		var dataid = {};
+		var compare_orderby = [];
+		var isError = false;
+		if (ids.length > 0) {
+			for (var i in ids) {
+				var _id = ids[i];
+				var ischeck = $("#urgent" + _id).prop("checked");
+				if (ischeck == "checked" || ischeck) {
+					urgent[_id] = '1';
+				} else {
+					urgent[_id] = '0';
+				}
+				var oval = $("#orderby" + _id).val();
+				if (oval == "" || oval == null || oval == undefined) {
+					layer.msg("请填写生产顺序");
+					isError = true;
+					break;
+				}
+				if (contains(compare_orderby, oval)) {
+					layer.msg("生产顺序有重复，请更正");
+					isError = true;
+					break;
+				}
+				compare_orderby.push(oval);
+				orderby[_id] = oval;
+				dataid[_id] = _id;
+			}
+		}
+		if (isError) {
+			return;
+		}
+		layer.load(0, {
+			shade: [0.1, '#fff']
+		});
+		$.ajax({
+			url: "{:Url('Schedule/save_schedule')}",
+			data: {
+				"tid": tid,
+				'gxid': gxid,
+				'gxname': gxname,
+				"do_time": do_time,
+				"ids": dataid,
+				"urgent": urgent,
+				"orderby": orderby
+			},
+			dataType: "json",
+			type: 'POST',
+			success: function (obj) {
+				isLock = false;
+				layer.closeAll();
+				if (obj.status == 2) {
+					layer.msg(obj.msg);
+					return;
+				}
+				layer.msg('排产成功',function(){
+					// 刷新父页面数据
+					window.parent.document.getElementById('addSchedulingModal').style.display = "none";
+					$('body').html('');
+					window.parent.searchData();
+				});
+			},
+			error: function () {
+				layer.closeAll();
+				layer.msg('网络错误,请重试');
+			}
+		})
+	}
+
+	function removeLine(orderid) {
+		$("#line" + orderid).remove();
+		// 重新计算数据
+		var orderNum = $('#addScheduleTable tbody').find('tr').length;
+		var orderArea = 0;
+		var orderDoornum = 0;
+		$('#addScheduleTable tbody').find('tr').each(function(){
+			var _this = $(this);
+			var temp_orderArea = Number(_this.children('.area-sum').html());
+			var temp_orderDoornum = Number(_this.children('.door-num').html());
+			orderArea += (temp_orderArea == NaN ? 0 : temp_orderArea);
+			orderDoornum += (temp_orderDoornum == NaN ? 0 : temp_orderDoornum);
+		})
+		$('.order-num').html(orderNum);
+		$('.order-area').html(orderArea.toFixed(2));
+		$('.order-doornum').html(orderDoornum);
+		for (var i = 0; i < ids.length; i++) {
+			if (orderid == ids[i]) {
+				ids.splice(i, 1);
+			}
+		}
+	}
+</script>
+<script type="text/javascript">
+	$('#senior_form').find('.imitate-select').each(function(){
+		var _this = $(this);
+		if(_this.children('ul').children('li[data-selected=true]')){
+			var tempTxt = _this.children('ul').children('li[data-selected=true]').html();
+			var tempVal = _this.children('ul').children('li[data-selected=true]').attr('data-value');
+			if(tempTxt != null && tempVal != null){
+				_this.children('.select-txt').attr('data-value',tempVal).html(tempTxt);
+				_this.children('input[type=hidden]').val(tempVal);
+			}
+		}
+	})
+	// 选择订单排序
+	$(window).click(function(){
+		$('.imitate-select').removeAttr('data-sign').children('ul').hide();
+	})
+	$('.imitate-select').click(function(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		var _this = $(this);
+		var clickSign = _this.attr('data-sign');
+		$('.imitate-select').removeAttr('data-sign').children('ul').hide();
+		if (clickSign == 'true') {
+			_this.children('ul').hide();
+			_this.removeAttr('data-sign');
+		} else {
+			_this.children('ul').show();
+			_this.attr('data-sign', 'true');
+		}
+	});
+	
+	$('.imitate-select ul').delegate('li','click',function(e){
+		e.preventDefault();
+		e.stopPropagation();
+		var _this = $(this);
+		var tempTxt = _this.html();
+		var _thisValue = _this.attr('data-value');
+		_this.parent().parent().children('.select-txt').attr('data-value',_thisValue).html(tempTxt);
+		_this.parent().hide();
+		_this.parent().parent().removeAttr('data-sign');
+		_this.parent().siblings('input[type=hidden]').val(_thisValue);
+		var _clickTarget = _this.parent().attr('data-sign');
+		switch (_clickTarget) {
+			case 'team':	// 班组
+				isDateChange=false;
+				getinfo();
+				break;
+			case 'team_gx':	// 工序
+				
+				break;
+		
+			default:
+				break;
+		}
+	});
+</script>
+</html>

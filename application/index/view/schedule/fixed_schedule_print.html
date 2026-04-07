@@ -1,0 +1,72 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+	<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>微元生产工序报工管理系统,建材行业生产管理系统,门窗生产管理系统,微元科技,佛山市微元科技有限公司</title>
+		<link href="__STATIC__/theme/index/css/font-awesome.min.css" rel="stylesheet">
+		{include file="public/header" /}
+	</head>
+<body class="print_scheduling_modal">
+	<!-- 打印排产订单 -->
+	<div class="modal-body">
+		<div class="modal-body-middle">
+			<div class="scheduling-box" id="schedulingData">
+				<div class="scheduling-box-top">
+					<div class="scheduling-detail">
+						<div>
+							订单总数：{$ordernum}
+						</div>
+						<div>
+							汇总面积：{$square}㎡
+						</div>
+						<div>
+							汇总扇数：{$fans}
+						</div>
+					</div>
+					{present name="schedule_no"}
+					<img src="{$schedule_no}">
+					{/present}
+				</div>
+				<div class="scheduling-table">
+					<table width="100%" border="1" cellspacing="0" cellpadding="0" class="layui-table">
+						<thead>
+							<tr>
+								{volist name="fieldList" id="vo"}
+								<th>{$vo['explains']}</th>
+								{/volist}
+							</tr>
+						</thead>
+						<tbody>
+							{volist name="orders" id="vo"}
+							<tr>
+								{php}
+								foreach($fieldList as $field=>$name){
+								{/php}
+								<td>{php} echo $vo[$field]!=''?$vo[$field]:'&nbsp;';{/php}
+								</td>
+								{php}
+								}
+								{/php}
+							</tr>
+							{/volist}
+						</tbody>
+					</table>
+				</div>
+                
+            </div>
+			<div class="modal-body-bottom" id="printbutton">
+				<div onclick="doPrint();">立即打印</div>
+			</div>
+		</div>
+	</div>
+	<script>
+	function doPrint() {   
+        $("#printbutton").hide();
+            window.print();   
+            setTimeout(function(){
+                $("#printbutton").show();
+            },500)
+        }
+	</script>
+</body>
+</html>

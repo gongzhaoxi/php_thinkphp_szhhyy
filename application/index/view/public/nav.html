@@ -1,0 +1,101 @@
+<div class="mb"></div>
+<div class="top">
+<div class="logo"><img src="__STATIC__/theme/index/images/logo.jpg"></div>
+<div class="t_user">
+<div class="left"><img src="__STATIC__/theme/index/images/Head.jpg"></div>
+<div class="right">
+<p>账号：{:session('name')}</p>
+<p class="so" style="background: no-repeat;padding-left:0px;"><a href="javascript:void(0);" onclick="modifypass();" title="修改密码">修改密码</a> | <a href="{:Url('Index/loginout')}" title="切换/退出当前账号">退出</a></p>
+</div>
+</div>
+<div class="box"><ul>
+
+{php} if(in_array('index',$sysmenu)){ {/php}
+<a href="{:Url('Index/index')}" title="首页"><li id="<?php if($current_position=='Index/index'){echo 'current' ;}?>">首页<p>HOME</p></li></a>
+{php} } {/php}
+
+{php} if(PRO_PAICHAN==1){ {/php}
+<a href="{:Url('Schedule/index')}" title="排产"><li id="<?php if($controller=='Schedule'){echo 'current' ;}?>">排产<p>SCHEDULING</p></li></a>
+{php} } {/php}
+
+{php} if(in_array('orders',$sysmenu)){ {/php}
+<a href="{:Url('Index/orders')}" title="全部订单"><li id="<?php if($current_position=='Index/orders'){echo 'current' ;}?>">全部订单<p>All ORDERS</p></li></a>
+{php} } {/php}
+
+{php} if(in_array('them',$sysmenu)){ {/php}
+<a href="{:Url('Index/them')}" title="入库订单"><li id="<?php if($current_position=='Index/them'){echo 'current' ;}?>">入库订单<p>STOAGE ORDERS</p></li></a>
+{php} } {/php}
+
+{php} if(in_array('out',$sysmenu)){ {/php}
+<a href="{:Url('Index/out')}" title="出库订单"><li id="<?php if($current_position=='Index/out'){echo 'current' ;}?>">出库订单<p>ISSUE ORDERS</p></li></a>
+{php} } {/php}
+
+{php} if(in_array('warm',$sysmenu)){ {/php}
+<a href="{:Url('Index/warm')}" title="预警订单"><li id="<?php if($current_position=='Index/warm'){echo 'current' ;}?>">预警订单<p>ALERT ORDERS</p></li></a>
+{php} } {/php}
+
+{php} if(PRO_SALARY==1){ {/php}
+<a href="{:Url('Salary/salary')}" title="计件管理"><li id="<?php if($controller=='Salary'|| $current_position=='Salary/handsalary' || $current_position=='Salary/paysalary'){echo 'current' ;}?>">计件管理<p>PIECEWORK</p></li></a>
+{php} } {/php}
+
+{php} if(in_array('setting',$sysmenu)){ {/php}
+<a href="{:Url('Setting/setting')}" title="参数设置"><li id="<?php if($controller=='Setting'){echo 'current' ;}?>">参数设置<p>PARAMETER</p></li></a>
+{php} } {/php}
+</ul>
+<div style="position:absolute;width: 50px;height: 70px; right: 200px; top: 10px; float: right; overflow: hidden;">
+	
+<a href="{:url('index/orders',array('isexcep'=>1))}" id="excep_flow" style="display:none;">
+<div style="position: relative; width: 100%; text-align: left; padding-top: 10px;">
+<img src="__STATIC__/theme/index/images/t_n.png" width="15" title="异常工序">
+<div style="position: absolute; top: -3px; left: 15px; background: #de1313; color: #fff; font-size: 10px; padding: 0px 2px;" id="excep_flow_text"></div>
+</div>
+</a>
+
+<a href="{:url('index/orders',array('isovertime'=>1))}" id="overtime_flow" style="display:none;">
+<div style="position: relative; width: 100%; text-align: left; padding-top: 10px; margin-top: 10px;">
+<img src="__STATIC__/theme/index/images/t_t.png" width="15" title="超时工序">
+<div style="position: absolute; top: -3px; left: 15px; background: #de1313; color: #fff; font-size: 10px; padding: 0px 2px;" id="overtime_flow_text"></div>
+</div>
+</a>
+
+</div>
+</div>
+</div>
+<script>
+//获取异常和超时工序报工数量
+function getExceptionNum(){
+	$.ajax({
+		  url: "{:Url('Index/exception_data')}",
+		  data:{},
+		  dataType:"json",
+		  type:'POST',
+		  success:function(obj){
+			  //console.log(obj);
+			  var overtime=obj.overtime;
+			  var exception=obj.exception;
+			  if(overtime>0){
+				  $("#overtime_flow_text").html(overtime);
+				  $("#overtime_flow").show();
+			  }
+			  if(exception>0){
+				  $("#excep_flow_text").html(exception);
+				  $("#excep_flow").show();
+			  }
+		  }
+	  })
+}
+$(document).ready(function(){
+	getExceptionNum();
+})
+//修改密码
+function modifypass(){
+	layer.open({
+		type: 2,
+		  title: '修改密码',
+		  shadeClose: true,
+		  shade: 0.8,
+		  area: ['480px', '350px'],
+		  content: "{:url('index/modify_pass')}" //iframe的url
+	})
+}
+</script>

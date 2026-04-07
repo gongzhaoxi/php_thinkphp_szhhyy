@@ -1,0 +1,181 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>微元生产工序报工管理系统,建材行业生产管理系统,门窗生产管理系统,微元科技,佛山市微元科技有限公司</title>
+<script src="__STATIC__/theme/index/js/jquery-1.10.2.js"></script>
+<link href="__STATIC__/theme/index/css/index.css" rel="stylesheet" />
+<link href="__STATIC__/theme/index/css/bootstrap.css" rel="stylesheet">
+<link href="__STATIC__/theme/index/css/font-awesome.min.css" rel="stylesheet">
+<script src="__STATIC__index/js/layer/layer.js"></script>
+<script src="__STATIC__index/js/laydate/laydate.js"></script>
+</head>
+<style>
+body{width:720px;display: contents;background:white;}
+.dis_inl{width:720px;display:block;overflow:hidden;padding:15px 15px;}
+.input-checkbox{float:left;}
+.btn{width: 70px;background: #7EC0EE;border: none;color: #fff;border-radius: 5px;display:inline-block;cursor:pointer;}
+.btn:hover, .btn:focus{color:#ffffff;}
+.child1{margin-left:15px;background:#b52323}
+.child0{background:#458B00}
+input.inputtxt{
+	width: 100px;
+	border:none;
+    border-bottom: solid 1px #458B00;
+    border-radius: 0;
+    text-align: center;
+}
+.rdut tr.title td{min-width: 60px;}
+</style>
+<body>
+<div class="dis_inl" style="display:block;">
+<table class="rdut">
+<tr class="title">
+<td>单号</td>
+<td>客户名称</td>
+<td>物料名称</td>
+<td>面积</td>
+<td>扇数</td>
+<td>员工</td>
+<td width="10%">状态</td>
+</tr>
+{php} $unfinish=0;{/php}
+{present name="list"}
+{volist name="list" id="vo"}
+<tr class="lsit" {if condition="$vo['finished'] eq '1'"}id="qci"{else/}id="xx"{/if}>
+<td>
+{if condition="$vo['finished'] neq '1'"}
+{php} $unfinish++;{/php}
+<input class="input-medium  middle input-checkbox" name="orderid[]" type="checkbox" value="{$vo['order_id']}" data="{$vo['gx_id']}" data-ordernum="{$vo['ordernum']}">
+{/if}
+{$vo['ordernum']}</td>
+<td>{$vo['uname']}</td>
+<td>{$vo['pname']}</td>
+<td>{$vo['area']}㎡</td>
+<td>{$vo['snum']}</td>
+<td>{$vo['do_uname']}</td>
+<td class="">{if condition="$vo['finished'] eq '1'"} √{else/}X{/if}</td>
+</tr>
+<tr>
+	<td colspan="4" style="text-align:left">
+	<span style="font-size:14px;font-weight:bold">已完成工序：</span>
+	{foreach $vo['gx_list'] as $gl}
+		{if $gl['endtime']>0}<span style="padding:0 4px;">{$gl['dname']}[{$gl['endtime']}]、</span>{/if}
+	{/foreach}
+	</td>
+</tr>
+<tr>
+	<td colspan="4" style="text-align:left">
+	<span style="font-size:14px;font-weight:bold">未完成工序：</span>
+	{foreach $vo['gx_list'] as $gl}
+		{if $gl['endtime']==0 || $gl['endtime']==''}<span>{$gl['dname']}、</span>{/if}
+	{/foreach}
+	</td>
+</tr>
+{/volist}
+{/present}
+</table>
+</div>
+
+<div class="dis_inl" {if condition="$unfinish eq 0"}style="display:none;"{/if}>
+<div>
+<input class="input-medium  middle input-checkbox" id="chckALl" type="checkbox" value="{$vo['order_id']}" onchange="select_all();"/> 全选
+</div>
+
+	<div style="width:100%;text-align:center;">
+	{if condition="$gx['need_num'] eq '1'"}
+	数量:<input type="text" class="inputtxt" id="in_num" size="5" value=""/>
+	{/if}
+	
+	&nbsp;&nbsp;组员:<input type="text" class="inputtxt" id="man" size="5" placeholder="可填写其他组员" value=""/>
+	
+	<p style="margin-top:5px;text-align:center;">
+	{if condition="$gx['state'] eq '1'"}
+	<a class="btn child0" onclick="javascript:toReport(1);">开始</a>
+	{/if}
+	<a  href="javascript:void(0);" class="btn child1" onclick="javascript:toReport(2);" >完成</a>
+	</p>
+	</div>
+</div>
+
+<script>
+function select_all(check_id){
+	var isCheck=$("#chckALl").prop("checked");
+		isCheck=isCheck?isCheck:false;
+	$("input[name='orderid[]']").prop("checked",isCheck);
+}
+
+//记录当前报工成功数量，最后汇总
+var success_num=0;
+var complete_num=0;
+var total_order=0;
+function toReport(state){
+	var _innum=0;
+	{if condition="$gx['need_num'] eq '1'"}
+		_innum=$("#in_num").val();
+	{/if}
+	var man=$("#man").val();
+	var gxid="{$gx['id']}";
+	
+	//订单id
+	var orderid=[];
+	var gx_id=[];
+	var ordernum=[];
+	$("input[name='orderid[]']").each(function(){
+		if($(this).prop("checked")){
+			orderid.push($(this).val());
+			gx_id.push($(this).attr("data"));
+			ordernum.push($(this).attr("data-ordernum"));
+		}
+	});
+	
+	if(orderid.length<=0){
+		layer.msg("请选择要报工的订单");
+		return;
+	}
+	
+	total_order=orderid.length;
+	
+	for(var i in orderid){
+		var _data=new Object();
+			_data.orderid=orderid[i];
+			_data.status=state;
+			_data.gxid=gx_id[i];
+			_data.ordernum=ordernum[i];
+			_data.num=_innum;
+			_data.man=man;
+			doreport(_data);
+	}
+	
+}
+
+function doreport(_data){
+	
+	$.ajax({
+		  url: "{:Url('Index/baogong')}",
+		  data:_data,
+		  dataType:"json",
+		  type:'POST',
+		  success:function(obj){
+			  //console.log(obj);
+			  if(obj.status!=1){
+				  layer.msg(_data.ordernum+':'+obj.msg);
+			  }else{
+				  success_num++;
+			  }
+			  if(success_num==total_order){
+				  layer.msg("报工完成");
+			  }
+		  },complete:function(d){
+			  complete_num++;
+			  if(complete_num==total_order){
+				  setTimeout(function(){
+					  parent.reload_window();
+		    		}, 3000);
+			  }
+		  }
+	  })
+}
+</script>
+</body>
+</html>

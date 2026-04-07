@@ -1,0 +1,57 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD HTML 4.01 Strict//EN' 'http://www.w3.org/TR/html4/strict.dtd'>
+<html>
+    <head>
+        <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>
+        <link href="__STATIC__index/css/index.css" rel="stylesheet" type="text/css"/>
+        <title>设置</title>
+        <style type="text/css">
+            .content{width:100%;}
+        </style>
+    </head>
+    <body>
+
+        <div class="content">
+            <div class="right">
+                <div class="user">
+                    <form action="#" id="form" method="post">
+                        <div class="menu" id="bind" style="width:200px;margin: 200px auto;">
+                             <a href="javascript:void(0)" id="bind_custom" style=" background-color: rgb(40, 77, 157);color: #fff;padding: 6px">绑定客户</a>
+                            <!--<a href="javascript:void(0)" id="bind_series" style=" background-color: rgb(40, 77, 157);color: #fff;padding: 6px">绑定系列</a>-->
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+<script src="__STATIC__index/js/jquery.min.js"></script>
+<script src="__STATIC__index/js/layer/layer.js"></script>
+<script type="text/javascript">
+    $(function () {
+        $('#bind_custom').click(function () {
+            var id = "{$id}";
+            layer.open({
+                type: 2,
+                title: '绑定客户',
+                shadeClose: true,
+                shade: 0.8,
+                area: ['580px', '100%'],
+                content: "bind_custom?id=" + id + "" //iframe的url
+            })
+        });
+        $('#bind_series').click(function () {
+            var id = "{$id}";
+            layer.open({
+                type: 2,
+                title: '绑定系列',
+                shadeClose: true,
+                shade: 0.8,
+                area: ['580px', '100%'],
+                content: "bind_series?id=" + id + "" //iframe的url
+            })
+        });
+    })
+
+
+
+</script>
+        </body>
+    </html>

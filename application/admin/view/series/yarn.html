@@ -1,0 +1,95 @@
+{include file="public/header"/}
+        <div class="layui-fluid">
+            <div class="layui-row">
+                <form class="layui-form">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label" style="line-height: 15px;">纱网</label>
+                        <div class="layui-inline">
+                            <select name="name" id="name">
+                              <option value="">请选择颜色</option>
+                              {volist name="bom" id="v"}
+                              <option value="{$v.id}" attr="{$v.thickness}">{$v.name}</option>
+                              {/volist}
+                            </select>
+                        </div>
+                        <div class="layui-inline">
+                             <input type="text" id="price" name="price" class="layui-input" placeholder="请填写价格">
+                        </div>
+                        <div class="layui-inline">
+                             <a href="javascript:;" class="layui-btn" id="addyarn"><i class='icon iconfont'>&#xe6b9;</i>添加纱网</a>
+                        </div>
+                    </div>
+                    <table class="layui-table layui-form" id="tabled">
+                            <thead>
+                                <tr>
+                                    <th>名称</th>
+                                    <th>厚度</th>
+                                    <th>价格</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabled">
+                                {volist name='list' id='v'}
+                                <tr>
+                                    <td>{$v.name}</td>
+                                    <td>{$v.thickness}<input name="info[{$key}][yarn_id]" type="hidden" value="{$v.yarn_id}"/></td>
+                                    <td>{$v.price}<input name="info[{$key}][price]" type="hidden" value="{$v.price}"/>
+                                        <input name="info[{$key}][series_id]" type='hidden' value='{$v.series_id}'/></td>
+                                    <td><button class='layui-btn-danger layui-btn layui-btn-xs' type='button' onclick='member_del(this)' ><i class='layui-icon'>&#xe640;</i>删除</button></td>
+                                </tr>
+                                {/volist}
+                            </tbody>
+                    </table>
+                    <div class="layui-form-item">
+                        <label for="L_repass" class="layui-form-label"></label>
+                        <input name="series_id" type="hidden" value="{$id}"/>
+                        <button class="layui-btn" lay-filter="add" lay-submit="">保存</button>
+                    </div>
+        </form>
+        </div>
+        </div>
+        <script>layui.use(['form', 'layer'],
+            function() {
+                $ = layui.jquery;
+                var form = layui.form,
+                layer = layui.layer;
+                
+                
+                $('#addyarn').click(function(){
+                    var name =  $('#name option:selected').text();
+                    var yarn_id = $('#name option:selected').val();
+                    var thickness = $('#name option:selected').attr('attr');
+                    var price = $('#price').val();
+                    var row = $('#tabled').find('tr').length; //tr的行数
+                    var series_id = {$id};
+                    if(name == ''){
+                        layer.msg('请选择颜色',{icon:2});
+                        return;
+                    }
+                    if(price == ''){
+                        layer.msg('请输入价格',{icon:2});
+                        return;
+                    }
+                    var html = "<tr><td>"+name+"<td>"+thickness+"<input name='info["+row+"][yarn_id]' type='hidden' value="+yarn_id+"></td>\n\
+                                <td>"+price+"<input name='info["+row+"][price]' type='hidden' value="+price+"><input name='info["+row+"][series_id]' type='hidden' value="+series_id+"/></td>\n\
+                                <td><button class='layui-btn-danger layui-btn layui-btn-xs' type='button' onclick=member_del(this) ><i class='layui-icon'>&#xe640;</i>删除</button></td><\n\
+                                </tr>";
+                    $('#tabled').append(html);
+                })
+                //监听提交
+                form.on('submit(add)',
+                function(data) {
+                    ajaxform("{:url('series/yarnAdd')}",data.field,2);
+                    return false;
+                });
+
+            });
+        /*删除*/
+        function member_del(obj) {
+            $(obj).parents("tr").remove();
+        }
+        </script>
+
+    </body>
+
+</html>

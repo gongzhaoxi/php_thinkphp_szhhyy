@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+<meta name="referrer" content="never">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>添加/修改物料</title>
+{include file="public/header" /}
+
+</head> 
+<style>
+	.select-genre{width: 248px;text-align: center;line-height: 28px;margin: 20px 0;margin-left: 31.8%;}
+</style>
+<body class="matter_add_modal">
+	<div class="modal-body">
+		<div class="modal-body-middle" style="padding-top:20%;">
+			<div class="matteriel-box">
+				<div class="matteriel-box-inner">
+					<div class="matteriel-box-inner">
+						<div class="matteriel-box-title">----- 物料名称 -----</div>
+						<div class="matteriel-box-content">
+							<input type="text" name="series" id="title" autocomplete="off" value="{$series['xname']}" placeholder="请输入物料名称" class="input-name">
+						</div>
+					</div>
+				</div>
+				<div class="matteriel-box-inner" id="o_line">
+					<!-- <div class="matteriel-box-title">----- 设置默认工艺路线 -----</div> -->
+					<div class="matteriel-box-title">----- 设置所属类别 -----</div>
+					<div class="select-genre">
+					<div class="imitate-select setDefaultSelect">
+									<span class="select-txt">选择类别</span>
+									<span class="icon-arrow triangle-down"></span>
+									<input type="hidden" name="genre" id="genre" value="{$series['gid']}">
+									<ul data-sign="role-index">
+										{volist name="series_genre" id="vo"}
+											<li {if condition="$vo['id'] eq $series['gid']"} data-selected="true"{/if} data-value="{$vo['id']}">{$vo['name']}</li> 
+										{/volist}
+									</ul>
+					</div>
+					</div>
+				</div>
+				
+			</div>
+		</div>
+		<div class="modal-body-bottom" style="position:absolute;bottom:0;left:40%">
+			<div onclick="save_series();">确认添加</div>
+		</div>
+	</div>
+
+<script type="text/javascript">
+$(document).ready(function(){
+	$('#o_line').find('.imitate-select').each(function(){
+		var _this = $(this);
+		var _val = _this.children('ul').children('li').eq(0).attr('data-value');
+		var _html = _this.children('ul').children('li').eq(0).html();
+		if(_val != null && _html != null){
+			_this.children('.select-txt').html(_html);
+			_this.children('input[type=hidden]').val(_val);
+
+		}
+	})
+})
+function save_series(){
+	var _gid = $('#genre').val();
+	var name = $('#title').val();
+	var id = "{$series['id']}";
+	var data = {};
+	if(name==''){
+		layer.msg('<span style="color:#fff;">请填写物料名！</span>');
+		return
+	}
+	if(_gid==''){
+		layer.msg('<span style="color:#fff;">请选择类别！</span>');
+		return
+	}
+	data['name'] = name;
+	data['gid'] = _gid;
+	data['id'] = id;
+	$.ajax({
+		url: "{:url('setting/save_series')}",
+		data:data,
+		dataType: 'json',
+		success:function(obj){
+			console.log(obj);
+			if(obj.code==0){
+				layer.closeAll();
+				layer.msg('<span style="color:#fff;">'+obj.msg+'</span>');
+				setTimeout(function(){
+					parent.location.reload();
+				},1500);
+			}else{
+				layer.msg('<span style="color:#fff;">'+obj.msg+'</span>');
+			}
+		}
+	})
+}
+$('.imitate-select').click(function(e) {
+	e.preventDefault();
+	e.stopPropagation();
+	var _this = $(this);
+	var clickSign = _this.attr('data-sign');
+	$('.imitate-select').removeAttr('data-sign').children('ul').hide();
+	if (clickSign == 'true') {
+		_this.children('ul').hide();
+		_this.removeAttr('data-sign');
+	} else {
+		_this.children('ul').show();
+		_this.attr('data-sign', 'true');
+	}
+});
+$(window).click(function(){
+	var elem = event.srcElement ? event.srcElement : event.target;
+	while (elem) { //循环判断至跟节点，防止点击的是div子元素 
+		if (elem.id && elem.id == 'orderScreenBox') {
+			return;
+		}
+		if($(elem).hasClass('modal-content')){
+			return;
+		}
+		elem = elem.parentNode;
+	}
+	$('.modal-box').fadeOut();
+	$('.imitate-select').removeAttr('data-sign').children('ul').hide();
+	$('.content-header-left').removeAttr('data-click').css({
+		top: '0',
+	}).children('.filter-orders').removeClass('filter-orders-active');
+	$('.content-header-left').siblings('.order-screen-box').css({
+		height: '0',
+		overflow: 'hidden'
+	})
+});
+$('.imitate-select ul').delegate('li','click',function(e){
+	e.preventDefault();
+	e.stopPropagation();
+	var _this = $(this);
+	var tempTxt = _this.html();
+	var _thisValue = _this.attr('data-value');
+	_this.parent().parent().children('.select-txt').attr('data-value',_thisValue).html(tempTxt);
+	_this.parent().hide();
+	_this.parent().parent().removeAttr('data-sign');
+	var _clickTarget = _this.parent().attr('data-sign');
+	_this.parent().siblings('input[type=hidden]').val(_thisValue);
+	switch (_clickTarget) {
+		case 'user_role':
+			changerole();
+			break;
+		default:
+			break;
+	}
+});
+	
+</script>
+</body>
+</html>

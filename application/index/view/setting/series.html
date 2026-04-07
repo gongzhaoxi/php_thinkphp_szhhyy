@@ -1,0 +1,284 @@
+<?php $current='6'; ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>微元生产工序报工管理系统,建材行业生产管理系统,门窗生产管理系统,微元科技,佛山市微元科技有限公司</title>
+<script src="__STATIC__/theme/index/js/jquery-1.10.2.js"></script>
+<link href="__STATIC__/theme/index/css/index.css" rel="stylesheet" />
+<link href="__STATIC__/theme/index/css/bootstrap.css" rel="stylesheet">
+<link href="__STATIC__/theme/index/css/font-awesome.min.css" rel="stylesheet">
+</head>
+<style type="text/css">
+.user{display:none;width:500px;height:auto;background:#E3E3E3;position:absolute;z-index:9999;left:36%;top:30%;border-radius:8px;}
+.user div{width:100%;text-align:center;height:40px;line-height:40px;margin-top:20px;font-size:14px;}
+.user div input{padding-left:4px;width:70%;height:40px;line-height:40px;border-radius:4px;border:0;margin-bottom:6px;}
+.user div .spa{letter-spacing:8px;}
+.btne{width:200px;height:40px;line-height:40px;background:#FF4040;color:#fff;border:0;outline:none;border-radius:8px;margin-left:25%;margin-top:18px;margin-bottom:10px;}
+.role{width: 70%;height: 40px;border-radius: 6px;border: none;}
+.ser{width: 70%;height: 40px;border-radius: 6px;border: none;}
+.mb{display:none;width:100%;height:100%;background:black;opacity:0.6;position:fixed;z-index:1000;}
+.mwpw_bg{margin-top:0px;}
+.me_r_1,.me_r_2{float:left;width:auto;}
+.me_r_1 select{border: 1px solid #e2e2e2;}
+.me_r_2{width:300px;}
+.me_r_2 input{border: 1px solid #e2e2e2;}
+.button{width: 50px;height: 25px;color: #FFFFFF;font: 12px/25px "微软雅黑";background: #0aad20;text-align: center;border: none;float: left;display:inline-block;}
+.button:hover{text-decoration:none;color:white;}
+</style>
+<body>
+{include file="public/header" /}
+<style type="text/css">
+img[Attributes Style] {width:auto;}
+</style>
+{include file="setting/menu" /}
+<div class="parameter">
+
+<!-- 搜索 -->
+<div class="pages" style="margin-top:0;">
+<form class="form-horizontal" action="{:url('Setting/series')}" method="get">
+<div class="me_r_2">
+<input type="text" name="keyword" value="{$get['keyword']}" placeholder="请输入系列名称"><button>搜索</button>
+<a href="{:url('Setting/series')}" class="button" style="margin-left:10px;">全部</a>
+</div>
+</form>
+</div>
+
+<table width="100%" border="0" cellspacing="1" cellpadding="1" class="mwpw_bg" >
+
+<tr class="title">
+<td width="10%">ID</td>
+<td width="20%">层级</td>
+<td width="30%">系列名称</td>
+<td width="20%">绑定工艺路线</td>
+<td width="20%">操作</td>
+</tr>
+<!-- 一级系列 -->
+{volist name="list" id="la"}
+
+	<tr>
+	<td>{$la.id}</td>
+	<td>父级</td>
+	<td>{$la.xname}</td>
+	<td></td>
+	<td>
+		<a class="edit" data-id="{$la.id}" href="#">修改</a> / 
+		<a class="copy" data-id="{$la.id}" href="#">复制</a> /
+		<a class="del" data-id="{$la.id}" href="#">删除</a>
+	</td>
+	</tr>
+	
+	{volist name="la['second']" id="se"}
+	<tr>
+	<td >{$se.id}</td>
+	<td>--</td>
+	<td >{$se.xname}</td>
+	<td >{$se.title}</td>
+	<td >
+		<a class="edit" data-id="{$se.id}" href="#">修改</a> / 
+<!-- 		<a class="copy" data-id="{$se.id}" href="#">复制</a> /  -->
+		<a class="del" data-id="{$se.id}" href="#">删除</a>
+	</td>
+	</tr>
+	{/volist}
+{/volist}
+
+</table>
+</div>
+
+<div class="pages">
+	{$page|raw}
+</div>
+
+<!-- 系列录入 -->
+<div class="user">
+			<form action="#" id="form" method="post">
+				<div><span style="letter-spacing:8px">层级：</span>
+					<select class="ser" id="ser" onchange="rank()">
+							<option value="-1">父级</option>
+							{volist name="flis" id="vl"}
+							<option value="{$vl.id}">{$vl.xname}</option>
+							{/volist}
+						</select></div>
+				<div><span>系列名称：</span><input type="text" name="user" id="user" autocomplete="off" value="" placeholder="请输入系列名称"/></div>
+				<div class="select-gx" style="display:none"><span>工艺路线：</span>
+					<select class="role" id="role">
+						{volist name="xid" id="vl"}
+							<option value="{$vl.id}">{$vl.title}</option>
+							{/volist}
+					</select>
+				</div>	
+	</form>
+	<button class="btne">确认无误，添加此系列！</button>
+</div>
+
+	<script src="__STATIC__index/js/jquery.min.js"></script>
+	<script src="__STATIC__index/js/layer/layer.js"></script>
+	<script type="text/javascript">
+	//下拉选择-1
+	$(document).ready(function(){
+		var ide = document.getElementById('role');
+		ide.selectedIndex = -1;
+		$("#role").change(function(){
+			var _text=$(this).find("option:selected").text();
+				$("#user").val(_text);
+		})
+	   });
+	
+		$('.add-user').click(function(){
+			$('.user').fadeIn();
+			$('.mb').fadeIn();
+		});
+		
+		$('.mb').click(function(){
+			$('.user').fadeOut();
+			$('.mb').fadeOut();
+		});
+		
+		$('.btne').click(function(){
+			var title = $("#user").val();
+			var type = $('#ser').val();
+			/* var gid = $('#role').val();	 */
+			if(title==''){
+				layer.msg("请输入系列名称");
+				return false;
+				}
+			var data = {};
+				data['title']=title;
+				data['type']=type;
+			if(type !== -1){
+				var gid = $('#role').val();
+				if(gid==''){
+					layer.msg("请选择绑定工序");
+					return false;
+					}
+				data['gid'] = gid
+			}
+			console.log(data);
+			
+			$.ajax({
+				url: "{:Url('Setting/series')}",
+				data: data,
+				dataType: 'json',
+				success:function(obj){
+					console.log(obj)
+					if(obj.code==0){
+						layer.msg('添加成功');
+						setTimeout(function(){
+							window.location.reload();
+						},1000);				
+					}else{
+						layer.msg('缺少参数');
+						setTimeout(function(){
+							window.location.reload();
+						},1000);
+					}
+				}
+			})
+		});
+		
+		//编辑
+		$('.edit').click(function(){
+			var id = $(this).data('id');
+			layer.open({
+				type: 2,
+				  title: '修改系列',
+				  shadeClose: true,
+				  shade: 0.8,
+				  area: ['480px', '60%'],
+				  content: "series_edit?id="+id+"" //iframe的url
+			})
+		});
+		//复制
+		$('.copy').click(function(){
+			var id = $(this).data('id');
+			var data={};
+			data['id']=id;
+			layer.confirm("确认要复制系列及其子系列吗?",{icon:3,title:'提示'},function(index){
+				$.ajax({
+					url:"{:Url('Setting/copy_series')}",
+					data:data,
+					dataType: "JSON",
+					success:function(obj){
+						if(obj.status==1){
+							layer.msg('复制成功');
+							setTimeout(function(){
+								window.location.reload();	
+							},1500);
+						}else{
+							layer.msg(obj.msg);
+						}
+					}
+					
+				});
+			});
+		});
+		//删除
+		$('.del').click(function(){
+			var id = $(this).data('id');
+			layer.confirm('是否删除',{icon:3,title:'提示'},function(index){
+				$.ajax({
+					url: "{:Url('Setting/del')}",
+					data: {kind:4,kid:id},
+					dataType:"json",
+					success:function(obj){
+						if(obj.code==0){
+							layer.msg('删除成功');	
+						}
+						setTimeout(function(){
+							window.location.reload();	
+						},1500);
+					}
+				})
+				layer.close(index);
+			})
+		});
+
+		function rank(){
+			$('.select-gx').css('display','block');
+		}
+		
+		//编辑之后，更新对应行的数据
+		//id 是series系列表的id
+		function update_tr(id){
+			$.ajax({
+				url: "{:Url('Setting/serirs_get')}",
+				data: {"id":id},
+				dataType:"json",
+				success:function(obj){
+					if(Number(obj.status)!=1){
+						layer.msg('获取数据失败，请刷新页面');
+						return ;
+					}
+					
+					refresh_tr(obj.data);
+				}
+			})
+		}
+		
+		//更新对应tr的显示
+		function refresh_tr(data){
+			var id=data.id;
+			var xname=data.xname;
+			var pname=data.pname;
+			var gxname=data.gxname;
+			
+			var _html="";
+				_html+='<td >'+id+'</td>'
+					'<td>'+pname+'</td>'
+					'<td >'+xname+'</td>'
+					'<td >'+gxname+'</td>'
+					'<td ><a class="edit" data-id="'+id+'" href="#">修改</a>'
+						'<a class="del" data-id="'+id+'" href="#">删除</a>'
+					'</td>';
+			$("#series_"+id).empty().html(_html);
+		}
+		
+	</script>
+	
+{include file="setting/timeset" /}
+
+{include file="public/footer" /}
+
+</body>
+</html>

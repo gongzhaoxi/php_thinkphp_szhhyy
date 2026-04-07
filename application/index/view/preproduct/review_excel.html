@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>预览导出数据</title>
+{include file="public/header" /}
+</head>
+<style>
+	button{padding:6px 12px;background:	#008B8B;color:#fff;margin: 12px;border:none}
+	table{margin-bottom:20px}
+	table tr td{text-align:center}
+	.schedule-date{margin:10px 100px;}
+	button:hover{background-color: #0c6b93;cursor: pointer;}
+	td{min-width: 100px; padding: 8px 0px;}
+	td:hover{ background-color: #f4f0e6 }
+	tr:hover{ background-color: #f8fac1 }
+</style>
+<body>
+	<div class="">
+		<div class="menu">
+			{volist name="menu" id="mu"}
+				<button data-id="{$mu['id']}" data-addtime="{$addtime}" data-num="{$ordernum}" data-unique="{$unique_sn}" onclick="showGenreData(this)">{$mu['name']}</button>
+			{/volist}
+			{if condition="count($menu) eq 0"}
+			<button data-id="0" data-addtime="{$addtime}" data-num="{$ordernum}" data-unique="{$unique_sn}" onclick="showGenreData(this)">默认类别</button>
+			{/if}
+			<button data-addtime="{$addtime}" data-num="{$ordernum}" data-unique="{$unique_sn}" onclick="showGlassData(this)">玻璃</button>
+			<button class="total-btn" data-addtime="{$addtime}" data-num="{$ordernum}" data-unique="{$unique_sn}" onclick="showTotalData()">汇总</button>
+		</div>
+		<div class="content" style="margin:20px">
+			
+		</div>
+	</div>
+	
+	<script>
+		$(document).ready(function(){
+			showTotalData();
+		})
+		
+		function showGenreData(e){
+			var _type = 3;
+			var id = $(e).data('id');
+			var addtime = $(e).data('addtime');
+			var ordernum = $(e).data('num');
+			var unique_sn = $(e).data('unique');
+			$.ajax({
+				url: "{:url('preproduct/ajax_review_data')}",
+				data: {type:_type,id,addtime,ordernum,unique_sn},
+				dataType: 'json',
+				success:function(obj){
+					console.log(obj);
+					if(obj.code==0){
+						if(obj.data.length==0){
+							layer.msg('<span style="color:#fff;">暂无数据！</span>');
+							return
+						}
+						$('.content').html('');
+						var res = obj.data;
+						var title = obj.title;
+						var _html = '';
+						_html += '<table border="1">';
+						_html += '<tr>';
+						_html += '<th rowspan="3">异常原因</th>';
+						_html += '<th rowspan="3">超时原因</th>';
+						_html += '<th rowspan="3">排产日期</th>';
+						_html += '<th rowspan="3">销售单号</th>';
+						_html += '<th rowspan="3">生产单号</th>';
+						_html += '<th rowspan="3">面积</th>';
+						_html += '<th rowspan="3">宽</th>';
+						_html += '<th rowspan="3">高</th>';
+						_html += '<th rowspan="3">物料名称</th>';
+						_html += '<th rowspan="3">客户名称</th>';
+						_html += '<th rowspan="3">颜色</th>';
+						_html += '<th rowspan="3">套数</th>';
+						_html += '<th rowspan="3">玻扇数</th>';
+						_html += '<th rowspan="3">纱扇数</th>';
+						_html += '<th rowspan="3">固玻</th>';
+						_html += '<th rowspan="3">提交时间</th>';
+						_html += '<th rowspan="3">排产时间</th>';
+						_html += '<th rowspan="3">计划完成日期</th>';
+						_html += '<th rowspan="3">实际完成日期</th>';
+						_html += '<th rowspan="3">实际发货日期</th>';
+						for(var s in title){
+							_html += '<th colspan="4">'+title[s]['work_value']+'天</th>';
+						}
+						_html += '</tr><tr>';
+						for(var s in title){
+							_html += '<th colspan="4">'+title[s]['dname']+'</th>';
+						}
+						_html += '</tr><tr>';
+						for(var s in title){
+							_html += '<th>开始日期</th>';
+							_html += '<th>预计完成时间</th>';
+							_html += '<th>实际完成日期</th>';
+							_html += '<th>是否超时</th>';
+						}
+						_html += '</tr>';
+						for(var s in res){
+							_html += '<tr>';
+							_html += '<td>'+res[s]['bad_cause']+'</td>';
+							_html += '<td>'+res[s]['over_cause']+'</td>';
+							_html += '<td>'+res[s]['schedule_time']+'</td>';
+							_html += '<td>'+res[s]['ordernum']+'</td>';
+							_html += '<td>'+res[s]['product_no']+'</td>';
+							_html += '<td>'+res[s]['area']+'</td>';
+							_html += '<td>'+res[s]['width']+'</td>';
+							_html += '<td>'+res[s]['height']+'</td>';
+							_html += '<td>'+res[s]['pname']+'</td>';
+							_html += '<td>'+res[s]['uname']+'</td>';
+							_html += '<td>'+res[s]['color']+'</td>';
+							_html += '<td>'+res[s]['snum']+'</td>';
+							_html += '<td>'+res[s]['doornum']+'</td>';
+							_html += '<td>'+res[s]['screenwin']+'</td>';
+							_html += '<td>'+res[s]['fixedglassnum']+'</td>';
+							_html += '<td>'+res[s]['addtime']+'</td>';
+							_html += '<td>'+res[s]['schedule_time']+'</td>';
+							_html += '<td>'+res[s]['plan_time']+'</td>';
+							_html += '<td>'+res[s]['fact_time']+'</td>';
+							_html += '<td>'+res[s]['send_time']+'</td>';
+							var data = res[s]['gx_list'];
+							for(var i in title){
+								_html += '<td></td>';
+								if(data[title[i]['id']]==undefined){
+									_html += '<td></td>';
+								}else{
+									_html += '<td>'+data[title[i]['id']]['plan_finish_time']+'</td>';
+								}
+								if(data[title[i]['id']]==undefined){
+									_html += '<td></td>';
+								}else{
+									_html += '<td>'+data[title[i]['id']]['finish_time']+'</td>';
+								}
+								if(data[title[i]['id']]==undefined){
+									_html += '<td></td>';
+								}else{
+									_html += '<td>'+data[title[i]['id']]['isover']+'</td>';
+								}
+							}
+							_html += '</tr>';
+						}
+						_html += '</table>';
+						$('.content').html(_html);
+					}else{
+						layer.msg('<span style="color:#fff;">'+obj.msg+'</span>');
+					}
+					
+				}
+			})
+		}
+		function showGlassData(e){
+			var _type = 2;
+			var addtime = $(e).data('addtime');
+			var ordernum = $(e).data('num');
+			var unique_sn = $(e).data('unique');
+			$.ajax({
+				url: "{:url('preproduct/ajax_review_data')}",
+				data: {type:_type,addtime,ordernum,unique_sn},
+				dataType: 'json',
+				success:function(obj){
+					console.log(obj);
+					if(obj.code==0){
+						if(obj.data.length==0){
+							layer.msg('<span style="color:#fff;">暂无数据！</span>');
+							return
+						}
+						$('.content').html('');
+						var res = obj.data;
+						var title = obj.title;
+						var _html = '';
+						_html += '<table border="1">';
+						_html += '<tr>';
+						for(var s in title){
+							_html += '<th>'+title[s]+'</th>';
+						}
+						_html += '</tr>';
+						for(var i in res){
+							_html += '<tr>';
+							for(var s in title){
+								_html += '<td>'+res[i][s]+'</td>';
+							}
+							_html += '</tr>';
+						}
+						_html += '</table>';
+						$('.content').html(_html);
+					}else{
+						layer.msg('<span style="color:#fff;">'+obj.msg+'</span>');
+					}
+				}
+			})
+		}
+		function showTotalData(e){
+			var _type = 1;
+			var _addtime = $('.total-btn').data('addtime');
+			var _ordernum = $('.total-btn').data('num');
+			var _unique_sn = $('.total-btn').data('unique');
+			$.ajax({
+				url: "{:url('preproduct/ajax_review_data')}",
+				data: {type:_type,addtime:_addtime,ordernum:_ordernum,unique_sn:_unique_sn},
+				dataType: 'json',
+				success:function(obj){
+					console.log(obj);
+					
+					if(obj.code==0){
+						if(obj.data.length==0){
+							layer.msg('<span style="color:#fff;">暂无数据！</span>');
+							return
+						}
+						$('.content').html('');
+						var res = obj.data;
+						var _html = '';
+						
+						for(var s in res){
+						_html += '<div class="schedule-date">排产日期：'+obj.date+'</div>';
+						_html += '<table border="1">';
+						_html += '<tr>';
+						_html += '<th rowspan="2">种类</th>';
+						_html += '<th rowspan="2">工序</th>';
+						_html += '<th rowspan="2">固定日产值</th>';
+						_html += '<th rowspan="2">单位</th>';
+						_html += '<th colspan="4">排产值</th>';
+						_html += '<th colspan="4">完成值</th>';
+						_html += '<th rowspan="2">报工人数</th>';
+						_html += '<th colspan="3">产值</th>';
+						_html += '<th colspan="2">缺口</th>';
+						_html += '</tr><tr>';
+						_html += '<th>套数</th>';
+						_html += '<th>面积</th>';
+						_html += '<th>玻扇</th>';
+						_html += '<th>纱扇</th>';
+						_html += '<th>套数</th>';
+						_html += '<th>面积</th>';
+						_html += '<th>玻扇</th>';
+						_html += '<th>纱扇</th>';
+						_html += '<th>日(1D)</th>';
+						_html += '<th>时(8H/D)</th>';
+						_html += '<th>单位</th>';	
+						_html += '<th>产值</th>';	
+						_html += '<th>人数</th>';	
+						_html += '</tr>';
+						var list = res[s]['list'];
+						var num = 0;
+						for(var i in list){
+							_html += '<tr>';
+							num==0?_html += '<td>'+list[i]['kname']+'</td>':_html += '<td></td>';
+							_html += '<td>'+list[i]['gxname']+'</td>';
+							_html += '<td>'+list[i]['final_value']+'</td>';
+							_html += '<td>'+(list[i]['unit']?list[i]['unit']:'')+'</td>';
+							_html += '<td>'+list[i]['num']+'</td>';
+							_html += '<td>'+list[i]['area'].toFixed(2)+'</td>';
+							_html += '<td>'+list[i]['b_num']+'</td>';
+							_html += '<td>'+list[i]['s_num']+'</td>';
+							_html += '<td>'+list[i]['finish_num']+'</td>';
+							_html += '<td>'+list[i]['finish_area'].toFixed(2)+'</td>';
+							_html += '<td>'+list[i]['finish_b_num']+'</td>';
+							_html += '<td>'+list[i]['finish_s_num']+'</td>';
+							_html += '<td>'+list[i]['finish_man']+'</td>';
+							_html += '<td>'+list[i]['day_value']+'</td>';
+							_html += '<td>'+list[i]['hour_value']+'</td>';
+							_html += '<td>'+(list[i]['unit']?list[i]['unit']:'')+'</td>';
+							_html += '<td>'+list[i]['value'].toFixed(2)+'</td>';
+							_html += '<td>'+list[i]['people']+'</td>';
+							_html += '</tr>';
+							num++;
+						}
+						_html += '<tr>';
+						_html += '<td></td>';
+						_html += '<td>合计</td>';
+						_html += '<td></td>';
+						_html += '<td></td>';
+						_html += '<td>'+res[s]['total_num']+'</td>';
+						_html += '<td>'+res[s]['total_area'].toFixed(2)+'</td>';
+						_html += '<td>'+res[s]['total_b_num']+'</td>';
+						_html += '<td>'+res[s]['total_s_num']+'</td>';
+						_html += '<td>'+res[s]['total_finish_num']+'</td>';
+						_html += '<td>'+res[s]['total_finish_area'].toFixed(2)+'</td>';
+						_html += '<td>'+res[s]['total_finish_bnum']+'</td>';
+						_html += '<td>'+res[s]['total_finish_snum']+'</td>';
+						_html += '<td>'+res[s]['total_man']+'</td>';
+						_html += '<td>'+res[s]['total_day_value']+'</td>';
+						_html += '<td>'+res[s]['total_hour_value']+'</td>';
+						_html += '<td></td>';
+						_html += '<td>'+res[s]['total_value'].toFixed(2)+'</td>';
+						_html += '<td>'+res[s]['total_people']+'</td>';
+						_html += '</tr>';
+						_html += '</table>';
+
+					}
+						$('.content').html(_html);
+					}else{
+						layer.msg('<span style="color:#fff;">'+obj.msg+'</span>');
+					}
+				}
+			})
+		}
+	</script>
+</body>
+</html>

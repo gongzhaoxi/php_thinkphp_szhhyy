@@ -1,0 +1,401 @@
+
+{include file="public/header"/}
+<style>
+    .alldisplay td{ text-align: center;}
+    .cporgress{width: 30%;position: relative;bottom: 30px;left: 30%;display: none;}
+</style>
+<script>
+        var z=0;
+        var total_good={php}echo count($product);{/php};
+        function calculate_btn(){
+            z=0;
+            layer.load(0, {shade: false});
+            $('.cporgress').css('display','block');
+            $('#form1').submit();
+            
+        }
+
+        
+	//回调
+	function receiver(data){
+            z++;
+            progress(z);
+            if(total_good==z){
+                layer.closeAll();
+                clear();
+                xadmin.open('编辑产品', '/admin/carorder/allCalculate/.html?order_id='+data);
+            }
+	}
+</script>
+<body>
+    <div class="x-nav">
+        <span class="layui-breadcrumb">
+            <!--<a href="">订单信息</a>-->
+            <a href="{:url('handle')}"><i class="icon iconfont">&#xe697</i>返回</a>
+        </span> 
+
+        <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" onclick="location.reload()" title="刷新">
+            <i class="layui-icon layui-icon-refresh" style="line-height:30px"></i>
+        </a>
+    </div>
+    <form class="layui-form layui-col-space5" target="imgiframe" action="{:url('Carorder/allIframe')}" method="post" id="form1">
+        <div class="layui-fluid">
+            <div class="layui-row layui-col-space15">
+
+                <div class="layui-col-md12 layui-form-item">
+                    <div class="layui-card">
+                        <div class="layui-card-body ">
+                            <blockquote class="layui-elem-quote">基础信息
+                            </blockquote>
+                            <div class="layui-inline" style="width: 40%;margin-bottom: 15px;">
+                                <label class="layui-form-label">订单编号</label>
+                                <div class="layui-input-inline" style="width:55%">
+                                    <input type="text" name="number" class="layui-input" readonly="true" value="{$res.number}">
+                                </div>
+
+                            </div>
+                            <div class="layui-inline" style="width: 40%;margin-bottom: 15px;">
+                                <label class="layui-form-label">要求交货时间</label>
+                                <div class="layui-input-inline" style="width:55%">
+                                    <input type="text" name="end_time"  readonly="true" class="layui-input" value="{$res.end_time}">
+                                </div>
+                            </div>
+                            <div class="layui-inline" style="width: 40%;margin-bottom: 15px;">
+                                <label class="layui-form-label">经销商名称</label>
+                                <div class="layui-input-inline" style="width: 55%">
+                                    <input type="text" name="dealer" required  lay-verify="required" readonly="true"  class="layui-input" value="{$res.dealer}">
+                                </div>
+                            </div>
+                            <div class="layui-inline" style="width: 40%;margin-bottom: 15px;">
+                                <label class="layui-form-label">电话</label>
+                                <div class="layui-input-inline" style="width: 55%">
+                                    <input type="text" name="phone" required  lay-verify="phone" readonly="true"  class="layui-input" value="{$res.phone}">
+                                </div>
+                            </div>
+                            <div class="layui-inline" style="width: 40%">
+                                <label class="layui-form-label">地址</label>
+                                <div class="layui-input-inline" style="width:55%">
+                                    <input type="text" name="address" class="layui-input" value="{$res.address}" readonly="true">
+                                </div>
+                            </div>
+                            <div class="layui-inline" style="width: 40%">
+                                <label class="layui-form-label">送货地址</label>
+                                <div class="layui-input-inline" style="width:55%">
+                                    <input type="text" name="send_address"  class="layui-input" value="{$res.send_address}" readonly="true">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">订单类型</label>
+                                <div class="layui-input-block" style="width: 30%">
+                                    <label class="layui-form-label" style='text-align: left'>{$order_type[$res['type']]}</label>
+                                </div>
+                            </div>
+							<div class="layui-form-item">
+							    <label class="layui-form-label">是否打印标签</label>
+							    <div class="layui-input-block" style="width: 63%; color: #ff0000;" > 
+							        <label class="layui-form-label" style='text-align: left'>
+										{if condition="($res['print_label'] eq 0)"}
+										需要
+										{else}
+										不需要
+										{/if}
+									</label>
+							    </div>
+							</div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">备注</label>
+                                <div class="layui-input-block" style="width: 63%;"> 
+                                    <input type="text" name="note"  class="layui-input" value="{$res.note}" readonly="true">
+                                </div>
+                            </div>
+                            <table class="layui-table">
+                                <tbody class='alldisplay'>
+                                    <tr>
+                                        <td>总面积:<span style='color: red'>{$res.product_area}</span></td>
+
+                                        <td>总数量:<span style='color: red'>{$res.count}</span></td>
+
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-card-body ">
+                                                   
+                </div>
+                <div class="layui-col-md12">
+                    <div class="layui-card">
+
+                        
+                        <div class="layui-card-header">
+
+<!--                            <button class="layui-btn layui-btn-normal" type='button' onclick='calculate_btn()'  id="calculate-btn">
+                                <i class="layui-icon"></i>一键所有算料
+                            </button>-->
+                            
+                            <button class="layui-btn layui-btn-warm" type='button' onclick="xadmin.open('算料结果', '{:url('allCalculate',array('order_id'=>$orderid))}', 1200, 600)">
+                                <i class="layui-icon"></i>查看算料结果
+                            </button>
+                            
+                            <div class="layui-progress layui-progress-big cporgress" lay-filter="demo" lay-showPercent="true">
+                                <div class="layui-progress-bar" lay-percent="0%"></div>
+                            </div>
+                            
+                        </div>
+                        <style type="text/css">
+                          .layui-card-body > div{ margin-top: 0px; }
+                          .layui-form th,.layui-form td{text-align: center;}
+                        </style>
+                        <div class="layui-card-body " style="padding-bottom: 0px;">
+                            <blockquote class="layui-elem-quote" style="margin: 0px;background: #c3c3c3;font-size: 14px; color: #000;">产品信息</blockquote>                       
+                        </div>
+                        <div class="layui-card-body " style="padding-top: 0px;">
+                            <table class="layui-table layui-form" style="margin: 0px;">
+                                <thead>
+                                    <tr>
+
+                                        <th width="30">编号</th>
+                                        <th>名称</th>
+                                        <th>材质</th>
+                                        <th>型号</th>
+                                        <th>铝材/花件颜色</th>
+                                        <th>单位</th>
+                                        <th>宽</th>
+                                        <th>高</th>
+                                        <th>个数</th>
+                                        <th>产品面积</th>
+                                        <th>单价</th>
+                                        <th>折后价</th>
+                                        <th>总金额</th>
+                                        <th>窗型结构</th>
+                                        <th>操作</th></tr>
+                                </thead>
+                                <tbody>
+                                    {volist name='product' id='v'}
+                                    <tr>
+
+                                        <td width="30">{$i}</td>
+                                        <td>{$v.name}</td>
+                                        <td>{$v.material}</td>
+                                        <td>{$v.flower_type}</td>
+                                        <td>{$v.color_name}</td>
+                                        <td>㎡</td>
+                                        <td>{$v.all_width}</td>
+                                        <td>{$v.all_height}</td>
+                                        <td>{$v.count}</td>
+                                        <td>{$v.product_area}</td>
+                                        <td>{$v.price}</td>
+                                        <td>{$v.all_price}</td>
+                                        <td>{$v.all_price}</td>
+                                        <td><img src='/upload/{$v.structure}' height="60"/></td>
+                                        {if condition="$v['order_type'] eq 1"}
+                                        <td class="td-manage">
+                                            <a title="查看手工单" onclick="xadmin.open('查看手工单', '{:url('Carorder/readHands',array('id'=>$v['op_id']))}')" href="javascript:;">
+                                                <i class="layui-icon">&#xe63c;</i></a>
+                                        </td>
+                                        {else/}
+                                        <td class="td-manage">
+                                            <input name="op_id[]" type="hidden" value="{$v.op_id}"/>
+                                            <input name="series_id[]" type="hidden" value="{$v.series_id}"/>
+                                            <input name="structure_id[]" type="hidden" value="{$v.structure_id}"/>
+                                            <a title="查看" onclick="xadmin.open('编辑产品', '{:url('Carorder/readProduct',array('id'=>$v['op_id']))}')" href="javascript:;">
+                                                <i class="layui-icon">&#xe63c;</i></a>
+                                        </td>
+                                        {/if}
+                                    </tr>
+                                    {/volist}
+
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="layui-card-body " style="padding-bottom: 0px;">
+                            <blockquote class="layui-elem-quote" style="margin: 0px;background: #c3c3c3;font-size: 14px; color: #000;">组合单信息</blockquote>                       
+                        </div>
+                        <div class="layui-card-body " style="padding-top: 0px;">
+                            <table class="layui-table layui-form" id="group-table" lay-filter="group-table" style="margin: 0px;">
+                                  <thead>
+                                    <tr>
+                                        
+                                        <th>编号</th>
+                                        <th>总宽</th>
+                                        <th>总高</th>
+                                        <th>产品面积</th>
+                                        <th>报价总个数</th>                                        
+                                        <th>生成总个数</th>
+                                        <th>总金额</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {volist name='group' id='v'}
+                                    <tr>
+                                        
+                                        <td>{$i}</td>
+                                        <td>{$v.width}</td>
+                                        <td>{$v.height}</td>
+                                        <td>{$v.product_area}</td>
+                                        <td>{$v.price_count}</td>
+                                        <td>{$v.calculate_count}</td>
+                                        <td>{$v.total_price}</td>
+                                        <td class="td-manage">
+                                            <a title="查看" onclick="xadmin.open('查看产品', '{:url('groupOrder',array('id'=>$v['og_id'],'order_id'=>$v['order_id']))}',1200,600)" href="javascript:;">
+                                                <i class="layui-icon">&#xe63c;</i></a>
+                                        </td>
+                                    </tr>
+                                    {/volist}
+
+                                </tbody> 
+                                
+                            </table>
+                        </div>
+                        <div class="layui-card-body " style="padding-bottom: 0px;">
+                            <blockquote class="layui-elem-quote" style="margin: 0px;background: #c3c3c3;font-size: 14px; color: #000;">原材料信息</blockquote>                       
+                        </div>
+                        <div class="layui-card-body " style="padding-top: 0px;">
+                            <table class="layui-table layui-form" style="margin: 0px;">
+                                <thead>
+                                    <tr>
+
+                                        <th width="30">编号</th>
+                                        <th>名称</th>
+                                        <th>材质/型号</th>
+                                        <th>铝材/花件颜色</th>
+                                        <th>单位</th>
+                                        <th>宽</th>
+                                        <th>高</th>
+                                        <th>个数</th>
+                                        <th>产品面积</th>
+                                        <th>单价</th>
+                                        <th>折后价</th>
+                                        <th>总金额</th>
+                                        <th>操作</th></tr>
+                                </thead>
+                                <tbody>
+                                    {volist name='material' id='v'}
+                                    <tr>
+
+                                        <td width="30">{$i}</td>
+                                        <td>{$v.name}</td>
+                                        <td>{$v.type}</td>
+                                        <td>{$v.color}</td>
+                                        <td>㎡</td>
+                                        <td>{$v.width}</td>
+                                        <td>{$v.height}</td>
+                                        <td>{$v.count}</td>
+                                        <td>{$v.product_area}</td>
+                                        <td>{$v.price}</td>
+                                        <td>{$v.all_price}</td>
+                                        <td>{$v.all_price}</td>
+                                        <td class="td-manage">
+                                            <a title="查看" onclick="xadmin.open('编辑产品', '{:url('Carorder/readMaterial',array('id'=>$v['om_id']))}')" href="javascript:;">
+                                                <i class="layui-icon">&#xe63c;</i></a>
+                                        </td>
+                                    </tr>
+                                    {/volist}
+
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="layui-card-body " style="padding-bottom: 0px;">
+                            <blockquote class="layui-elem-quote" style="margin: 0px;background: #c3c3c3;font-size: 14px; color: #000;">定制类产品</blockquote>
+                        </div>
+                        <div class="layui-card-body " style="padding-top: 0px;">
+                            <table class="layui-table layui-form" style="margin: 0px;" lay-filter="diy">
+                                <thead>
+                                <tr>
+                                    <th lay-data="{field:'material'}">名称</th>
+                                    <th lay-data="{field:'color_name'}">铝型/花件颜色</th>
+                                    <th lay-data="{field:'all_width'}">总宽</th>
+                                    <th lay-data="{field:'all_height'}">总高</th>
+                                    <th lay-data="{field:'count'}">数量</th>
+                                    <th lay-data="{field:'product_area'}">产品面积</th>
+                                    <th lay-data="{field:'area'}">报价面积</th>
+                                    <th lay-data="{field:'price'}">单价</th>
+                                    <th lay-data="{field:'all_price'}">总价</th>
+                                    <th lay-data="{field:'diy_pic'}">产品图片</th>
+                                    <th lay-data="{field:'c'}" width="12%">操作</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {volist name='diy' id='v'}
+                                <tr>
+
+                                    <td>{$v.material}</td>
+                                    <td>{$v.color_name}</td>
+                                    <td>{$v.all_width}</td>
+                                    <td>{$v.all_height}</td>
+                                    <td>{$v.count}</td>
+                                    <td>{$v.product_area}</td>
+                                    <td>{$v.area}</td>
+                                    <td>{$v.price}</td>
+                                    <td>{$v.all_price}</td>
+                                    <td><img src="/upload/{$v.diy_pic}"></td>
+                                    <td class="td-manage">
+                                        <a title="查看" onclick="xadmin.open('编辑', '{:url('diyedit',array('id'=>$v['op_id']))}',1200, 600)" href="javascript:;">
+                                            <i class="layui-icon">&#xe63c;</i></a>
+                                        <a title="删除" onclick="member_del(this, {$v.op_id})" href="javascript:;">
+                                            <i class="layui-icon">&#xe640;</i></a>
+                                    </td>
+                                </tr>
+                                {/volist}
+
+                                </tbody>
+
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <input name="order_id" type="hidden" value="{$orderid}"/>
+            <iframe name="imgiframe" width="0" height="0"></iframe>
+        </div>
+    </form>
+</body>
+<script>
+    layui.use(['laydate', 'form'],
+            function () {
+            var laydate = layui.laydate;
+            var form = layui.form;
+
+            //执行一个laydate实例
+            laydate.render({
+            elem: '#end_date' //指定元素
+            });
+            //监听提交表单
+            form.on('submit(edit)',
+                    function (data) {
+                    ajaxform("{:url('edit')}", data.field, 1);
+                    return false;
+                    });
+            });
+             //进度条   
+      function progress(number){
+          var all_count ={php}echo count($product);{/php};         
+          var one = Math.round(100/all_count);
+          var progress = number*one;
+          element.progress('demo', progress+'%');
+      }      
+     //清空进度条
+     function clear(){
+            clearInterval();
+            $('.cporgress').css('display','none');
+            element.progress('demo', '0%');
+            element.render();
+        }
+            
+     function check(id){
+         layer.confirm('确定通过审核',function(){
+             ajaxform("{:url('check')}", {id:id}, 1);
+         });
+         
+     }       
+
+</script>
+<script src="__STATIC__/js/jquery.min.js" charset="utf-8"></script>
+<script>
+
+</script>
+</html>

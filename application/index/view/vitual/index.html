@@ -1,0 +1,55 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<!-- <meta http-equiv="refresh" content="5"> -->
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>微元生产工序报工管理系统,建材行业生产管理系统,门窗生产管理系统,微元科技,佛山市微元科技有限公司</title>
+<link href="__STATIC__/theme/index/databoard/gk.css?v=<?php echo time();?>" rel="stylesheet" />
+<script src="__STATIC__/theme/index/databoard/jquery.min.js"></script>
+<script src="__STATIC__/theme/index/databoard/gk.js?v=<?php echo time();?>"></script>
+
+
+</head>
+<body style="text-align: center;line-height: 50px;">
+<div style=" width: auto; margin:0 auto ; margin-top: 50vh">
+<div style=" margin-top: -180px;">
+<div style="font-size: 3vw; padding-bottom: 20px;">今天</div>
+<div style=" font-size: 5vw;color: #f6ffad;">
+<span style="font-size: 3vw;">接单(产品)：</span></span><span id="torder">112</span><span style="font-size: 3vw;">套</span><span style="font-size: 2vw; color:#328def"> | </span><span id="tarea">215.37</span><span style="font-size: 3vw;">m²</span>                          
+</div>
+<div style="height:10vh"></div>
+<div style="font-size: 3vw; padding-bottom: 20px;">
+    <?php echo date('Y').'年'.date('m').'月';?>
+</div>
+<div style="font-size: 5vw;color: #f6ffad;">
+<span style="font-size: 3vw;">接单(产品)：</span><span id="morder">{$month}</span><span style="font-size: 3vw;">套</span><span style="font-size: 2vw; color:#328def"> | </span><span id="marea">{$month_area}</span><span style="font-size: 3vw;">m²</span>  
+</div>
+</div>
+</div>
+
+<script>
+$(function(){
+    refresh();
+    setInterval("refresh()",60000*30); 
+
+})
+
+function refresh(){
+    $.ajax({
+        url:"{:url('index')}",
+        data: {today_receive:$('#torder').text(),today_area:$('#tarea').text(),month_receive:$('#morder').text(),month_area: $('#marea').text()},
+        type: 'POST',
+        dataType: 'json',
+        success:function(res){
+            $('#torder').text(res.torder);
+            $('#tarea').text(res.tarea);
+            $('#morder').text(res.morder);
+            $('#marea').text(res.marea);
+        }
+    })
+}
+    
+</script>
+</body>
+</html>

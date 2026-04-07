@@ -1,0 +1,175 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+        <title>微元生产工序报工管理系统,建材行业生产管理系统,门窗生产管理系统,微元科技,佛山市微元科技有限公司</title>
+        {include file="public/header" /}
+    </head>
+    <style>
+        .layui-input, .layui-select, .layui-textarea {
+            height: 30px;
+            line-height: 1.1;
+        }
+        body .imitate-select{background-color: unset;border: none;}
+    </style>
+<body class="glassplan_modal">
+    <div class="modal-body">
+        <form class="layui-form" id="form1">
+            <div class="title-button">
+                {volist name='button' id='v'}
+                <span class="{if condition="$v['back_count'] neq 0"}part{else/}dange{/if}">{$v.product_no}: 订{$v.book_count} | 回{$v.back_count}</span>
+                {/volist}
+            </div>
+            <div class="select-box">
+                <div class="imitate-select" style="width: 200px">
+<!--                    <span class="select-txt">选择销售单号</span>-->
+<!--                    <span class="triangle-down"></span>-->
+<!--                    <input type="hidden" name="ordernum">-->
+<!--                    <ul data-sign="ordernum">-->
+<!--                        <li data-value="">默认</li>-->
+<!--                        {volist name='ordernum' id='v'}-->
+<!--                        <li data-value='{$v}' {if condition="$search['ordernum'] eq $v"}data-selected="true"{/if}>{$v}</li>-->
+<!--                        {/volist}-->
+<!--                    </ul>-->
+                    <select name="ordernum" lay-search="">
+                        <option value>选择或输入销售单号</option>
+                        {volist name='ordernum' id='v'}
+                        <option value="{$v}" {if condition="$search['ordernum'] eq $v"}selected{/if}>{$v}</option>
+                        {/volist}
+                    </select>
+                </div>
+                <div class="imitate-select" style="width: 200px">
+<!--                    <span class="select-txt">选择生产单号</span>-->
+<!--                    <span class="triangle-down"></span>-->
+<!--                    <input type="hidden" name="unique_sn">-->
+<!--                    <ul data-sign="unique_sn">-->
+<!--                        <li data-value="">默认</li>-->
+<!--                        {volist name='unique_sn' id='v'}-->
+<!--                        <li data-value='{$v}' {if condition="$search['unique_sn'] eq $v"}data-selected="true"{/if}>{$v}</li>-->
+<!--                        {/volist}-->
+<!--                    </ul>-->
+                    <select name="unique_sn" lay-search="">
+                        <option value>选择或输入生产单号</option>
+                        {volist name='unique_sn' id='v'}
+                        <option value="{$v}" {if condition="$search['unique_sn'] eq $v"}selected{/if}>{$v}</option>
+                        {/volist}
+                    </select>
+                </div>
+                <div class="imitate-select">
+<!--                    <span class="select-txt">选择状态</span>-->
+<!--                    <span class="triangle-down"></span>-->
+<!--                    <input type="hidden" name="state">-->
+<!--                    <ul data-sign="state">-->
+<!--                        <li data-value="">默认</li>-->
+<!--                        <li data-value='1' {if condition="$search['state'] eq 1"}data-selected="true"{/if}>异常</li>-->
+<!--                    </ul>-->
+                    <select name="state" lay-search="">
+                        <option value="">默认</option>
+                        <option value="1" {if condition="$search['state'] eq 1"}selected{/if}>异常</option>
+                    </select>
+                </div>
+            </div>
+            <table class="layui-table">
+                <thead>
+                    <tr>
+                        <th>销售单号</th>
+                        <th>生产单号</th>
+                        <th>完成时间</th>
+                        <th>报工者</th>
+                        <th>异常</th>
+                    </tr> 
+                </thead>
+                <tbody>
+                    {volist name='list' id='v'}
+                    <tr>
+                        <td>{$v.ordernum}</td>
+                        <td>{$v.unique_sn}</td>
+                        <td>{if condition="$v['endtime'] neq 0"}{$v.endtime|date='Y-m-d'}{/if}</td>
+                        <td>{$v.uname}</td>
+                        <td>{if condition="$v['state'] eq 1"}<a onclick="xadmin.open('异常', '{:url('index/exception',array('fid'=>$v['fid']))}', 500, 460)" href="javascript:void(0)">有</a>{else}/{/if}</td>
+                    </tr>
+                    {/volist}
+                </tbody>
+            </table>
+        </form>
+    </div>	
+</body>
+    <script>layui.use(['form', 'laydate','layer','upload','table'],
+        function() {
+            $ = layui.jquery;
+            var form = layui.form;
+
+            form.on('select',function () {
+                $('#form1').submit();
+            });
+        });
+
+    </script>
+<script>
+    // 显示当前选中的筛选条件
+    $('#form1').find('.imitate-select').each(function(){
+        var _this = $(this);
+        if(_this.children('ul').children('li[data-selected=true]')){
+            var tempTxt = _this.children('ul').children('li[data-selected=true]').html();
+            var tempVal = _this.children('ul').children('li[data-selected=true]').attr('data-value');
+            if(tempTxt != null && tempVal != null){
+                _this.children('.select-txt').attr('data-value',tempVal).html(tempTxt);
+                _this.children('input[type=hidden]').val(tempVal);
+            }
+        }
+    })
+    // 选择订单排序
+    $('.imitate-select').click(function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var _this = $(this);
+        var clickSign = _this.attr('data-sign');
+        $('.imitate-select').removeAttr('data-sign').children('ul').hide();
+        if (clickSign == 'true') {
+            _this.children('ul').hide();
+            _this.removeAttr('data-sign');
+        } else {
+            _this.children('ul').show();
+            _this.attr('data-sign', 'true');
+        }
+    });
+    $(window).click(function(){
+        
+        var elem = event.srcElement ? event.srcElement : event.target;
+        while (elem) { //循环判断至跟节点，防止点击的是div子元素 
+            if (elem.id && elem.id == 'orderScreenBox') {
+                return;
+            }
+            if($(elem).hasClass('modal-content')){
+                return;
+            }
+            elem = elem.parentNode;
+        }
+        $('.modal-box').fadeOut();
+        $('.imitate-select').removeAttr('data-sign').children('ul').hide();
+        $('.content-header-left').removeAttr('data-click').css({
+            top: '0',
+        }).children('.filter-orders').removeClass('filter-orders-active');
+        $('.content-header-left').siblings('.order-screen-box').css({
+            height: '0',
+            overflow: 'hidden'
+        })
+    });
+    $('.imitate-select ul').delegate('li','click',function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        var _this = $(this);
+        var tempTxt = _this.html();
+        var _thisValue = _this.attr('data-value');
+        _this.parent().parent().children('.select-txt').attr('data-value',_thisValue).html(tempTxt);
+        _this.parent().hide();
+        _this.parent().parent().removeAttr('data-sign');
+        _this.parent().siblings('input[type=hidden]').val(_thisValue);
+        var _clickTarget = _this.parent().attr('data-sign');
+        if(_clickTarget == 'ordernum' || _clickTarget == 'unique_sn' || _clickTarget == 'state' ){
+            $('#form1').submit();
+        }
+    });
+</script>
+</html>

@@ -1,0 +1,173 @@
+<?php if (!defined('THINK_PATH')) exit(); /*a:1:{s:108:"/mnt/datadisk0/www/wwwroot/wchuanghua2.ecloudm.com/public/../application/admin/view/carorder/all_iframe.html";i:1635496792;}*/ ?>
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport"
+              content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no">
+        <meta http-equiv="pragma" content="no-cache">
+        <meta http-equiv="cache-control" content="no-cache">
+        <meta http-equiv="expires" content="0">
+        <title></title>
+        <style>
+            body,
+            html,
+            div,
+            p,
+            ul,
+            li,
+            a,
+            img,
+            span,
+            button,
+            header,
+            footer,
+            section {
+                padding: 0;
+                margin: 0;
+            }
+
+            *, :before, :after {
+                -webkit-tap-highlight-color: transparent;
+                -webkit-user-select: none;
+                outline: none;
+                box-sizing: border-box;
+                -webkit-box-sizing: border-box;
+            }
+
+            ::-webkit-scrollbar {
+                width: 0;
+                opacity: 0;
+            }
+
+            button{
+                font-family: simsun,"microsoft yahei", arial, "Helvetica Neue", Helvetica, STHeiTi, sans-serif;
+            }
+            body {
+                font-family: "microsoft yahei", arial, "Helvetica Neue", Helvetica, STHeiTi, sans-serif;
+                color: #000;
+                background-color: #f5f5f5;
+                -webkit-overflow-scrolling: touch;
+            }
+            .share-container {
+                padding-top: 0.72rem;
+                width: 2.35rem;
+                margin: 0 auto;
+            }
+
+
+            .text{
+                font-size: 0.36rem;
+                color: #f2f2f2;
+            }
+            .btn-share {
+                width: 64%;
+                height: 0.89rem;
+                background-color: #3baaff;
+                border-radius: 0.89rem;
+                border: 1px solid #3baaff;
+                color: white;
+                font-size: 0.36rem;
+                margin: 0.75rem 0 0.67rem;
+            }
+            .btn-share:active{
+                background-color: #1b96c8;
+            }
+            
+            .share-content{
+                width:auto;
+                height:459px;
+            }
+        </style>
+    </head>
+    <body>
+        <section class="main-container">
+            <?php if(is_array($loop) || $loop instanceof \think\Collection || $loop instanceof \think\Paginator): $i = 0; $__LIST__ = $loop;if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$v): $mod = ($i % 2 );++$i;?>
+            <div class="share-content" id="shareContent<?php echo $v['op_id']; ?>">
+                 <?php 
+                    foreach ($v['export'] as $key => $value) {
+                        eval("$$value;"); //为变量赋值
+                    }
+                    $picc = "ccc.png";$black = "black.jpg";
+                    
+                    $diff = $v['structure_id']; //结构id,用于解决包含多个脚本的错误
+                    $rulerPic = $v['ruler_pic'];
+                    $flower = $v['flowerd']!=''?$v['flowerd']:$picc;
+                    $flowers = $v['flowerds']!=''?$v['flowerds']:$picc;
+                    $alumPic = $black;
+                    $flowerPic = $black;
+
+                    //如果标尺脚本不存在，则不执行
+                    if(in_array($v['path_url'],$allruler)){
+                        include "./ruler/$v[path_url]"; //运行脚本
+                    }
+
+                    
+                ?>
+            </div>
+            <?php endforeach; endif; else: echo "" ;endif; ?>
+            
+        </section>
+        <script src="/static/js/jquery.min.js"></script>
+        <script src="/static/js/dom2image.js"></script>
+        <script>
+            var saveproject_url = "<?php echo url('Carorder/saveImg'); ?>";
+            var count = <?php  echo count($loop) ?>;
+            	<?php 
+                        $op_id=$res_id=array();
+                        foreach($loop as $value){
+                                $op_id[]=$value['op_id'];	
+                                $res_id[]=$value['res_id'];	
+                        }
+            	 ?>
+            	
+            var op_id=[<?php  echo implode(",",$op_id); ?>];
+            var res_id=[<?php  echo implode(",",$res_id); ?>];
+            
+            var _i = 0;//记录当前执行的序号
+            var _length=op_id.length;//记录产品的数量
+
+            //ajax 提交canvas的二进制值到后台并保存
+            function saveAsimg(cc,res_id) {
+                imageData = cc;
+//                console.log(imageData);
+                jQuery.post(saveproject_url, {'suffix': 'jpg', 'image': imageData,res_id:res_id}, function (result) {
+                	imageData=null;
+                	if(result.status==1){
+                        window.parent.receiver(<?php echo $order_id; ?>); //回调函数
+                        if((_i+1)<_length){
+                        	_i++;
+                        	toimage(_i);//再执行下一个
+                        }
+                    }
+                });
+            }
+            
+            function toimage(index){
+           	var _op_id=op_id[index];
+            	var _res_id=res_id[index];
+            
+            	var node =document.getElementById("shareContent"+_op_id);
+             		domtoimage.toPng(node).then(function (dataUrl) {
+                    saveAsimg(dataUrl,_res_id); //保存图片
+                   
+                }).catch(function (error) {
+                    //console.error('oops, something went wrong!', error);
+                });
+
+
+            };
+            
+            $(function(){
+            	if(_length>0){
+                 	toimage(_i);
+            	}else{
+
+                    window.parent.open_result(<?php echo $order_id; ?>);
+            	}
+
+            })
+
+        </script>
+    </body>
+</html>

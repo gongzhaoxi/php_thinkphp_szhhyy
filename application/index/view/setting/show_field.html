@@ -1,0 +1,335 @@
+<?php $current='6'; ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>微元生产工序报工管理系统,建材行业生产管理系统,门窗生产管理系统,微元科技,佛山市微元科技有限公司</title>
+{include file="public/header" /}
+
+</head>
+<body class="add_field_modal">
+	{php}$systemfield=array('ordernum');{/php}
+	<div class="modal-body">
+		<div class="modal-body-middle">
+			<form id="form" class="field-box">
+				<input id="hidden_id" type="hidden" value="{$one['id']}"/>
+				<ul class="field-box-list">
+					<li class="field-list-group">
+						<div class="field-list-group-left setLineHeight">字段名称：</div>
+						<div class="field-list-group-right">
+							<input type="text" name="field_name" id="field_name" autocomplete="off" value="{$one['fieldname']}" placeholder="请输入字段名称" {if condition="$lockfield eq 1 || $one['is_system'] eq 1"}disabled="disabled"{/if} />
+						</div>
+					</li>
+					<li class="field-list-group">
+						<div class="field-list-group-left setLineHeight">第三方字段名称：</div>
+						<div class="field-list-group-right">
+							<input type="text" name="third_field_name" id="third_field_name" autocomplete="off" value="{$one['third_fieldname']}" placeholder="请输入第三方字段名称" />
+						</div>
+					</li>
+					<li class="field-list-group">
+						<div class="field-list-group-left setLineHeight">字段含义：</div>
+						<div class="field-list-group-right">
+							<input type="text" name="explains" id="explains" autocomplete="off" value="{$one['explains']}" placeholder="请输入字段含义"/>
+						</div>
+					</li>
+					<li class="field-list-group">
+						<div class="field-list-group-left">字段类型：</div>
+						<div class="field-list-group-right">
+							<div class="group-right-list imitate-select">
+								<span class="select-txt">选择字段类型</span>
+								<span class="triangle-down"></span>
+								<input type="hidden" name="type" id="type">
+								<ul data-sign="type">
+									{volist name="field_type" id="vo"}
+										<li {php} if($one['type']==$key){ {/php}data-selected="true"{php} }{/php} data-value="{$key}">{$vo}</li>
+									{/volist}
+								</ul>
+							</div>
+						</div>
+					</li>
+					<li class="field-list-group setPadding">
+						<div class="field-list-group-left">系统必须：</div>
+						<div class="field-list-group-right">
+							<div class="imitate-checkbox-small {if condition='$lockfield neq 1'}disabled{/if}" {if condition="$one['is_system'] eq '1'"} data-sign="true" data-sign="true"{/if}  {if condition="$lockfield neq 1"}data-disabled="true"{/if}>
+								<span></span>
+								<input type="hidden" name="is_system" id="is_system" value="0" />
+							</div>
+						</div>
+					</li>
+					<li class="field-list-group setPadding">
+						<div class="field-list-group-left">二维码字段：</div>
+						<div class="field-list-group-right">
+							<div class="imitate-checkbox-small" {if condition="$one['isqrcode'] eq '1'"} data-sign="true" data-sign="true"{/if}>
+								<span></span>
+								<input type="hidden" name="isqrcode" id="isqrcode" value="1" />
+							</div>
+						</div>
+					</li>
+					<li class="field-list-group">
+						<div class="field-list-group-left setLineHeight">二维码排序：</div>
+						<div class="field-list-group-right">
+							<input type="text" id="orderby" autocomplete="off" name="orderby" value="{$one['orderby']}" placeholder="请输入数字"/>
+						</div>
+					</li>
+					<li class="field-list-group setPadding">
+						<div class="field-list-group-left">列表字段：</div>
+						<div class="field-list-group-right">
+							<div class="imitate-checkbox-small"  {if condition="$one['onlist'] eq '1'"} data-sign="true" data-sign="true"{/if}>
+								<span></span>
+								<input type="hidden" name="onlist" id="onlist" value="1" />
+							</div>
+						</div>
+					</li>
+					<li class="field-list-group setPadding">
+						<div class="field-list-group-left">员工报表：</div>
+						<div class="field-list-group-right">
+							<div class="imitate-checkbox-small"  {if condition="$one['salary_field'] eq '1'"} data-sign="true" data-sign="true"{/if}>
+								<span></span>
+								<input type="hidden" name="salary_field" id="salary_field" value="1" />
+							</div>
+						</div>
+					</li>
+					<li class="field-list-group">
+						<div class="field-list-group-left setLineHeight">列表排序：</div>
+						<div class="field-list-group-right">
+							<input type="text" id="listorder" autocomplete="off" name="listorder" value="{$one['listorder']}" placeholder="请输入数字"/>
+						</div>
+					</li>
+					<li class="field-list-group setPadding">
+						<div class="field-list-group-left">高级搜索：</div>
+						<div class="field-list-group-right">
+							<div class="imitate-checkbox-small {php} if(in_array($one['fieldname'],$systemfield)){ {/php} disabled {php} }{/php}" {php} if($one['search']==1||in_array($one['fieldname'],$systemfield)){ {/php} data-sign="true" data-sign="true" {php} }{/php} {php} if(in_array($one['fieldname'],$systemfield)){ {/php} data-readonly="true" {php} }{/php} >
+								<span></span>
+								<input type="hidden" name="search" id="search" value="1" />
+							</div>
+						</div>
+					</li>
+					<li class="field-list-group" {if condition="$paichan neq 1"}style="display:none;"{/if}>
+						<div class="field-list-group-left setLineHeight">排产字段：</div>
+						<div class="field-list-group-right">
+							<div class="imitate-checkbox-small" {if condition="$one['scheduallist'] eq '1'"} data-sign="true" data-sign="true"{/if}>
+								<span></span>
+								<input type="hidden" name="scheduallist" id="scheduallist" value="1" />
+							</div>
+						</div>
+					</li>
+					<li class="field-list-group" {if condition="$paichan neq 1"}style="display:none;"{/if}>
+						<div class="field-list-group-left setLineHeight">排产排序：</div>
+						<div class="field-list-group-right">
+							<input type="text" id="scheduleorder" autocomplete="off" name="scheduleorder" value="{$one['scheduleorder']}" placeholder="请输入数字"/>
+						</div>
+					</li>
+					<li class="field-list-group setPadding unset-margin-bottom">
+						<div class="field-list-group-left">包含下级：</div>
+						<div class="field-list-group-right">
+							<ul class="level-list">
+								{volist name="list" id="vo"}
+									<li>
+										<div class="imitate-checkbox-small"  {php} if(in_array($vo['id'],$childs)){ {/php} data-sign="true" data-sign="true" {php}}{/php}>
+											<span></span>
+											<input type="hidden" name="child" value="{$vo.id}" />
+										</div>
+										<div>{$vo.explains}</div>
+									</li>
+								{/volist}
+							</ul>
+						</div>
+					</li>
+					<li class="field-list-group">
+						<div class="field-list-group-left">是否禁用：</div>
+						<div class="field-list-group-right">
+							<div class="disable-tab-box">
+								<div class="disable-tab" data-index="1">
+									<span class="imitate-radio {if condition="$one['status'] eq '1'"}imitate-radio-active{/if}"></span>
+									<span>是</span>
+								</div>
+								<div class="disable-tab" data-index="0">
+									<span class="imitate-radio {if condition="$one['status'] neq '1'"}imitate-radio-active{/if}"></span>
+									<span>否</span>
+								</div>
+								<input type="hidden" class="status" name="status" value="{$one['status']}" />
+							</div>
+						</div>
+					</li>
+				</ul>
+			</form>
+			<div class="modal-body-bottom">
+				<div class="btne">确认添加</div>
+			</div>
+		</div>
+	</div>
+<script type="text/javascript">
+	$(document).ready(function(){
+		$('.field-box').find('.imitate-checkbox-small').each(function(){
+			var _this = $(this);
+			if(_this.attr("data-sign") == 'true'){
+				_this.children('span').show();
+			}
+		});
+		$('.field-box').find('.imitate-select').each(function(){
+			var _this = $(this);
+			var selectVal = _this.find('li[data-selected=true]').attr('data-value');
+			var selectTxt = _this.find('li[data-selected=true]').html();
+			_this.children('input[type=hidden]').val(selectVal);
+			_this.children('.select-txt').html(selectTxt);
+		})
+	})
+	$('.btne').click(function(){
+		var field_name = $("#field_name").val();
+		var explains = $("#explains").val();
+		var orderby = $("#orderby").val();
+		var listorder = $("#listorder").val();
+		var scheduleorder = $("#scheduleorder").val();
+		var type = $("#type").val();
+		var hidden_id = $("#hidden_id").val();
+		var third_fieldname = $('#third_field_name').val();
+		var is_system = 0;
+		if($("#is_system").parent().attr("data-sign") == 'true'){
+			is_system = 1;
+		}
+		var statusVal = $("input[name='status']").val()
+		var status = statusVal == '' || statusVal == undefined ? 0 : statusVal;
+		var onlist = 0;
+		if($("#onlist").parent().attr("data-sign") == 'true'){
+			onlist=1;
+		}
+		var issalaryfield = 0;
+		if($("#salary_field").parent().attr("data-sign") == 'true'){
+			issalaryfield=1;
+		}
+		var isqrcode = 0;
+		if($("#isqrcode").parent().attr("data-sign") == 'true'){
+			isqrcode = 1;
+		}
+		
+		var search = 0;
+		if($("#search").parent().attr("data-sign") == 'true'){
+			search = 1;
+		}
+		
+		var scheduallist = 0;
+		if($("#scheduallist").parent().attr("data-sign") == 'true'){
+			scheduallist = 1;
+		}
+		
+		var childs=new Array();
+		$("input[name='child']").each(function(){
+			var _this = $(this);
+			if(_this.parent().attr("data-sign") == 'true'){
+				childs.push(_this.val());
+			}
+		})
+		var child='';
+			child=childs.join(",");
+		
+		if(field_name==''){
+			layer.msg("请输入字段名称");
+			return false;
+		}
+		$.ajax({
+			url: "{:Url('Setting/add_field')}",
+			data: {
+				"field_name":field_name,
+				"third_fieldname":third_fieldname,
+				"explains":explains,
+				"type":type,
+				"orderby":orderby,
+				"listorder":listorder,
+				"is_system":is_system,
+				"status":status,
+				"search":search,
+				"isqrcode":isqrcode,
+				"onlist":onlist,
+				"salary_field":issalaryfield,
+				"scheduleorder":scheduleorder,
+				"scheduallist":scheduallist,
+				"child":child,
+				"id":hidden_id
+			},
+			dataType: 'json',
+			success:function(obj){
+				if(obj.status==1){
+					layer.msg('操作成功');
+					setTimeout(function(){
+						parent.location.reload();
+					},1000);				
+				}else{
+					layer.msg(obj.msg);
+				}
+			}
+		},'json')
+	});
+	
+	// 是否禁用
+	$('.disable-tab-box .disable-tab').click(function(){
+		var _this = $(this);
+		var clickTarget = _this.attr('data-index');
+		$('input[name=status]').val(clickTarget);
+		_this.children('.imitate-radio').addClass('imitate-radio-active');
+		_this.siblings('.disable-tab').children('.imitate-radio').removeClass('imitate-radio-active');
+	});
+
+	$('.imitate-select').click(function(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		var _this = $(this);
+		var clickSign = _this.attr('data-sign');
+		$('.imitate-select').removeAttr('data-sign').children('ul').hide();
+		if (clickSign == 'true') {
+			_this.children('ul').hide();
+			_this.removeAttr('data-sign');
+		} else {
+			_this.children('ul').show();
+			_this.attr('data-sign', 'true');
+		}
+	});
+	$(window).click(function(){
+		var elem = event.srcElement ? event.srcElement : event.target;
+		while (elem) { //循环判断至跟节点，防止点击的是div子元素 
+			if (elem.id && elem.id == 'orderScreenBox') {
+				return;
+			}
+			elem = elem.parentNode;
+		}
+		$('.imitate-select').removeAttr('data-sign').children('ul').hide();
+		$('.content-header-left').removeAttr('data-click').css({
+			top: '0',
+		}).children('.filter-orders').removeClass('filter-orders-active');
+		$('.content-header-left').siblings('.order-screen-box').css({
+			height: '0',
+			overflow: 'hidden'
+		})
+	})
+	$('.imitate-select ul').delegate('li','click',function(e){
+		e.preventDefault();
+		e.stopPropagation();
+		var _this = $(this);
+		var tempTxt = _this.html();
+		var _thisValue = _this.attr('data-value');
+		_this.parent().parent().children('.select-txt').attr('data-value',_thisValue).html(tempTxt);
+		_this.parent().hide();
+		_this.parent().parent().removeAttr('data-sign');
+		var _clickTarget = _this.parent().attr('data-sign');
+		_this.parent().siblings('input[type=hidden]').val(_thisValue);
+	});
+	
+
+	$('.imitate-checkbox-small').click(function(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		let _this = $(this);
+		let clickSign = _this.attr('data-sign');
+		if(_this.attr('data-readonly') != 'true' && _this.attr('data-disabled') != 'true'){
+			if (clickSign == 'true') {
+				_this.removeAttr('data-sign');
+				_this.children('span').hide();
+			} else {
+				_this.children('span').show();
+				_this.attr('data-sign', 'true');
+			}
+		}
+	});
+	</script>
+	
+</body>
+</html>

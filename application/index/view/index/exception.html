@@ -1,0 +1,206 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD HTML 4.01 Strict//EN' 'http://www.w3.org/TR/html4/strict.dtd'>
+<html>
+<head>
+<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>
+<script src="__STATIC__/theme/index/js/jquery-1.10.2.js"></script>
+<link href="__STATIC__index/css/index.css" rel="stylesheet" type="text/css"/>
+<title>工序异常</title>
+</head>
+<style type="text/css">
+.layer-open{padding:10px 0px;}
+.layer-open span{padding:5px 10px;font-weight:bold; background:#333; color:#fff; font-size:14px;}
+.layer-cont{padding:10px 10px 0px 10px;font-size:14px; color:#333;}
+.layer-find{padding:0px 10px 10px 10px; font-size:12px; color:#990000;}
+.doi{padding:10px 0px;}
+.doi span{padding:5px 10px;font-weight:bold; background:#333; color:#fff; font-size:14px;}
+.tet{padding: 5px 10px;}
+.tet textarea{width: 94%;height: 100px;border-radius: 6px;padding: 8px;}
+.layer-btn{border: none;width: 80px;height: 36px;color: #fff;border-radius: 6px;background: #1E90FF;}
+.btn-modules{text-align:center;margin-top:20px;}
+.back{margin-bottom:20px}
+.child3{background:none;color:#50a120;text-decoration: none;width:100px;}
+.imgs{margin-top:10px;}
+#img li{display:inline-block;width:160px;height:160px;float:left;padding-right:5px;margin-bottom:5px;}
+#img li img{display:block;max-width:160px;max-height:160px;cursor:pointer;}
+.handle-time{font-size: 12px;padding: 4px 10px;}
+.handle-time input{line-height: 26px;border-radius: 4px;}
+</style>
+<body>
+<div class="back">
+	<div class="layer-open">
+		<span>异常情况</span>
+		<div class="layer-cont">{$flow_check['stext']} </div>
+	</div>
+	<div class="layer-find">发现者：{$reporter['uname']}   &nbsp;&nbsp;&nbsp;&nbsp;{php} if($flow_check['error_time']>0){ echo date('Y-m-d',$flow_check['error_time']);} {/php}</div>
+	<div class="doi"><span>处理方法</span></div>
+	
+	{notpresent name="one"}
+	<div class="handle-time">预计处理完成时间：<input type="date"  id="handle_time"  autocomplete="off"/></div>
+	<div class="tet"><textarea name="" id="text" placeholder="填写处理意见"></textarea></div>
+	<div class="btn-modules">
+	<button class="layer-btn" onclick="layer_submit()">提交</button>
+	{if condition="$flow_check['endtime'] eq 0"}
+	<button class="layer-btn" onclick="toReport()" style="background-color:#458B00">报工</button>
+	{/if}
+	</div>
+	{else /}
+	<div class="handle-time">预计处理完成时间：{php} if($one['handle_time']>0){echo date('Y-m-d',$one['handle_time']);}{/php}</div>
+	<div class="tet">{$one['text']}</div>
+	<div class="layer-find">处理异常者：{$hanlder['uname']}</div>
+	{if $flow_check['isback']!=2}
+	<div class="btn-modules">
+	<button class="layer-btn" onclick="abnormal_submit()">异常竣工</button></div>{/if}
+	{if condition="$flow_check['endtime'] eq 0"}
+	<div class="btn-modules">
+	<button class="layer-btn" onclick="toReport()" style="background-color:#458B00">报工</button>
+	</div>
+	{/if}
+	{/notpresent}
+
+	<div style="text-align:center;">
+		{if condition="$gx['state'] eq '1' and $flow_check['starttime'] gt 0"}
+		<a class="btn child3" href="javascript:void(0);" onclick="javascript:toRepeal(1);">【撤销开始】</a>
+		{/if}
+		{if condition="$flow_check['endtime'] gt 0"}
+		<a class="btn child3" href="javascript:void(0);" onclick="javascript:toRepeal(2);">【撤销完成】</a>
+		{/if}
+	</div>
+</div>
+
+	{present name="imgs"}
+	<div class="imgs">
+		<ul id="img">
+			{volist name="imgs" id="vo"}
+			<li class="cover"><img data-id="{$vo['id']}" id="delImg" src="__STATIC__/theme/index/images/dels.png" style="width:16px;height:16px;float:left" /><img id="ims" src="{$vo['imgurl']}" height="200" style="margin:12px"></li>
+			{/volist}
+		</ul>
+	</div>
+	
+	<script>
+	$(document).ready(function(){
+		var go=true;
+		$("#delImg").click(function(){
+			go=false;
+			var id=$(this).data("id");
+			layer.confirm("是否删除",{icon:3,title:'提示'},function(){
+				$.ajax({
+					url:"{:url('index/delimg')}",
+					data:{id},
+					dataType:'json',
+					success:function(obj){
+						console.log(obj)
+						layer.msg(obj.msg);
+						setTimeout(function(){
+							window.location.reload();	
+						},1500)
+					}
+				});
+		})
+		setTimeout(function(){
+			go=true;
+		},1500)
+		})
+		$('#img').on('click', '.cover', function () {
+			 if(go==true){
+	            var _index = $(this).index();
+	            var images = $('#img').find('.cover');
+	            var imagesArr = new Array();
+	            $.each(images, function (i, image) {
+	                imagesArr.push($(image).children('#ims').attr('src'));
+	            });
+	            parent.zoom_img(imagesArr,_index+1);
+			 }
+	        });
+	})
+	</script>
+	
+	{/present}
+
+<script src="__STATIC__index/js/jquery.min.js"></script>
+<script src="__STATIC__index/js/layer/layer.js"></script>
+<script src="__STATIC__index/js/laydate/laydate.js"></script>
+<script type="text/javascript">
+function layer_submit(){
+	   var text = $("#text").val();
+	   var id = {$flow_check['id']};
+	   var date = $("#handle_time").val();
+	   if(text==""){
+		   layer.msg('处理意见不为空');
+		   return false;
+	   }
+	   $.ajax({
+		   url:"{:Url('Index/advert')}",
+		   data:{"id":id,"text":text,"date":date},
+		   dataType: 'json',
+		   success:function(obj){
+			   console.log(obj.code);
+			   if(obj.code==0){
+				   layer.msg('提交成功');
+				   setTimeout(function(){
+					  layer.close(layer.index);
+					  window.location.reload();
+				   },2000);
+				   return false;
+			   }
+			   layer.msg('参数不完成整');
+		   }
+	   })
+}
+//异常竣工
+function abnormal_submit(){
+	var id = {$flow_check['id']};
+	$.ajax({
+		   url:"{:Url('Index/abnormal_work')}",
+		   data:{"id":id},
+		   dataType: 'json',
+		   success:function(obj){
+			   console.log(obj.code);
+			   if(obj.code==0){
+				   layer.msg('提交成功');
+				   setTimeout(function(){
+					  layer.close(layer.index);
+					  window.location.reload();
+				   },2000);
+				   return false;
+			   }
+			   layer.msg('参数不完成整');
+		   }
+	   })
+}
+function toReport(){
+	parent.layer.closeAll();
+	var gxid="{$flow_check['orstatus']}";
+	var orderid="{$flow_check['orderid']}";
+	parent.show_gx(gxid,orderid);
+}
+
+var orderid="{$flow_check['orderid']}";
+var gxid="{$flow_check['orstatus']}";
+
+//撤销报工
+function toRepeal(_status){
+	
+	layer.confirm("是否执行撤销报工",{icon:3,title:'提示'},function(index){
+		$.ajax({
+			  url: "{:Url('Index/repealgx')}",
+			  data:{"orderid":orderid,"gxid":gxid,"status":_status},
+			  dataType:"json",
+			  type:'POST',
+			  success:function(obj){
+				  //console.log(obj);
+				  if(obj.status==1){
+					  layer.msg('操作成功');
+					  setTimeout(function(){
+						  parent.reload_window();
+			    		}, 2000);
+				  }else{
+					  layer.msg(obj.msg);
+				  }
+			  }
+		 });
+		layer.close(index);
+	})
+}
+</script>
+</body>
+</html>

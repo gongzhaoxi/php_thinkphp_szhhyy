@@ -1,0 +1,146 @@
+<?php $current='6'; ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>微元生产工序报工管理系统,建材行业生产管理系统,门窗生产管理系统,微元科技,佛山市微元科技有限公司</title>
+{include file="public/header" /}
+
+</head>
+<body>
+	<div class="baogong_parameterSetting popup-box">
+		<div class="popup-header">
+			<div>参数设置</div>
+		</div>
+		<div class="popup-body">
+            {include file="setting/menu" /}
+            
+			<div class="body-center">
+				<div class="body-content-box body-nav-active">
+                    <div class="content-header">
+                        <div class="content-header-left">
+                            <span class="header-left-item" id="addPrinterBtn">
+                                <img src="__STATIC__/theme/index/img/icon_team.png">
+                                <span>添加打印机</span>
+                            </span>
+                        </div>
+                    </div>
+					<div class="content-center">
+						<div class="content-center-inner">
+							<table class="layui-table" border="1" cellpadding="0" cellspacing="0">
+								<thead>
+									<tr class="title">
+                                        <th width="5%">ID</th>
+                                        <th width="15%">名称</th>
+                                        <th width="15%">机器码</th>
+                                        <th width="15%">密钥</th>
+                                        <th width="8%">样式</th>
+                                        <th width="5%">类型</th>
+                                        <th width="8%">操作</th>
+                                    </tr>
+								</thead>
+								<tbody>
+									{volist name="list" id="v"}
+                                        <tr>
+                                            <td>{$v.id}</td>
+                                            <td>{$v.name}</td>
+                                            <td>{$v.machine_code}</td>
+                                            <td>{$v.secret}</td>
+                                            <td>{if condition="$v['type'] eq 1"}{$print_style[$v['style']]}{/if}</td>
+                                            <td>{if condition="$v['type'] eq 1"}入库{elseif condition="$v['type'] eq 2"}切割方案{else/}半成品{/if}</td>
+                                            <td class="operate-box">
+                                                <div class="operate-btn">
+                                                    <a class="btn-normal change" data-id="{$v.id}" href="#">修改</a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {/volist}
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+    </div>
+    <!-- 导入规则 -->
+	<div class="modal-box" id="importRuleModal">
+		<div class="modal-content">
+			<div class="modal-header">
+				<div class="modal-header-left">
+					<div class="modal-header-title">
+						<img src="__STATIC__/theme/index/img/icon_batch.png">
+						<span>导入字段规则</span>
+					</div>
+				</div>
+				<div class="modal-header-right">
+					<span class="close-modal-btn"></span>
+				</div>
+			</div>
+			<div class="modal-body">
+				<div class="iframe-box">
+					<iframe class="myIframe" id="myIframe_importRule" frameborder="0"></iframe>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- 添加打印机 -->
+	<div class="modal-box" id="addPrinterModal">
+		<div class="modal-content">
+			<div class="modal-header">
+				<div class="modal-header-left">
+					<div class="modal-header-title" style="padding-left: 20px;">
+						<span class="title-txt">添加打印机</span>
+					</div>
+				</div>
+				<div class="modal-header-right">
+					<span class="close-modal-btn"></span>
+				</div>
+			</div>
+			<div class="modal-body">
+				<div class="iframe-box">
+					<iframe class="myIframe" id="myIframe_addPrinter" frameborder="0"></iframe>
+				</div>
+			</div>
+		</div>
+    </div>
+    {include file="setting/timeset" /}
+</body>
+<script type="text/javascript">
+    // 添加规则
+    $('#addPrinterBtn').click(function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        $('.title-txt').html('添加打印机');
+        $('#addPrinterModal').fadeIn();
+        $('#myIframe_addPrinter').attr('src','add_print');
+    });
+    // 编辑
+    $('.change').on('click', function(e){
+        var id = $(this).data('id');
+        e.preventDefault();
+        e.stopPropagation();
+        $('.title-txt').html('修改工艺路线');
+        $('#addPrinterModal').fadeIn();
+        $('#myIframe_addPrinter').attr('src','add_print?id='+id);
+    });
+	$('.close-modal-btn').click(function(e){
+		e.preventDefault();
+		e.stopPropagation();
+		$('.modal-box').fadeOut();
+	})
+	$(window).click(function(){
+		var elem = event.srcElement ? event.srcElement : event.target;
+		while (elem) { //循环判断至跟节点，防止点击的是div子元素 
+			if (elem.id && elem.id == 'orderScreenBox') {
+				return;
+			}
+			if($(elem).hasClass('modal-content')){
+				return;
+			}
+			elem = elem.parentNode;
+		}
+		$('.modal-box').fadeOut();
+	})
+</script>
+</html>

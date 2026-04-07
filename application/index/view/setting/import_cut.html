@@ -1,0 +1,50 @@
+{include file='public/header2'}
+<style type="text/css">
+    body{
+        background-color: transparent;
+    }
+    .red{color: #ffffff; text-align: center;}
+</style>
+<body>
+    
+    <div style="padding: 50px 0;margin: 0 auto;text-align: center;">
+        <a href="/static/cut.xlsx" class="layui-btn layui-btn-normal" >下载模板</a>
+        <button class="layui-btn" id="import">上传切割方案</button>
+    </div>
+    <div style="margin: 20px;">
+        <p class="red">注：1、请先“下载模板”，按照模板格式填写内容。</p>
+    </div>
+	
+</body>
+<script>
+    layui.use(['laydate', 'form','upload'],
+        function() {
+            $ = layui.jquery;
+            var laydate = layui.laydate;
+            var  form = layui.form;
+            var upload = layui.upload;
+
+            var uploadInst = upload.render({
+                elem: '#import' //绑定元素
+                , url: "{:url('Printer/import')}" //上传接口
+                , size: 800000 //限制文件大小，单位 KB
+                , method: 'post'
+                , accept: 'file'
+                , exts: "xls|xlsx"
+                , before:function(){ layer.load()}
+                , done: function (res) {
+                    layer.closeAll('loading');
+                    if(res.code==0){
+                        layer.msg(res.msg,{icon:1,time:2000},function(){ location.reload();});
+                        return;
+                    }
+                    layer.msg(res.msg,{icon:2})
+                }
+                , error: function () {
+                    layer.closeAll('loading');
+                }
+            });
+        });
+</script>
+</html>
+

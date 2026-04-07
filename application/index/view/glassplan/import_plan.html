@@ -1,0 +1,50 @@
+{include file='public/header2'}
+<style type="text/css">
+    body{background-color: transparent;min-width: unset;}
+    .red{color: #ffffff;}
+</style>
+<body>
+    <div style="width: 200px;padding-top: 50px;margin: auto;">
+        <a href="{:url('download')}" class=" layui-btn layui-btn-normal" >下载模板</a>
+        <button class=" layui-btn" id='import'>上传计划</button>
+
+    </div>
+    <div style='margin: 20px;'>
+        <p class="red">注：1、首次“上传新计划”时，请先“下载模板”，按照模板格式填写内容。</p>
+        <p class="red">2、“模板”中的字段内容分为“系统固定字段”与“增加字段”，如用户需要增加字段时，请先点击“设置计划字段”进行设置，再“下载模板”。</p>
+        <p class="red">3、新计划与回厂数量使用的模板是相同的，导入新计划时“已回厂片数”为空即时，如旧计划表中玻璃有回厂时，直接在原有表中“已回厂片数”填写相应的数量。</p>
+    </div>
+	
+</body>
+    <script>
+        layui.use(['laydate', 'form','upload'],
+        function() {
+            $ = layui.jquery;
+            var laydate = layui.laydate;
+            var  form = layui.form;
+            var upload = layui.upload;
+            
+            var uploadInst = upload.render({
+                elem: '#import' //绑定元素
+                , url: "{:url('save_plan')}" //上传接口
+                , size: 800000 //限制文件大小，单位 KB
+                , method: 'post'
+                , accept: 'file'
+                , exts: "xls|xlsx"
+                , before:function(){ layer.load()}
+                , done: function (res) {
+                    layer.closeAll('loading');
+                    if(res.code==0){
+                        layer.msg(res.msg,{icon:1,time:2000},function(){ location.reload();});                        
+                        return;
+                    }
+                    layer.msg(res.msg,{icon:2})
+                }
+                , error: function () {
+                    layer.closeAll('loading');
+                }
+            });
+        });       
+    </script>
+</html>
+

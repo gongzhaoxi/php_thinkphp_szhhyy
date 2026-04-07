@@ -1,0 +1,44 @@
+<link rel="stylesheet" type="text/css" href="__STATIC__/index/js/layui/css/layui.css"/>
+<link rel="stylesheet" type="text/css" href="__STATIC__/theme/index/css/style.min.css" />
+<link rel="stylesheet" target="theme" title="blue" type="text/css" href="__STATIC__/theme/index/css/color.min.css" disabled="disabled" />
+
+
+<link rel="stylesheet" target="theme" title="white" type="text/css" href="__STATIC__/theme/index/css/white_color.min.css" disabled="disabled" />
+<script src="__STATIC__/theme/index/js/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="__STATIC__index/js/layui/layui.js"></script>
+<script>
+	var theme = localStorage.getItem('theme');
+	var titleColor = ''; // 图表标题颜色
+	var legendColor = ''; // 图表字体颜色
+	var legendColor_1 = '';
+	var legendColor_2 = '';
+	changeTheme(theme);
+	function changeTheme(theme) {
+		theme = theme == null || theme == undefined ? 'blue' : theme;
+		$('link[title='+ theme +']').removeAttr('disabled');
+		setTimeout(() => {
+			$('link[title='+ theme +']').siblings('link[target=theme]').not('link[title='+ theme +']').attr("disabled","disabled");
+		}, 100);
+		switch (theme) {
+			case 'blue':
+				titleColor = '#78c8f8';
+				legendColor = '#cdd9ff';
+				legendColor_1 = '#60c1ff';
+				legendColor_2 = '#f2e9c1';
+				break;
+			case 'white':
+				titleColor = '#333';
+				legendColor = '#666';
+				legendColor_1 = '#555';
+				legendColor_2 = '#c23531';
+				break;
+			default:
+				break;
+		}
+	}
+	var layer, laydate;
+	layui.use(['layer','laydate'],function(){
+		laydate = layui.laydate;
+		layer = layui.layer;
+	})
+</script>

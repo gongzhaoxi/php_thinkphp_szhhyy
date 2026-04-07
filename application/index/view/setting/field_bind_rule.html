@@ -1,0 +1,223 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>微元生产工序报工管理系统,建材行业生产管理系统,门窗生产管理系统,微元科技,佛山市微元科技有限公司</title>
+{include file="public/header" /}
+</head>
+<style>
+    .select-box{
+        padding: 10px;
+        display: flex;
+    }
+    .select-box .imitate-select{
+        height: 30px;
+        width: 200px;
+        margin-right: 20px;
+	}
+	.layui-form-select{
+		margin: 0 15px;
+	}
+</style>
+<body>
+	<div class="baogong_parameterSetting popup-box">
+		<div class="popup-header">
+			<div>参数设置</div>
+		</div>
+		<div class="popup-body">
+			{include file="setting/menu" /}
+			<div class="body-center">
+				<div class="body-content-box body-nav-active">
+					<div class="content-header">
+						<div class="content-header-left">
+                            <span class="header-left-item" id="importRuleBtn">
+								<img src="__STATIC__/theme/index/img/icon_team.png">
+								<span>导入规则</span>
+							</span>
+							<span class="header-left-item" id="addRuleBtn">
+								<img src="__STATIC__/theme/index/img/icon_team.png">
+								<span>添加规则</span>
+							</span>
+						</div>
+					</div>
+					<div class="content-center">
+						<div class="content-center-inner">
+							<form id="form1" class="select-box layui-form">
+								<select name="field" id="field" lay-verify="required" lay-search lay-filter="field">
+									<option value="">筛选字段名称</option>
+									{volist name='field' id='v'}
+									<option value="{$v.field_id}" {if condition="$v['field_id'] eq $search['field']"}selected="selected"{/if}>{$v.fieldname}|{$v.explains}</option>
+									{/volist}
+								</select>
+								<select name="lines" id="lines" lay-verify="required" lay-search lay-filter="lines">
+									<option value="">筛选字段名称</option>
+									{volist name='line' id='v'}
+									<option value="{$v.id}" {if condition="$v['id'] eq $search['lines']"}selected="selected"{/if}>{$v.title}</option>
+									{/volist}
+								</select>
+							</form>
+							<table class="layui-table" border="1" cellpadding="0" cellspacing="0">
+								<thead>
+									<tr>
+										<th width="5%">组合方式</th>
+                                        <th width="3%">顺序</th>
+                                        <th width="8%">工艺线</th>
+										<th width="10%">二维码字段</th>
+                                        <th width="3%">符号</th>
+                                        <th width="67%">判断值</th>
+
+
+                                        <th width="150">操作</th>
+									</tr>
+								</thead>
+								<tbody>
+									{volist name="list" id="v"}
+                                        <tr>
+                                        	<td>{$v.relate_type}</td>
+                                            <td>{$v.sort}</td>
+                                            <td>{$v.title}</td>
+                                            <td>{$v.fieldname}|{$v.explains}</td>
+                                            <td>{if condition="$v['type'] eq ''"}={else/}{$v.type}{/if}</td>
+                                            <td style="line-height: 40px;">{$v.rule}</td>
+
+                                            <td class="operate-box">
+                                                <div class="operate-btn">
+                                                    <a class="btn-normal edit" data-id="{$v.id}" href="#">修改</a>
+                                                    / 
+                                                    <a class="btn-danger del" data-id="{$v.id}"  href="#">删除</a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {/volist}
+								</tbody>
+							</table>
+							<div class="page-box">
+								<div class="pages">
+									{$page|raw}
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+    </div>
+    <!-- 导入规则 -->
+	<div class="modal-box" id="importRuleModal">
+		<div class="modal-content">
+			<div class="modal-header">
+				<div class="modal-header-left">
+					<div class="modal-header-title">
+						<img src="__STATIC__/theme/index/img/icon_batch.png">
+						<span>导入字段规则</span>
+					</div>
+				</div>
+				<div class="modal-header-right">
+					<span class="close-modal-btn"></span>
+				</div>
+			</div>
+			<div class="modal-body">
+				<div class="iframe-box">
+					<iframe class="myIframe" id="myIframe_importRule" frameborder="0"></iframe>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- 添加规则 -->
+	<div class="modal-box" id="addRuleModal">
+		<div class="modal-content">
+			<div class="modal-header">
+				<div class="modal-header-left">
+					<div class="modal-header-title" style="padding-left: 20px;">
+						<span class="title-txt">添加字段规则</span>
+					</div>
+				</div>
+				<div class="modal-header-right">
+					<span class="close-modal-btn"></span>
+				</div>
+			</div>
+			<div class="modal-body">
+				<div class="iframe-box">
+					<iframe class="myIframe" id="myIframe_addRule" frameborder="0"></iframe>
+				</div>
+			</div>
+		</div>
+	</div>
+	{include file="setting/timeset" /}
+</body>
+<script type="text/javascript">
+	layui.use('form',function(){
+		var form = layui.form;
+		form.render();
+		form.on('select(field)', function(data){
+			$('#form1').submit();
+		})
+		form.on('select(lines)', function(data){
+			$('#form1').submit();
+		})
+	})
+    // 添加规则
+    $('#addRuleBtn').click(function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        $('.title-txt').html('添加字段规则');
+        $('#addRuleModal').fadeIn();
+        $('#myIframe_addRule').attr('src','add_field_rule');
+    });
+    // 导入字段规则
+    $('#importRuleBtn').click(function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        $('#importRuleModal').fadeIn();
+		$('#myIframe_importRule').attr('src','import_field_rule');
+    });
+    // 编辑
+    $('.edit').on('click', function(e){
+        var id = $(this).data('id');
+        e.preventDefault();
+        e.stopPropagation();
+        $('.title-txt').html('编辑字段规则');
+        $('#addRuleModal').fadeIn();
+        $('#myIframe_addRule').attr('src','add_field_rule?id='+id);
+    });
+    
+    //删除
+    $('.del').click(function(){
+        var id = $(this).data('id');
+        layer.confirm('是否删除',{icon:3,title:'提示'},function(index){
+            $.ajax({
+                url: "{:Url('del_field_rule')}",
+                data: {"id":id},
+                dataType:"json",
+                success:function(obj){
+                    if(obj.code==1){
+                        layer.alert('删除失败',{icon:1});
+                    }else if(obj.code==0){
+                        layer.msg('删除成功');	
+                    }
+                    setTimeout(function(){
+                        window.location.reload();	
+                    },1500);
+                }
+            })
+            layer.close(index);
+        })
+    });
+
+	$('.close-modal-btn').click(function(e){
+		e.preventDefault();
+		e.stopPropagation();
+		$('.modal-box').fadeOut();
+	})
+	$(window).click(function(){
+		var elem = event.srcElement ? event.srcElement : event.target;
+		while (elem) {
+			if($(elem).hasClass('modal-content')){
+				return;
+			}
+			elem = elem.parentNode;
+		}
+		$('.modal-box').fadeOut();
+	})
+</script>
+</html>

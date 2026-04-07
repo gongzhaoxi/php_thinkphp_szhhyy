@@ -1,0 +1,184 @@
+<?php $current='6'; ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>微元生产工序报工管理系统,建材行业生产管理系统,门窗生产管理系统,微元科技,佛山市微元科技有限公司</title>
+{include file="public/header" /}
+
+</head>
+<body>
+	<div class="baogong_parameterSetting popup-box">
+		<div class="popup-header">
+			<div>参数设置</div>
+		</div>
+		<div class="popup-body">
+			{php}$index = 2;{/php}
+			{include file="setting/menu" /}
+			<div class="body-center">
+				<!-- 班组管理 -->
+				<div class="body-content-box body-nav-active">
+					<div class="content-header">
+						<div class="content-header-left">
+							<span class="header-left-item" id="addClassGroupBtn">
+								<img src="__STATIC__/theme/index/img/icon_team.png"><span>添加班组</span></span>
+						</div>
+					</div>
+					<div class="content-center">
+						<div class="content-center-inner">
+							<table class="layui-table parameter-table">
+								<thead>
+									<tr>
+										<th>ID</th>
+										<th style="text-align: left;">班组名称</th>
+<!--										<th>产量值</th>-->
+										<th>创建时间</th>
+										<!--<th>所属权限</th>-->
+										<th>操作</th>
+									</tr>
+								</thead>
+								<tbody>
+									{volist name="list[0]" id="e"}
+										<tr style="background-color: rgba(6,6,47,0.3);">
+											<td class="icon_group">{$e.id}</td>
+											<td style="text-align: left;">{$e.team_name}</td>
+											<!--<td></td>-->
+											<td>{$e.addtime|date="Y-m-d"}</td>
+											<!--<td>{$groups[$e['auth_id']]['title']}</td>-->
+											
+											<td class="operate-box">
+												<span class="btn-normal editClassGroupBtn" data-id="{$e.id}">修改</span>/
+												<span class="btn-normal btn-danger del" data-id="{$e.id}">删除</span>
+											</td>
+										</tr>
+
+										{php} 
+												if(isset($list[$e['id']])){ 
+													$childs=$list[$e['id']];
+													foreach($childs as $val){
+										{/php}
+											<tr>
+												<td>{$val.id}</td>
+												<td style="text-align: left;">{$e.team_name} -- {$val.team_name}</td>
+												<!--<td>{$e.day_ab}  {foreach $ab_unit as $la}{if $la['id']==$e['unit']}{$la['label']}{/if}{/foreach}</td>-->
+												<td>{$val.addtime|date="Y-m-d"}</td>
+												<!--<td>{$groups[$val['auth_id']]['title']}</td>-->
+												<td class="operate-box">
+													<span class="btn-normal editClassGroupBtn" data-id="{$val.id}">修改</span>/
+													<span class="btn-normal btn-danger del" data-id="{$val.id}">删除</span>
+												</td>
+											</tr>
+										{php} 
+												}
+											} 
+										{/php}
+										{/volist}
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- 添加班组 -->
+	<div class="modal-box" id="addClassGroupModal">
+		<div class="modal-content">
+			<div class="modal-header">
+				<div class="modal-header-left">
+					<div class="modal-header-title">
+						<img src="__STATIC__/theme/index/img/icon_team.png">
+						<span>添加班组</span>
+					</div>
+				</div>
+				<div class="modal-header-right">
+					<span class="close-modal-btn"></span>
+				</div>
+			</div>
+			<div class="modal-body">
+				<div class="iframe-box">
+					<iframe class="myIframe" id="addClassGroupIframe" frameborder="0"></iframe>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal-box" id="editClassGroupModal">
+		<div class="modal-content">
+			<div class="modal-header">
+				<div class="modal-header-left">
+					<div class="modal-header-title">
+						<span>修改班组</span>
+					</div>
+				</div>
+				<div class="modal-header-right">
+					<span class="close-modal-btn layui-icon layui-icon-close"></span>
+				</div>
+			</div>
+			<div class="modal-body">
+				<div class="iframe-box">
+					<iframe class="myIframe" id="editClassGroupIframe" frameborder="0"></iframe>
+				</div>
+			</div>
+		</div>
+	</div>
+	{include file="setting/timeset" /}
+</body>
+	<script type="text/javascript">
+		$(document).ready(function(){
+			// 添加班组
+			$('#addClassGroupBtn').click(function (e) {
+				e.preventDefault();
+				e.stopPropagation();
+				$('#addClassGroupModal').fadeIn();
+				$('#addClassGroupIframe').attr('src','add_team');
+			});
+			//编辑
+			$('.editClassGroupBtn').click(function (e) {
+				e.preventDefault();
+				e.stopPropagation();
+				var id = $(this).data('id');
+				var url = "add_team?id=" + id;
+				$('#editClassGroupModal').fadeIn();
+				$('#editClassGroupIframe').attr('src',url);
+			});
+			$('.close-modal-btn').click(function () {
+				$('.modal-box').fadeOut();
+			});
+			//删除
+			$('.del').click(function(){
+				var id = $(this).data('id');
+				layer.confirm('是否删除',{icon:3,title:'提示'},function(index){
+					$.ajax({
+						url: "{:Url('Setting/del_team')}",
+						data: {"id":id},
+						dataType:"json",
+						success:function(obj){
+							if(obj.status==1){
+								layer.msg('删除成功');	
+							}else{
+								layer.msg('删除失败');	
+							}
+							setTimeout(function(){
+								window.location.reload();	
+							},1500);
+						}
+					})
+					layer.close(index);
+				})
+			});
+		})
+		$(window).click(function(){
+			var elem = event.srcElement ? event.srcElement : event.target;
+			while (elem) { //循环判断至跟节点，防止点击的是div子元素 
+				if (elem.id && elem.id == 'orderScreenBox') {
+					return;
+				}
+				if($(elem).hasClass('modal-content')){
+					return;
+				}
+				elem = elem.parentNode;
+			}
+			$('.modal-box').fadeOut();
+		});
+	</script>
+</html>

@@ -1,0 +1,580 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD HTML 4.01 Strict//EN' 'http://www.w3.org/TR/html4/strict.dtd'>
+<html>
+<head>
+<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>
+<link href="__STATIC__index/css/index.css" rel="stylesheet" type="text/css" />
+{include file="public/header" /}
+<title>设置</title>
+<style type="text/css">
+.content {
+	width: 100%;
+}
+
+.right {
+	margin: 20px 20px;
+}
+
+.add-user button {
+	width: 70px;
+	height: 34px;
+	line-height: 34px;
+	border: 0;
+	outline: none;
+	text-align: center;
+	background: #1874CD;
+	color: #fff;
+	font-size: 13px;
+	border-radius: 8px;
+}
+
+.u-pages {
+	box-shadow: 0px 2px 0px #A3A3A3;
+	background: #CFCFCF;
+	font-weight: bold;
+	margin-top: 10px;
+	width: 100%;
+	height: 50px;
+	line-height: 50px;
+	border: 1px solid #EAEAEA;
+}
+
+.u-pages ul li {
+	
+}
+
+.u-pages ul {
+	display: flex;
+}
+
+.row-line {
+	width: 1px;
+	height: 50px;
+	background: #EAEAEA;
+}
+
+.user {
+	display: block;
+}
+
+.user div {
+	width: 100%;
+	text-align: center;
+	height: 40px;
+	line-height: 40px;
+	margin-top: 30px;
+	font-size: 14px;
+}
+
+.user div span {
+	display: inline-block;
+	width: 100px;
+	float: left;
+	margin-left: 15px;
+}
+
+.user div input {
+	padding-left: 4px;
+	width: 70%;
+	height: 40px;
+	line-height: 40px;
+	border-radius: 4px;
+	margin-bottom: 6px;
+	vertical-align: middle;
+	outline: none;
+	border: 1px solid #666;
+}
+
+.user div input.bindteam {
+	width: 20px;
+	height: 20px;
+	vertical-align: middle;
+	margin-right: 10px;
+}
+
+.user div .spa {
+	letter-spacing: 4px;
+}
+
+.btne {
+	width: 150px;
+	height: 40px;
+	line-height: 40px;
+	background: #FF4040;
+	color: #fff;
+	border: 0;
+	outline: none;
+	border-radius: 8px;
+	cursor: pointer;
+	margin-top: 20px;
+	margin-right: 10px;
+}
+
+.role {
+	width: 70%;
+	height: 40px;
+	border-radius: 4px;
+}
+
+.mb {
+	display: none;
+	width: 100%;
+	height: 100%;
+	background: black;
+	opacity: 0.6;
+	position: fixed;
+	z-index: 1000;
+}
+
+.u-user-li {
+	border-left: 1px solid #EAEAEA;
+	border-right: 1px solid #EAEAEA;
+	border-bottom: 1px solid #EAEAEA;
+	width: 100%;
+	height: 50px;
+	line-height: 50px;
+}
+
+.u-user-li ul {
+	display: flex;
+}
+
+#monitor_style input {
+	width: 10%;
+	border-radius: 4px;
+	margin-bottom: 6px;
+	height: 25px;
+}
+
+#monitor_gx .gx_listd {
+	display: inline-block;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    text-align: left;
+}
+
+#monitor_gx input {
+	width: 20px;
+    height: 20px;
+	float: left;
+	margin: 0;
+	margin-right: 8px;
+}
+
+.monitor_gx .gx_listd {
+	width: 13%;
+	display: inline-block;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    text-align: left;
+}
+.monitor_gx .gx_listd input{
+	width: 20px;
+    height: 20px;
+	float: left;
+	margin: 0;
+	margin-right: 8px;
+}
+.monitor_gx input {
+	width: 100%;
+	border-radius: 4px;
+	margin-bottom: 6px;
+	height: 25px;
+}
+</style>
+</head>
+<body>
+
+	<div class="content edit_monitor">
+		<div style="text-align: center;">
+			<button class="btne" style="width: 400px">确认无误，并提交！</button>
+		</div>
+		<div class="right">
+			<!-- 用户录入 -->
+			<div class="user">
+				<form action="#" id="form" method="post">
+
+					<div id="client_namediv">
+						<span>屏幕代码：</span><input style="float: left;" type="text"
+							name="code" id="code" autocomplete="off"
+							value="{$monitor['code']}" placeholder="请输入屏幕代码,A,B等" />
+					</div>
+
+					<div id="client_namediv">
+						<span>屏幕名称：</span><input style="float: left;" type="text"
+							name="vname" id="vname" autocomplete="off"
+							value="{$monitor['vname']}" placeholder="请输入屏幕名称" />
+					</div>
+					<div>
+						<span>显示班组：</span> <select class="role" id="teamid"
+							style="float: left;">
+							<option value="0">请选择班组</option> {volist name="team[0]" id="e"}
+							<option
+								{php} if(in_array($e['id'],$team_id)){ {/php}selected="selected"
+								{php} }{/php} value="{$e['id']}" class="first">{$e['team_name']}</option>
+							{php} if(isset($team[$e['id']])){ $childs=$team[$e['id']];
+							foreach($childs as $val){ {/php}
+							<option
+								{php} if(in_array($val['id'],$team_id)){ {/php}selected="selected"
+								{php} }{/php} value="{$val['id']}" class="second">&nbsp;&nbsp;&nbsp;&nbsp;{$e['team_name']}--{$val['team_name']}</option>
+							{php} } } {/php} {/volist}
+						</select>
+					</div>
+
+					<div>
+						<span>显示字段：</span> <select class="role" id="display_field"
+							style="float: left;">
+							<option value="">请选择二维码字段</option> {volist name="qrcodeList"
+							id="vo"}
+							<option {if condition="$key eq $monitor['display_field'] "
+								}selected="selected" {/if} value="{$key}">{$vo}</option>
+							{/volist}
+						</select>
+					</div>
+					<div id="monitor_type_box" style="text-align: left;">
+						<span style="text-align: center;">屏幕类型：</span> <input
+							style="width: 5%; height: 30px;" type="radio" name="monitor_type"
+							id="monitor_type" value="0" {if
+							condition="$monitor['monitor_type'] eq 0" }checked{/if}/>单向组合屏
+						<!--                                    <input style=" width: 5%;height: 30px;" type="radio" name="monitor_type" id="monitor_type" value="1" {if condition="$monitor['monitor_type'] eq 1"}checked{/if}/>多工序+异常组合屏-->
+						<input style="width: 5%; height: 30px;" type="radio"
+							name="monitor_type" id="monitor_type" value="2" {if
+							condition="$monitor['monitor_type'] eq 2" }checked{/if}/>自动派单屏--今昨汇总
+						<input style="width: 5%; height: 30px;" type="radio"
+							name="monitor_type" id="monitor_type" value="3" {if
+							condition="$monitor['monitor_type'] eq 3" }checked{/if}/>固定流水作业+异常组合屏
+					</div>
+
+					<!--车间选项-->
+					<div id='product_box'>
+
+
+
+						<div id="monitor_style">
+							<span>屏幕样式：</span>
+							<div style='position: relative;'>
+
+								{volist name="monitor_style" id="vo"} 
+									{if condition="$key neq 7 && $key neq 9 && $key neq 10 && $key neq 11 && $key neq 12 "}
+								<div style="float: left; width: 150px; height: 125px; line-height: 20px; margin-top: 0px;" class="monitor-box">
+									<img src="{$vo.image}" style="width: 130px;" title="{$vo.name}" /></br>
+									{$vo.name}</br> <input name="style" id="style" class="style"
+										type="radio" {php} if($monitor['style']=""){
+										{/php}checked="checked" {php} }{/php} value="{$key}" />
+								</div>
+								{/if} {/volist}
+
+							</div>
+						</div>
+						<div style="clear: both; height: 0px;">
+							<div id="monitor_gx" class="monitor_gx" style="display: {if condition="$monitor['style'] eq 4"}block{else/}none{/if}">
+								<div style="width: 10%; float: left">
+									<span>选择工序：</span>
+								</div>
+								<div style="width: 90%; float: left;height: 120px;overflow-y: scroll;">
+									{volist name='gx' id="v"}
+									<div class="gx_listd"
+										style="margin-top: 0px; float: left;line-height: 20px;" title="{$v.dname}">
+										<input name="gx_name" type="checkbox" value="{$v.dname}" {if
+											condition="in_array($v['dname'],$gx_list) && $monitor['monitor_type'] eq 0" }checked{/if}/>{$v.dname}
+									</div>
+									{/volist}
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<!--办公室选项-->
+					<div id='office_box'>
+						<div style='width: 10%; float: left'>
+							<span>选择班组：</span>
+						</div>
+						<div
+							style='width: 90%; float: left; z-index: 99999; height: 120px; overflow-y: scroll;'>
+							{volist name="team[0]" id="e"} {php} if(isset($team[$e['id']])){
+							$childs=$team[$e['id']]; foreach($childs as $val){ {/php}
+							<div
+								style="margin-top: 0px; float: left; width: 20%; line-height: 20px; display: inline-block; text-align: left;" title="{$e['team_name']}--{$val['team_name']}">
+								<input name='teamid_list' type="checkbox"
+									style="width: 20px; height: 20px; float: left;"
+									value="{$val['id']}" {php} if(is_array($team_list) && in_array($val['id'],$team_list)){ echo 'checked';}{/php}/>{$e['team_name']}--{$val['team_name']}
+							</div>
+							{php} } } {/php} {/volist}
+						</div>
+						<!--                                <div class="clear"></div>-->
+						<div id="monitor_style2">
+							<span>屏幕样式：</span>
+							<div style='position: relative;'>
+
+								{volist name="monitor_style" id="vo"} {if condition="$key eq 7"}
+								<div
+									style="float: left; width: 150px; height: 125px; line-height: 20px; margin-top: 0px;"
+									class="monitor-box2">
+									<img src="{$vo.image}" style="width: 130px;" title="{$vo.name}" /></br>
+									{$vo.name}</br> <input style="height: 20px;" name="style"
+										id="style2" class="style2" type="radio"
+										{php} if($monitor['style']==$key){ {/php}checked="checked"
+										{php} }{/php} value="{$key}" />
+								</div>
+								{/if} {/volist}
+
+							</div>
+						</div>
+					</div>
+					<!--自动派单屏-->
+					<div id="auto_send" style="height: 300px; margin: 0;">
+						<div class="monitor_gx"
+							style="clear: both; height: 200px; margin: 0">
+							<div>
+								<div style='width: 10%; float: left'>
+									<span>选择工序：</span>
+								</div>
+								<div style="width: 90%; float: left;height: 120px; overflow-y: scroll;">
+									{volist name='gx' id="v"}
+									<div class="gx_listd"
+										style="margin-top: 0px; float: left; line-height: 20px;" title="{$v.dname}">
+										<input style="width: 20px; height: 20px; float: left;"
+											name="gx_name" type="checkbox" value="{$v.dname}" {if
+											condition="in_array($v['dname'],$gx_list)  && $monitor['monitor_type'] eq 2" }checked{/if}/>{$v.dname}
+									</div>
+									{/volist}
+								</div>
+							</div>
+						</div>
+						<div id="monitor_style2">
+							<span>屏幕样式：</span>
+							<div style='position: relative;'>
+
+								{volist name="monitor_style" id="vo"} {if condition="$key eq 9"}
+								<div
+									style="float: left; width: 150px; height: 125px; line-height: 20px; margin-top: 0px;"
+									class="monitor-box2">
+									<img src="{$vo.image}" style="width: 130px;" title="{$vo.name}" /></br>
+									{$vo.name}</br> <input style="height: 20px;" name="style"
+										id="style2" class="style2" type="radio"
+										{php} if($monitor['style']==$key){ {/php}checked="checked"
+										{php} }{/php} value="{$key}" />
+								</div>
+								{/if} {/volist}
+
+							</div>
+						</div>
+					</div>
+
+
+					<!--固定流水作业+异常屏-->
+					<div id="fixed_flow" style="height: 300px; margin: 0;">
+						<div class="monitor_gx"
+							style="clear: both; height: 200px; margin: 0">
+							<div>
+								<div style='width: 10%; float: left'>
+									<span>选择工序：</span>
+								</div>
+								<div style='width: 90%; float: left;height: 200px;overflow-y: auto;'>
+									{volist name='line_gxlist' id="v"}
+									<div class="gx_listd"
+										style="margin-top: 0px; float: left; width: 20%; line-height: 20px;" title="{$v.line_name}-{$v.dname}">
+										<input style="width: 20px; height: 20px; float: left;"
+											name="gx_name" type="checkbox" value="{$v.id}" {if
+											condition="in_array($v['id'],$gx_list)  && $monitor['monitor_type'] eq 3" }checked{/if}/>
+											{$v.line_name}-{$v.dname}
+									</div>
+									{/volist}
+								</div>
+							</div>
+						</div>
+						<div id="monitor_style2">
+							<span>屏幕样式：</span>
+							<div style='position: relative;'>
+
+								{volist name="monitor_style" id="vo"} {if condition="in_array($key,[10,11,12])"}
+								<div style="float: left; width: 150px; height: 125px; line-height: 20px; margin-top: 0px;" class="monitor-box2">
+									<img src="{$vo.image}" style="width: 130px;" title="{$vo.name}" /></br>
+									{$vo.name}</br> <input style="height: 20px;" name="style"
+										id="style2" class="style2" type="radio"
+										{php} if($monitor['style']==$key){ {/php}checked="checked"
+										{php} }{/php} value="{$key}" />
+								</div>
+								{/if} {/volist}
+
+							</div>
+						</div>
+					</div>
+
+
+
+				</form>
+			</div>
+
+			<div class="clear"></div>
+		</div>
+		<script src="__STATIC__index/js/jquery.min.js"></script>
+		<script src="__STATIC__index/js/layer/layer.js"></script>
+		<script type="text/javascript">
+			$(function() {
+				var selected = $('#teamid option:selected').attr('class');
+				select_ban(selected);
+				change_monitor_type();
+			})
+			$('#monitor_type_box').find('input').change(function() {
+				change_monitor_type();
+				//清除屏幕样式的选中
+				$('input[name=style]').each(function() {
+					$(this).attr('checked', false);
+				})
+				//清除工序框的选中
+				$('.gx_listd input').each(function() {
+					$(this).attr('checked', false);
+				})
+			})
+			//选择生产类型改变班组样式
+			function change_monitor_type() {
+				var type = $('input[name=monitor_type]:checked').val();
+				if (type == 0) {
+					$('#product_box').show();
+					$('#auto_send').hide();
+					$('#office_box').hide();
+					$('#fixed_flow').hide();
+				} else if (type == 1) {
+					$('#product_box').hide();
+					$('#auto_send').hide();
+					$('#office_box').show();
+					$('#fixed_flow').hide();
+				} else if (type == 2) {
+					$('#auto_send').show();
+					$('#product_box').hide();
+					$('#office_box').hide();
+					$('#fixed_flow').hide();
+				} else if (type == 3) {
+					$('#auto_send').hide();
+					$('#product_box').hide();
+					$('#office_box').hide();
+					$('#fixed_flow').show();
+				}
+
+			}
+
+			//选择班组改变屏幕类型显示或隐藏
+			$('#teamid').change(function() {
+				var selected = $(this).find('option:selected').attr('class');
+				select_ban(selected);
+			})
+
+			function select_ban(selected) {
+				if (selected == 'first') {
+					$('.monitor-box').each(function() {
+						if ($(this).find('input').val() != 5) {
+							$(this).css('display', 'none');
+						} else {
+							$(this).css('display', 'inline');
+						}
+					});
+				} else {
+					$('.monitor-box').each(function() {
+						if ($(this).find('input').val() == 5) {
+							$(this).css('display', 'none');
+						} else {
+							$(this).css('display', 'inline');
+						}
+					});
+				}
+			}
+			//选择总屏幕类型则显示工序列表
+			$('.style').change(function() {
+				if ($(this).val() == 4) {
+					$('#monitor_gx').css('display', 'block');
+				} else {
+					$('#monitor_gx').css('display', 'none');
+					$('.gx_listd input').each(function() {
+						$(this).attr('checked', false);
+					})
+				}
+			})
+
+			$('.btne')
+					.click(
+							function() {
+								var id = "{$monitor.id}";
+								var code = $("#code").val();
+								var vname = $("#vname").val();
+								var team_id = $("#teamid").val();
+								var display_field = $("#display_field").val();
+								var style = $("input[name=style]:checked")
+										.val();
+								var gx_list = [];
+								var monitor_type = $(
+										'input[name=monitor_type]:checked')
+										.val();
+								var team_list = [];//办公室班组id
+								$('.gx_listd input').each(function() {
+									if ($(this).attr('checked') == 'checked') {
+										gx_list.push($(this).val());
+									}
+								})
+								$('input[name=teamid_list]').each(function() {
+									if ($(this).attr('checked') == 'checked') {
+										team_list.push($(this).val());
+									}
+								})
+								if (code == '') {
+									layer.msg('请填写屏幕代码');
+									return;
+								}
+
+								if (vname == '') {
+									layer.msg('请填写屏幕名称');
+									return;
+								}
+
+								if (Number(team_id) <= 0) {
+									layer.msg('请选择显示班组');
+									return;
+								}
+
+								if (Number(style) <= 0) {
+									layer.msg('请选择屏幕样式');
+									return;
+								}
+
+								$
+										.ajax(
+												{
+													url : "{:Url('Setting/save_monitor')}",
+													data : {
+														"id" : id,
+														"code" : code,
+														"vname" : vname,
+														"team_id" : team_id,
+														"style" : style,
+														"gx_list" : gx_list,
+														"monitor_type" : monitor_type,
+														'team_list' : team_list,
+														'display_field' : display_field
+													},
+													type : 'post',
+													dataType : 'json',
+													success : function(obj) {
+														if (obj.status == 1) {
+															layer.msg('操作成功');
+															var index = parent.layer
+																	.getFrameIndex(window.name);
+															setTimeout(
+																	function() {
+																		layer
+																				.close(index);
+																		window.parent.location
+																				.reload();
+																	}, 2000)
+
+														} else {
+															layer.msg(obj.msg);
+														}
+
+													}
+
+												}, 'json')
+							})
+		</script>
+</body>
+</html>

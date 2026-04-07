@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+<meta name="referrer" content="never">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>物料导入</title>
+{include file="public/header" /}
+</head> 
+
+<body>
+<div class="modal-box" id="addOrderBatchModal" style="display:block;background:#2588b1;">
+	<div class="modal-content">
+		<div class="modal-body">
+			<div class="modal-body-middle">
+				<form class="add-batch-box excelimportform" id="excelimportform" action="{:Url('setting/doseries_import')}" enctype="multipart/form-data" method="post">
+					<div class="upload-box">
+						<div class="upload-box-left">
+							<input type="file" onchange="user_select(this)" name="excel" class="execl"  data-sign="excelimport"/>
+							<div class="before-upload">
+								<img  onclick="select_upfile(this)" src="__STATIC__/theme/index/img/icon_upload.png">
+								<div>请选择上传</div>
+								<div>指定文件</div>
+							</div>
+							<div class="after-upload">
+								<img  onclick="select_upfile(this)" src="__STATIC__/theme/index/img/icon-upload-finish.png">
+								<div>已选择：</div>
+								<div class="file-name"></div>
+							</div>
+						</div>
+						<div class="upload-box-right">
+							<div>如需要批量上传物料时，请先</div>
+							<div class="download-btn"><a href="{:Url('setting/downloads')}">下载模板</a></div>
+						</div>
+					</div>
+					<div class="uploadSureBtn">确认提交</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+		<!-- 系列录入 -->
+<!-- <div class="user">
+	<form action="{:url('Setting/doseries_import')}" method="post" enctype="multipart/form-data">
+				<div><span>选择文件：</span><input type="file" name="import" id="fiel" /></div>
+				<div><span></span><input type="submit" value="确认提交"/></div>
+	</form>
+	
+</div> -->
+	<script>
+	function select_upfile(_this){
+		$(_this).parent().siblings('input[type=file]').click();
+	}
+	function user_select(_this){
+		var obj =  $(_this);
+		var sign = obj.attr('data-sign');
+		var _targetForm = sign == 'excelimport' ? $('#excelimportform') : $('#toExamineform');
+		// excelimport toExamine
+		var _label = '';
+		obj.each(function(){
+			_label = $(this)[0].files[0].name;
+		});
+		if(_label != '' || _label != undefined){
+			_targetForm.find('.before-upload').hide();
+			_targetForm.find('.after-upload').show().children('.file-name').html(_label);
+			_targetForm.find('.uploadSureBtn').addClass('uploadSureBtn-finish').attr('onclick','importsubmit("' + sign + '")');
+		}
+	}
+	function importsubmit(){
+		  $('#excelimportform').submit();
+		  setTimeout(function(){
+			  parent.window.location.reload();
+		  },1500)
+	  }
+	</script>
+</body>
+</html>

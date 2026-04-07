@@ -1,0 +1,143 @@
+<?php $current='6'; ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>微元生产工序报工管理系统,建材行业生产管理系统,门窗生产管理系统,微元科技,佛山市微元科技有限公司</title>
+	<link rel="stylesheet" href="__STATIC__/theme/index/js/selectjs/select.css"> <!--   默认主题CSS   -->
+	{include file="public/header" /}
+
+	<script src="__STATIC__/theme/index/js/selectjs/select.js"></script>
+</head>
+<body>
+	<div class="baogong_parameterSetting popup-box">
+		<div class="popup-header">
+			<div>参数设置</div>
+		</div>
+		<div class="popup-body" style="padding-top: 40px;">
+			{php}$index = 3;{/php}
+			{include file="setting/menu" /}
+			<div class="body-center">
+				<!-- 班组工序绑定 -->
+				<div class="body-content-box  body-nav-active">
+					<div class="content-center" style="height:100%;padding-top:0;">
+						<div class="content-center-inner">
+							<table class="parameter-table">
+								<thead>
+									<tr>
+										<th>ID</th>
+										<th>班组名称</th>
+										<th class="text-align-left">管辖工序</th>
+										<th>操作</th>
+									</tr>
+								</thead>
+								<tbody>
+									{volist name="list[0]" id="e"}
+									<tr class="tr-groud">
+										<td>{$e.id}</td>
+										<td>{$e.team_name}</td>
+										<td  class="text-align-left">
+										{php} 
+											if(isset($team[$e['id']]['gx_list'])){ 
+												$ls=$team[$e['id']]['gx_list'];
+												foreach($ls as $gx){
+										{/php}
+										<span><?php echo htmlspecialchars_decode($gx)?></span>
+										{php} 
+												} 
+											}
+										{/php}
+										</td>
+										<td></td>
+									</tr>
+									{php} 
+											if(isset($list[$e['id']])){ 
+												$childs=$list[$e['id']];
+												foreach($childs as $val){
+									{/php}
+										<tr>
+											<td>{$val.id}</td>
+											<td class="td-class-group">{$val.team_name}</td>
+											<td class="text-align-left  td-procedure">
+											{php} 
+											if(isset($team[$val['id']]['gx_list'])){ 
+												$ls=$team[$val['id']]['gx_list'];
+												foreach($ls as $gx){
+											{/php}
+											<span><?php echo htmlspecialchars_decode($gx)?></span>
+											{php} 
+												}
+											}
+											{/php}
+											</td>
+											<td class="operate-box">
+												<span data-id="{$val.id}" class="btn-normal edit">绑定</span>
+											</td>
+										</tr>
+									{php} 
+											}
+										} 
+									{/php}
+									{/volist}
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- 绑定数据 -->
+	<div class="modal-box" id="teamBindModal">
+		<div class="modal-content">
+			<div class="modal-header">
+				<div class="modal-header-left">
+					<div class="modal-header-title">
+						<span id="usernameTxt"></span>
+					</div>
+				</div>
+				<div class="modal-header-right">
+					<span class="close-modal-btn layui-icon layui-icon-close"></span>
+				</div>
+			</div>
+			<div class="modal-body">
+				<div class="iframe-box">
+					<iframe class="myIframe" id="teamBindIframe" frameborder="0"></iframe>
+				</div>
+			</div>
+		</div>
+	</div>
+	{include file="setting/timeset" /}
+</body>
+<script type="text/javascript">
+	$(document).ready(function(){
+		// 绑定
+		$('.edit').click(function(e){
+			e.preventDefault();
+			e.stopPropagation();
+			var id = $(this).data('id');
+			var id = $(this).data('id');
+			var url = "team_gx?tid="+id;
+			$('#teamBindModal').fadeIn();
+			$('#teamBindIframe').attr('src',url);
+		});
+		// 关闭弹窗
+		$('.close-modal-btn').click(function () {
+			$('.modal-box').fadeOut();
+		});
+	})
+	$(window).click(function(){
+		var elem = event.srcElement ? event.srcElement : event.target;
+		while (elem) { //循环判断至跟节点，防止点击的是div子元素 
+			if (elem.id && elem.id == 'orderScreenBox') {
+				return;
+			}
+			if($(elem).hasClass('modal-content')){
+				return;
+			}
+			elem = elem.parentNode;
+		}
+		$('.modal-box').fadeOut();
+	});
+</script>
+</html>

@@ -1,0 +1,66 @@
+{include file="public/header"/}
+<style>
+    .material-div{
+        border: 1px solid #fafafa;height:50px;background-color: #fff;position: absolute;
+        width: 100%;min-height: 100px;left: 0; text-align: center;z-index: 9999;display: none;
+    }
+</style>   
+<body>
+     <form class="layui-form layui-col-space5">
+    <div class="layui-fluid">
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-md12">
+                <table class="layui-table layui-form">
+                    <thead>
+                        <tr>                                        
+                            <th>安装位置</th>
+                            <th>材质/型号</th>
+                            <th>铝材/花件颜色</th>
+                            <th>单位</th>
+                            <th>宽</th>
+                            <th>高</th>
+                            <th>个数</th>
+                            <th>面积</th>
+                            <th>单价</th>
+                            <th>折后价</th>
+                            <th>总金额</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table">
+                        <tr id="clone">
+                            <td>{$info.name}</td>
+                            <td>{$info.type}</td>
+                            <td>{$info.color}</td>                           
+                            <td>㎡</td>
+                            <td>{$info.width}</td>
+                            <td>{$info.height}</td>
+                            <td>{$info.count}</td>
+                            <td>{$info.area}</td>
+                            <td>{$info.price}</td>
+                            <td>{$info.rebate_price}</td>
+                            <td>{$info.all_price}</td>
+                           
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+     </form>
+</body>
+<script>
+    layui.use(['laydate', 'form'],
+            function () {
+                var form = layui.form;
+                
+                //监听提交表单
+                form.on('submit(add)',
+                        function (data) {                            
+                            ajaxform("{:url('editMaterial')}", data.field);
+                            return false;
+                        });
+
+            });
+</script>
+<script src="__STATIC__/js/jquery.min.js" charset="utf-8"></script>
+</html>

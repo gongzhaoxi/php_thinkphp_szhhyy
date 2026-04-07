@@ -1,0 +1,170 @@
+{include file="public/header"/}
+<style>
+    .tips{ position: absolute;left: 40%;bottom: 150px;display: none;font-size: 19px;}
+    .tips span { line-height: 30px;}
+    .bottom-fixed{display:none;}
+    .material-div{
+        border: 1px solid #fafafa;height:50px;background-color: #fff;position: absolute;
+        width: 100%;min-height: 100px;left: 0; text-align: center;z-index: 9999;display: none;
+    }
+</style>   
+<body>
+    <div class="layui-fluid">
+        <div class="layui-row">
+            <form class="layui-form">
+                <blockquote class="layui-elem-quote">报价信息</blockquote> 
+                {include file="order/common_add_price"/}
+                <blockquote class="layui-elem-quote">产品结构信息</blockquote> 
+                <div class="layui-form-item">
+                    <label for="username" class="layui-form-label">
+                        <span class="x-red"></span>上传结构图片
+                    </label>
+                    <div class="layui-input-inline">
+                        <button type="button" class="layui-btn" id="color">
+                            <i class="layui-icon">&#xe67c;</i>上传图片
+                        </button>
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">
+                        <span class="x-red">*</span>最大6m,格式jpg,png,gif,bmp,jpeg,pdf
+                    </div>                       
+                </div>
+                <div class="layui-form-item" id="picbox" style="display:none">
+                    <label for="username" class="layui-form-label">                           
+                    </label>
+                    <div class="layui-input-inline">
+                        <div class="layui-upload-list">
+                            <img class="layui-upload-img" src="/upload/" id="prepic" style="max-height: 60px">
+                            <input name="structure" id="pic" type="hidden" value=""/>
+                            <p id="demoText"></p>
+                        </div>
+                    </div>
+                </div>
+                <blockquote class="layui-elem-quote">产品物料清单</blockquote> 
+                <div id="clone-box">
+                    <div class="layui-form-item" id="clone">
+                        <div class="input-field layui-inline ">
+                            <input type="text" name="c_name[]" class="layui-input" placeholder="名称">
+                        </div>
+                        <div class="layui-inline input-formula">
+                            <input type="text" name="c_material[]"  class="layui-input material" placeholder="材质/型号" autocomplete="off">
+                            <div class="material-div" id="material-div"></div>
+                        </div>
+                        <div class="layui-inline input-formula">
+                            <input type="text" name="c_size[]" class="layui-input" placeholder="尺寸">
+                        </div>
+                        <div class="layui-inline input-formula">
+                            <input type="text" name="c_count[]" class="layui-input" placeholder="数量">
+                        </div>
+                        <button type="button" class="layui-btn layui-btn-radius layui-btn-danger" onclick="del(this)">删除</button>
+                    </div>
+                </div>
+                <div style="float: right">
+                    <button type="button" id="add" class="layui-btn layui-btn-radius layui-btn-warm">继续添加</button>
+                </div>
+                <div class="layui-form-item">
+                    <input name="window_type" id="window_type" type="hidden"/>
+                    <input name="order_id" type="hidden" value="{$orderid}"/>
+                    <label for="L_repass" class="layui-form-label"></label>
+                    <button class="layui-btn" lay-filter="add" lay-submit="">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    {include file='order/common_js'}
+    <script>
+        layui.use(['form', 'layer', 'upload'],
+                function () {
+                    $ = layui.jquery;
+                    var form = layui.form,
+                    layer = layui.layer;
+
+                    var upload = layui.upload;
+                    //执行上传实例
+                    var uploadInst = upload.render({
+                        elem: '#color' //绑定元素
+                        , url: "{:url('bom/upload')}" //上传接口
+                        , size: 8000 //限制文件大小，单位 KB
+                        , method: 'post'
+                        , fileAccept: 'image/*'
+                        , exts: "jpg|png|gif|bmp|jpeg|pdf"
+                        , done: function (res) {
+                            //上传完毕回调
+                            $('#picbox').css('display', 'block');
+                            $('#prepic').attr('src', "/upload/" + res.data);
+                            $('#pic').val(res.data);
+                        }
+                        , error: function () {
+                            //请求异常回调
+                        }
+                    });
+                    //监听表单提交
+                    form.on('submit(add)',
+                            function (data) {
+                                var field = data.field;
+                                var yarn_text = $('#yarn').find('option:selected').text(); //纱网text
+                                var hands_text = $('#hands-box').find('option:selected').text(); //把手位text
+                                field.hands_text = hands_text;
+                                field.yarn_text = yarn_text;
+                                field.name = $('#two option:selected').text();
+                                
+                                ajaxform("{:url('addHandMade')}", field);
+                                return false;
+                            });
+
+                });
+    </script>
+    <script src="__STATIC__/js/jquery.min.js" charset="utf-8"></script>
+    <script>
+        $(function () {
+            $('#add').click(function () {
+                var html = $('#clone').clone();
+                $('#clone-box').append(html);
+            })
+
+            //材料异步下拉
+            $('#clone-box').on('keyup', '.material', function () {
+                var z = $(this);
+                var material = $(this).next();
+                material.css('display', 'block');
+                $.post("{:url('findBom')}", {name: z.val()}, function (obj) {
+                    var data = obj.data;
+                    if (data.lenth <= 0) {
+                        return;
+                    }
+                    var html = '';
+                    for (i = 0; i < data.length; i++) {
+                        html += "<div class='select2' unit='" + data[i]['unit'] + "' price=" + data[i]['price'] + ">" + data[i]['name'] + "</div>";
+                    }
+                    material.html(html);
+                    var _input = $(z).parents('tr').find('input');
+                    $(_input).each(function () {
+                        $(this).val('');
+                    })
+                    //点击门店后赋予数据
+                    $('.select2').click(function () {
+                        z.val($(this).text());
+                        z.parent().nextAll('.unit').find('input').val($(this).attr('unit'));
+                        z.parent().nextAll('.price').find('input').val($(this).attr('price'));
+                        material.css('display', 'none');
+                    })
+
+                }, 'json');
+            })
+            
+            //点击空白处隐藏搜索框
+            $(document).click(function(event){
+                var _con = $('.material-div');  // 设置目标区域
+                if(!_con.is(event.target) && _con.has(event.target).length === 0){ // Mark 1
+                   $('.material-div').css('display','none');
+                }
+           });
+        })
+
+        //删除
+        function del(obj) {
+            $(obj).parent().remove();
+        }
+    </script>
+</body>
+
+</html>

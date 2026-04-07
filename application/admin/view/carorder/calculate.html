@@ -1,0 +1,149 @@
+{include file="public/header"/}
+<style>
+    body{background-color: #fff;}
+    *{ padding: 0px; margin: 0px; }
+    ul,li{ list-style:none;}
+    .single-head{ width: 100%; height: auto; overflow: hidden; }
+    .center{ text-align: center;margin: 10px 0; font-size:16px; color: #000; font-weight: bold;}
+    .top{width: 100%;}
+    .top table tr td{ padding: 0px 10px;font-size:12px; line-height: 20px;}
+    .top_left{ width: 89%; float: left;}
+    .top_left ul.a1{width: 100%; float: left; height: 30px;}
+    .top_left ul.a1 li{float: left; width: 33%; line-height: 20px; font-size: 14px; color: #000; text-align: left;}
+    .top_left ul.a1 li.a2{ width: 66% }
+    .top_right{ width: 10%; float: left; padding-right: 1%; text-align:right;}
+    .top_right img{ background: #999; width: 65px; height: 65px; }
+    .mwpw{ width: 100%;display: flex;flex-wrap: wrap; }
+    .gqge{  width:50%;  overflow: hidden; border:1px solid #000;box-sizing:border-box; padding:0.5%;}
+    .gqge_left{ float:left; width: 64%;text-align: center;}
+    .gqge_left img{max-width:100%;max-height:240px;vertical-align:middle;}
+    .gqge_right{ width: 35%;padding: 0.5%;float: left;}
+    .gqge_right li{ width: 100%; border:1px solid #000;box-sizing:border-box;line-height:15px;font-size: 12px; color: #000; text-align: center;}
+    .gqge_cent{ width: 100%; float: left; font-size: 12px; line-height:15px; color: #000;text-align: left; }
+    @media print{
+        INPUT {display:none}
+        .PageNext{page-break-after:always}
+    }
+</style>
+<div style="padding: 10px;">
+    <div class="single-head" style="position: relative;">
+		<span style="position: absolute;top: 5px; right: 5px; font-weight: bold;">
+			{if condition="$order.print_label eq 0"}
+			需要打印标签
+			{else}
+			不需要打印标签
+			{/if}
+		</span>
+        <h3 class="center">广东恒辉窗花制品有限公司(生产作业单【
+         {if condition="$order.type eq 1"}常规{/if}
+         {if condition="$order.type eq 2"}加急{/if}
+         {if condition="$order.type eq 3"}样板{/if}
+         {if condition="$order.type eq 4"}返修单{/if}
+         {if condition="$order.type eq 5"}单剪网{/if}
+         {if condition="$order.type eq 6"}单切料{/if}
+         {if condition="$order.type eq 7"}工程{/if}
+				 {if condition="$order.type eq 8"}重做{/if}
+        】)</h3>
+        <div class="top">
+            <div class="top_left">
+                <ul class="a1">
+                    <li>客户名称：{$order.dealer}</li>
+                    <li>下单日期：{$order.addtime|date='Y-m-d',###}</li>
+                    <li>生产完成日期：{$order.make_time}</li>
+                </ul>
+                <ul class="a1">
+                    <li class="a2">送货地址：{$order.send_address}</li>
+                    <li>订单编号：{$order.number}</li>
+                </ul>
+            </div>
+            <div class="top_right"><img src="{$order.qrcode}"></div>
+        </div>
+        <div class="top">
+            <table width="100%" border="1" cellspacing="0" cellpadding="0">
+                <tbody>
+                <tr>
+                    <td width="33%">下单人 ：营运部（工号1007）</td>
+                    <td width="33%">审核人 ：算料组（工号1006）</td>
+                </tr>
+                <tr>
+                    <td>总面积：{$order.area}m²&nbsp;&nbsp;|&nbsp;&nbsp;总数量：{$order.count}</td>
+                    <td colspan="2">备注：</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {php}$z=1;{/php}
+    {volist name='list' id='v'}
+
+    {php}if($z == 1){ {/php}
+    <table class="mwpw PageNext" border="1" cellspacing="0" cellpadding="0">
+    {php}}{/php}
+         {php}if($z == 1 || $z == 3){ {/php}
+         <tr>
+         {php}}{/php}
+
+             <td class="gqge" style="height: 430px">
+                 <div class="gqge_left">
+                     <div style="min-height: 250px;">
+                         {if condition="$v['path']"}
+                         <img src="{$v.path}">
+                         {elseif condition="$v['structure_pic'] neq null"/}
+                         <img src="/upload/{$v.structure_pic}">
+                         {/if}
+                     </div>
+                     <div class="gqge_cent">
+                         <p>型材: {$v.material} | 花件：{$v.flower_type} | 型材/花件颜色：{$v.color_name} | 锁高: {$v.lock_position}mm | 单窗面积：{$v.product_area}㎡ | 数量：{$v.count} | 横间距:{$v.spacing} | 竖间距:{$v.bottom_spacing} | 右竖间距:{$v.right_bottom_spacing}| 下固横间距:{$v.bottom_fixed_spacing} | 下固竖间距:{$v.bottom_vertical_spacing} | 上下固花件：{$v.flower_types}</p>
+                         <p>备注：{$v.note}</p>
+                         <p>结构ID：{$v.structure_id}</p>
+                         <div style="word-wrap:break-word;display:none;"><?php dump($v['ruler_data']);?></div>
+                         <div style="word-wrap:break-word;display:none;"><?php dump($v['calculate_data']);?></div>
+                     </div>
+                 </div>
+
+                 <div class="gqge_right" style="{if condition="!is_array($v['calculate'])"}display:none{/if}">
+                 <li><strong>开料尺寸</strong></li>
+                 {volist name="v['calculate']" id='v2'}
+                 <li>{$v2}</li>
+                 {/volist}
+                 {if condition="$v['is_hand'] eq 0"}
+                 <li><strong>{$v.flower_type} (高*宽)</strong></li>
+                 <li>{$v.flower}</li>
+                 {/if}
+                 {if condition="$v['cal_note'] neq null"}
+                 <li style="height: 17px">{$v.cal_note}</li>
+                 {/if}
+                 <li style="height: 17px">{$v.flower_types}</li>
+                 </div>
+             </td>
+
+        {php}if($z == 2 || $z == 4){ {/php}
+        </tr>
+        {php}}{/php}
+
+    {php}if($z == 4){ echo '</table>';}{/php}
+    {php}$z++;{/php}
+    {php}if($z>4){ $z=1;}{/php}
+
+    {/volist}
+
+</div>
+<div class="layui-col-md12" id="print" style="margin-left: 40%; display: block;">
+    <button class="layui-btn" type="button">立即打印</button>
+</div>
+<script src="__STATIC__/js/jquery.min.js" charset="utf-8"></script>
+<script>
+    $(function() {
+        var cloneHtml = $('.single-head').clone();
+        $('#print').click(function() {
+            $('#print').css('display', 'none');
+            $(cloneHtml).insertBefore($('.mwpw').eq(0).siblings('.mwpw'));
+            window.print();
+            $('.single-head').eq(0).siblings('.single-head').remove();
+            $('#print').css('display', 'block');
+        })
+    })
+</script>
+
+</body>
+</html>

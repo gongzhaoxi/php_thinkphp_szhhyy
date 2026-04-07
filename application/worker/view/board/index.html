@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html class="x-admin-sm">
+<head>
+	<meta charset="UTF-8">
+	<title>恒辉生产异常上报汇总屏</title>
+	<meta name="renderer" content="webkit|ie-comp|ie-stand">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=1, initial-scale=1,target-densitydpi=low-dpi" />
+	<meta http-equiv="Cache-Control" content="no-siteapp" />
+	<link rel="stylesheet" href="__STATIC__/css/font.css">
+	<link rel="stylesheet" href="__STATIC__/css/xadmin.css">
+	<!-- <link rel="stylesheet" href="__STATIC__/css/theme5.css"> -->
+	<script src="__STATIC__/lib/layui/layui.js" charset="utf-8"></script>
+	<script type="text/javascript" src="__STATIC__/js/xadmin.js"></script> 
+	<script type="text/javascript" src="__STATIC__/js/erp.js"></script>       
+	<!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+	<!--[if lt IE 9]>
+	  <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+	  <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+	<![endif]-->
+	<style>
+	body{
+		background: rgb(8, 14, 47);
+	}
+	.content{
+		padding: 20px 20px 10px 20px;
+	}
+	
+	.row1 .time{
+		color: rgb(169, 169, 169);
+		font-size:16px;
+		padding-left:5%;
+	}
+	.row1 .title{
+		text-align:center;
+		color: rgb(255, 255, 0);
+		font-size: 20px;
+		font-weight:600;
+		position: relative;
+		padding-bottom:10px;
+	}
+	.row1 .title::after {
+	  content: "";
+	  display: inline-block;
+	  position: absolute;
+	  width: 150px;
+	  height: 3px;
+	  background-color:rgb(90, 110, 211);
+	  bottom: 0;
+	  right: 0;
+	}		
+	
+	#section1{
+	    background:rgb(2, 0, 128);
+	    margin-top: 30px;
+	    padding: 20px 40px 20px 0;
+		text-align:right;
+		color:#fff;
+		font-size:20px;
+	}
+	#section1 span{
+	    color: rgb(216, 0, 27);
+		font-size:24px;
+		font-weight:600;
+	}	
+	
+	.row2{
+		color:#fff;
+		margin:20px 0 0 0 ;
+	}
+	#section2{
+		background:rgb(2, 0, 128);
+	}
+
+	.layui-table thead tr,
+	.layui-table-header,
+	.layui-table-tool,
+	.layui-table-total,
+	.layui-table-total tr,
+	.layui-table-patch,
+	.layui-table-mend,
+	.layui-table[lay-even] tr:nth-child(even),
+	.layui-table tbody tr:hover,
+	.layui-table-hover,
+	.layui-table-click{background-color: transparent;}
+	
+	#section2 .title{
+		font-size:18px;
+		font-weight:600;
+		margin-bottom:10px;
+	}
+	#section2 .second{
+		text-align:right;
+		color: rgb(169, 169, 169);
+	}
+	.layui-table {
+		width: 100%;
+		margin: 10px 0;
+		background-color: transparent;
+		color: #fff;
+	}
+
+	.layui-table-body::-webkit-scrollbar {
+		display: none;
+	}
+	
+	.layui-table-hover,.layui-table[lay-even] tbody tr:nth-child(even){background-color:transparent;}
+	.layui-table-view .layui-table tr td:last-child,.layui-table-view .layui-table tr th:last-child{border-right:none;}
+	.layui-table-view .layui-table tr th{border-bottom:none;}
+	
+	.layui-laypage input, .layui-laypage button,.layui-table-page .layui-laypage span,.layui-laypage a, .layui-laypage span{
+		background-color: transparent;
+		color: #fff;
+	}
+	.layui-table-page .layui-laypage .layui-laypage-limits,.layui-table-page .layui-laypage .layui-laypage-skip{
+		display:none;
+	}
+	
+	</style>
+</head>
+<body>
+	<div class="content">
+		<div id="c1">
+			<div class="layui-row row1">
+				<div class="layui-col-xs3  layui-col-sm3 layui-col-md3 time">&nbsp;</div>
+				<div class="layui-col-xs6 layui-col-sm6 layui-col-md6" style="text-align:center;">
+					<span class="title">恒辉生产异常上报汇总屏</span>
+				</div>
+				<div class="layui-col-xs3 layui-col-sm3 layui-col-md3">
+					&nbsp;
+				</div>
+			</div>	
+			<div class="layui-row">
+				<div  id="section1">
+					异常总数：<span id="count"></span>
+				</div>	
+			</div>
+		</div>
+		<div class="layui-row  row2">
+			<div  id="section2">
+				<div class="layui-row" style="padding:10px 20px;">
+					<div class="layui-col-xs12 layui-col-sm12 layui-col-md12">
+						<div id="alarmTableContainer">
+							<table id="alarmTable"  lay-filter="alarmTable" ></table>
+						</div>
+					</div>	
+				</div>		
+			</div>
+		</div>
+	</div>
+    </body>
+    <script>
+	layui.use(['table', 'form', 'jquery'], function() {
+		let table = layui.table;
+		let form = layui.form;
+		let $ = layui.jquery;
+				
+		var scroller = null;
+		
+		var right = ($('.row1 .title').width() - 150)/2;
+		$('<style>.row1 .title::after{right:'+right+'px}</style>').appendTo('head');
+
+		var h = ($(window).height() - $('#c1').height() -  100);
+		var limit = Math.floor((h-91)/38);
+
+		let alarmTableContainer = $('#alarmTableContainer');
+		var page = 1;
+		
+		showTime();	
+
+		function showTime() {
+			let show_day = new Array(
+				"星期日",
+				"星期一",
+				"星期二",
+				"星期三",
+				"星期四",
+				"星期五",
+				"星期六",
+				
+			);
+			let time = new Date();
+			let year = time.getFullYear();
+			let month = time.getMonth() + 1;
+			let date = time.getDate();
+			let day = time.getDay();
+			let hour = time.getHours();
+			let minutes = time.getMinutes();
+			let second = time.getSeconds();
+			month < 10 ? (month = "0" + month) : month;
+			// month = month + 1;
+			hour < 10 ? (hour = "0" + hour) : hour;
+			minutes < 10 ? (minutes = "0" + minutes) : minutes;
+			second < 10 ? (second = "0" + second) : second;
+			let now_time =
+			// "当前时间：" +
+			year +
+			"-" +
+			month +
+			"-" +
+			date +
+			"" +
+			" " +
+			show_day[day] +
+			" " +
+			hour +
+			":" +
+			minutes +
+			":" +
+			second;
+			
+			$('.row1 .time').html(now_time);
+		};
+		
+		setInterval(function (){
+			showTime();	
+		},1000)
+		
+		setInterval(function (){
+			location.reload();	
+		},30*60*1000)	
+
+		setInterval(function (){
+			if(page*limit >= parseInt($('#count').html()) ){
+				page = 0;
+			}
+			page = page +1
+			table.reload('alarmTable', {
+				page:{curr: page}
+			})
+		},30*1000)	
+		
+		table.render({
+			elem: '#alarmTable',
+			url: '{:url('index')}',
+			page: true,
+			loading:false,
+			limit:limit,
+			height: h,
+			cols: [[
+				{type: 'numbers',title: '序号',align: 'center',unresize: true, width:'5%'},
+				{field: 'number',title: '订单号',align: 'center',unresize: true, width:'20%'},
+				{field: 'create_time',title: '上报时间',align: 'center',unresize: true,width: '20%', templet: function(d){return d.create_time.substr(0,16);}},
+				{field: 'dealer',title: '客户名称',align: 'center',unresize: true,width: '20%'},
+				{field: 'process_name',title: '异常工序',align: 'center',unresize: true,width: '15%'},
+				{field: 'type',title: '异常分类',align: 'center',unresize: true,width: '20%'},
+			]],
+			toolbar: false,
+			defaultToolbar: false,
+			done: function (res, curr, count) {
+				$('#count').html(count);
+				//if (count > limit) {
+					//scroller = new TableScroller(alarmTableContainer, 2000);
+					//scroller.start();
+				//}
+			}
+		});	
+		
+		// 表格滚动器
+		function TableScroller(tableContainer, interval) {
+			// 响应鼠标事件
+			let that = this;
+			tableContainer.on('mouseover', function () {
+				that.pause();
+			});
+			tableContainer.on('mouseleave', function () {
+				that.resume();
+			});
+		 
+			// 隐藏表格滚动条
+			let bodyContainer = tableContainer.find('.layui-table-body');
+			//bodyContainer.css('overflow-x', 'hidden');
+			//bodyContainer.css('overflow-y', 'hidden');
+		 
+			this.timerID = null;
+			this.interval = interval;
+			this._bodyTable = bodyContainer.find('table');
+			this._tbody = this._bodyTable.find('tbody');
+		 
+			this.start = function () {
+				let that = this;
+				that.timerID = setInterval(function () {
+					that._scroll(that._bodyTable, that._tbody, that.interval);
+				}, that.interval);
+			};
+			this.pause = function () {
+				let that = this;
+				if (that.timerID === null) {
+					return;
+				}
+		 
+				clearInterval(that.timerID);
+				that.timerID = null;
+			};
+			this.resume = function () {
+				let that = this;
+				if (that.timerID !== null || that.callback === null || that.interval === null) {
+					return;
+				}
+		 
+				that.timerID = setInterval(function () {
+					that._scroll(that._bodyTable, that._tbody, that.interval);
+				}, that.interval);
+			};
+			this.stop = function () {
+				let that = this;
+				if (this.timerID === null) {
+					return;
+				}
+		 
+				clearInterval(that.timerID);
+				that.callback = null;
+				that.interval = null;
+				that.timerID = null;
+			};
+			this._scroll = function (bodyTable, tbody, interval) {
+				let firstRow = tbody.find('tr:first');
+				let rowHeight = firstRow.height();
+				bodyTable.animate({top: '-' + rowHeight + 'px'}, interval * 0.5, function () {
+					tbody.append(firstRow.prop("outerHTML"));
+					bodyTable.css('top', '0px');
+					firstRow.remove();
+				});
+			}
+		};		
+	})
+</script>
+</html>

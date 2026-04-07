@@ -1,0 +1,537 @@
+<script>layui.use(['form', 'layer','upload'],
+            function() {
+                $ = layui.jquery;
+                var form = layui.form,
+                layer = layui.layer;              
+                var upload = layui.upload;
+
+                form.verify({
+                    fixed:function(value){
+                        if(Number(value)>1000){
+                            return '固定值最大为1000';
+                        }
+                    }
+                })
+               
+                //自定义折扣区间 验证
+                form.verify({
+                    rebate: function(value, item){ //value：表单的值、item：表单的DOM对象
+                    //   if(!new RegExp("^[0|1](\.[0-9]{1,2}){0,1}$").test(value)){
+                    //     return '折扣区间：0-1';
+                    //   }                      
+                    }
+
+                  });
+
+                //上传原单图
+                var uploadInst = upload.render({
+                    elem: '#btn-upload' //绑定元素
+                    , url: "{:url('bom/upload')}" //上传接口
+                    , size: 8000 //限制文件大小，单位 KB
+                    , method: 'post'
+                    , fileAccept: 'image/*'
+                    , exts: "jpg|png|gif|bmp|jpeg|pdf"
+                    , done: function (res) {
+                            //上传完毕回调
+                            $('#diy_pic_box').css('display','block');
+                            $('#diy_prepic').attr('src', "/upload/" + res.data);
+                            $('#diy_pic').val(res.data);
+                    }
+                    , error: function () {
+                            //请求异常回调
+                    }
+                });
+                form.on('select(guardrail)',function(data){
+					if(data.value == 1){
+						$('.guardrail').show();
+						$('.guardrail input').attr('lay-verify','required');
+				   }else{
+						$('.guardrail').hide();
+						$('.guardrail input').removeAttr('lay-verify')
+				   }
+                });		               
+			   
+                //监听工艺一级下拉
+                form.on('select(one)',function(data){
+                    var html = "<option value=''>请选择</option>";
+                    //一级下拉时，清楚其他级别的select内容
+                    $('#three').html(html);
+                    $('#four').html(html);
+                    $('#five').html(html);
+                    //三级，四级，五级默认隐藏
+                    $('#tthree').css('display','none');
+                    $('#tfour').css('display','none');
+                    $('#tfive').css('display','none');
+                    html += tech(data.value);
+                    $('#two').html(html);  
+                    form.render('select');  //更新渲染
+                });
+                //监听工艺二级下拉
+                form.on('select(two)',function(data){
+                    if(data.value!=''){
+                        var html = "<option value=''>请选择</option>";
+                        var res = tech(data.value);
+                        //显示下一级
+                        if(res.length!=''){
+                            $('#tthree').css('display','inline-block');
+                        }
+                        html += tech(data.value);
+                        $('#three').html(html);
+                          //写入隐藏域的系列id
+                        $('#series_id').val(data.value);
+                        //添加颜色下拉数据
+                        $('#aluminum_color').html(bcolor(1,data.value));
+                        $('#flower_color').html(bcolor(2,data.value));
+                        //添加纱网下拉数据
+                        $('#yarn').html(yarn(data.value));
+                        //添加五金下拉数据
+                        $('#fived').html(five(data.value));
+                        //添加把手位下拉数据
+                        $('#hands').html(hands(data.value));
+                        $('#five_price').val('');$('#five_count').val('');
+                        form.render('select');  //更新渲染
+                    }
+                });
+                 //监听工艺三级下拉
+                form.on('select(three)',function(data){
+                    $('#tfour').css('display','none');
+                    if(data.value!=''){
+                        var html = "<option value=''>请选择</option>";
+                        var res = tech(data.value);
+                        //显示下一级
+                        if(res.length!=''){
+                            $('#tfour').css('display','inline-block');
+                        }
+                        html += res;
+                        $('#four').html(html);
+                          //写入隐藏域的系列id
+                        $('#series_id').val(data.value);
+                        //添加颜色下拉数据
+                        $('#aluminum_color').html(bcolor(1,data.value));
+                        $('#flower_color').html(bcolor(2,data.value));
+                        //添加纱网下拉数据
+                        $('#yarn').html(yarn(data.value));
+                        //添加五金下拉数据
+                        $('#fived').html(five(data.value));
+                        //添加把手位下拉数据
+                        $('#hands').html(hands(data.value));
+                        $('#five_price').val('');$('#five_count').val('');
+                        form.render('select');  //更新渲染
+                    }
+                });
+                 //监听工艺四级下拉
+                form.on('select(four)',function(data){
+                    $('#tfive').css('display','none');
+                    if(data.value!=''){
+                        var html = "<option value=''>请选择</option>";
+                        var res = tech(data.value);
+                        //显示下一级
+                        if(res != ''){
+                            $('#tfive').css('display','inline-block');
+                        }
+                        html += res;
+                        
+                        //花件显示或隐藏
+                        var flower = findFlower(data.value);
+                        if(flower){
+                            $('#flower-boxd').css('display','block');
+                        }else{
+                            $('#flower-boxd').css('display','none');
+                        }
+                        $('#five').html(html);  
+                        //写入隐藏域的系列id
+                        $('#series_id').val(data.value);
+                        //添加颜色下拉数据
+                        $('#aluminum_color').html(bcolor(1,data.value));
+                        $('#flower_color').html(bcolor(2,data.value));
+                        //添加纱网下拉数据
+                        $('#yarn').html(yarn(data.value));
+                        //添加五金下拉数据
+                        $('#fived').html(five(data.value));
+                        //添加把手位下拉数据
+                        $('#hands').html(hands(data.value));
+                        $('#five_price').val('');$('#five_count').val('');
+                        
+                        form.render('select');  //更新渲染
+                    }
+                });
+                //监听工艺五级下拉
+                form.on('select(five)',function(data){
+                    //花件显示或隐藏
+                    var flower = findFlower(data.value);
+                    if(flower){
+                        $('#flower-boxd').css('display','block');
+                    }else{
+                        $('#flower-boxd').css('display','none');
+                    }
+                    
+                   //写入隐藏域的系列id
+                   $('#series_id').val(data.value);
+                   //添加颜色下拉数据
+                    $('#aluminum_color').html(bcolor(1,data.value));
+                    $('#flower_color').html(bcolor(2,data.value));
+                    //添加纱网下拉数据
+                    $('#yarn').html(yarn(data.value));
+                    //添加五金下拉数据
+                        $('#fived').html(five(data.value));
+                    //添加把手位下拉数据
+                    $('#hands').html(hands(data.value));
+                    form.render('select');  //更新渲染
+                });
+                
+                //监听颜色联动
+                form.on('select(color)',function(data){
+                    var type = $(data.elem).attr('type'); //铝材颜色还是花件颜色
+                    var select_text = $(data.elem).find('option:selected').text()
+                    var two =  $(data.elem).parent().next();
+                    var three = $(data.elem).parent().next().next();
+                    var diy = $(data.elem).parent().nextAll('.diy-name');
+                    var diy_price = $(data.elem).parent().nextAll('.diy-price');
+                    
+                    //花件颜色的自定义名称和价格
+                    var _f_name = $(data.elem).parents('.layui-form-item').next().find('.diy-name');
+                    var _f_price = $(data.elem).parents('.layui-form-item').next().find('.diy-price');
+                    
+                    two.css('display','none');
+                    three.css('display','none');
+                    diy.css('display','none');
+                    diy_price.css('display','none');
+                    _f_name.css('display','none');
+                    _f_price.css('display','none');
+                    
+                    diy.find('input').val('');
+                    diy_price.find('input').val('');
+                    _f_name.find('input').val('');
+                    _f_price.find('input').val('');
+                    $.post("{:url('order/colorTwo')}",{id:data.value,series_id:$('#series_id').val(),type:type},function(obj){                         
+                        var array = obj.data;   
+                        var html = "<option value=''>请选择</option>";
+                        for(i=0;i<array.length;i++){                              
+                            html += "<option value="+array[i]['id']+">"+array[i]['name']+"</option>";                                                             
+                        }      
+                        $(data.elem).parent().next().find('select').html(html);
+                        //如果是特殊烤漆,则显示自定义名称和自定义价格
+                        if(data.value=='-1'){
+                            diy.css('display','inline-block');
+                            diy_price.css('display','inline-block');
+                        }else if(array.is_self == 1){
+                            diy.css('display','inline-block')
+                        }else if(array!=''){                       
+                            two.css('display','inline-block');
+                        }  
+                        
+                        //同时更新花件颜色选中
+                        if(type == 1){
+                            $('.flower-select option').each(function(){
+                                if($(this).text() == select_text){
+                                    $(this).prop('selected',true);
+                                }
+                            })
+                            
+                            if(data.value=='-1'){
+                                _f_name.css('display','inline-block');
+                                _f_price.css('display','inline-block');
+                            }else if(array.is_self == 1){
+                                _f_name.css('display','inline-block')
+                            }
+                        }
+                                               
+                        form.render('select'); 
+                    },'json'); 
+                   
+                })
+                
+                //监听颜色二级联动
+                form.on('select(color_two)',function(data){
+                    var type = $(data.elem).attr('type'); //铝材颜色还是花件颜色
+                    var three = $(data.elem).parent().next();
+                    if(type == 1){
+                        var name = 'alum_color[]';
+                    }else{
+                        var name = 'flower_color[]';
+                    }
+                    if(data.value!=''){
+                        $.post("{:url('order/colorThree')}",{id:data.value,series_id:$('#series_id').val(),type:type},function(obj){                         
+                            var array = obj.data;     
+                            var html = "<option value=''>请选择</option>";
+                            for(i=0;i<array.length;i++){                              
+                                html += "<option value="+array[i]['id']+">"+array[i]['name']+"</option>";                                                             
+                            }   
+                            $(data.elem).parent().next().find('select').html(html);
+                            if(array!=''){
+                                three.css('display','inline-block');
+                            }
+                            form.render('select'); 
+                        },'json'); 
+                    }
+                })
+                
+                $(function(){
+                    $("input[name='alum_name']").change(function(){
+                        $("input[name='flower_name']").val($(this).val());
+                    })
+                   
+                })
+                
+                //监听纱网联动
+                form.on('select(yarn)',function(data){
+                    if(data.value!=''){
+                        $.post("{:url('order/yarnTwo')}",{id:data.value,series_id:$('#series_id').val()},function(obj){                            
+                           var array = obj.data;                           
+                           var html = "<option value="+array['thickness']+">"+array['thickness']+"</option>";     
+                           $('#yarn_two').html(html);
+                           $('#yarn_price').val(array.price);
+                           form.render('select');  
+                       },'json'); 
+                    }else{
+                            $('#yarn_price').val(0);
+                            var html = "<option value=''>0</option>";
+                            $('#yarn_two').html(html);
+                    }
+                })
+                
+                //监听五金
+                form.on('select(fived)',function(data){
+                    if(data.value!=''){
+                         var price = $(data.elem).find('option:selected').attr('price');
+                         $('#five_price').val(price);
+                    }
+                })
+                
+                //根据新加窗型--隐藏显示飘窗面数，弧长等
+                form.on('select(window_type_a)',function(data){
+                    if(data.value == '常规'){
+                        $('#window-box').css('display','none');$('#window-box').find('input').val('');
+                        $('#arc-length-box').css('display','none');$('#arc-length-box').find('input').val('');
+                        $('#arc-length-count-box').css('display','none');$('#arc-length-count-box').find('input').val('');
+                    }else if(data.value == '飘窗'){
+                        $('#window-box').css('display','inline-block');
+                        $('#arc-length-box').css('display','none');$('#arc-length-box').find('input').val('');
+                        $('#arc-length-count-box').css('display','none');$('#arc-length-count-box').find('input').val('');
+                    }else{
+                        $('#window-box').css('display','none');$('#window-box').find('input').val('');
+                        $('#arc-length-box').css('display','inline-block');
+                        $('#arc-length-count-box').css('display','inline-block');
+                    }
+                })
+                
+            });
+            
+            //颜色一级
+            function bcolor(type,series_id){
+                $.ajaxSetup({async : false});  
+                var html = "<option value=''>请选择</option>";
+                $.post("{:url('order/color')}",{type:type,series_id:series_id},function(obj){                         
+                        var array = obj.data;     
+                        for(i=0;i<array.length;i++){                              
+                            html += "<option value="+array[i]['id']+">"+array[i]['name']+"</option>";                                                             
+                        }      
+                        html += "<option value='-1'>特殊烤漆</option>";
+                    },'json'); 
+                return html;
+            }
+            
+            //纱网一级
+            function yarn(series_id){
+                $.ajaxSetup({async : false});  
+                var html = "<option value=''>请选择</option>";
+                $.post("{:url('yarn')}",{series_id:series_id},function(obj){                         
+                        var array = obj.data;  
+                        if(array.length<=0){
+                            $('.yarn-box').css('display','none');
+                        }else{
+                            $('.yarn-box').css('display','block');
+                        }
+                        for(i=0;i<array.length;i++){                              
+                            html += "<option value="+array[i]['yarn_id']+">"+array[i]['name']+"</option>";                                                             
+                        }      
+                       
+                    },'json'); 
+                return html;
+            }
+            
+            //把手位
+            function hands(series_id){
+                $.ajaxSetup({async : false});  
+                var html = "<option value=''>请选择</option>";
+                $.post("{:url('hands')}",{series_id:series_id},function(obj){                         
+                        var array = obj.data;     
+                        for(i=0;i<array.length;i++){                              
+                            html += "<option value="+array[i]['hands_id']+" width="+array[i]['width']+">"+array[i]['name']+"</option>";                                                             
+                        }      
+                       
+                    },'json'); 
+                return html;
+            }
+            //五金
+            function five(series_id){
+                $.ajaxSetup({async : false});  
+                var html = "<option value=''>请选择</option>";
+                $.post("{:url('five')}",{series_id:series_id},function(obj){  
+                        var array = obj.data;
+                        if(array.length<=0){
+                            $('.five-box').css('display','none');
+                        }else{
+                            $('.five-box').css('display','block');
+                        }    
+                        for(i=0;i<array.length;i++){                              
+                            html += "<option value="+array[i]['five_id']+" price="+array[i]['price']+">"+array[i]['name']+"</option>";                                                             
+                        }      
+                       
+                    },'json'); 
+                return html;
+            }
+            //工艺多级联动，返回html
+            function tech(pid){
+                 $.ajaxSetup({async : false}); 
+                 var html = '';
+                 $.post("{:url('order/technology')}",{pid:pid},function(obj){                                                   
+                        var array = obj.data;     
+                        for(i=0;i<array.length;i++){                              
+                            html += "<option value="+array[i]['id']+">"+array[i]['name']+"</option>";                                                             
+                        }                           
+                },'json'); 
+                return html;
+            }
+            //查询当前工艺是否是带花的
+            function findFlower(id){
+                $.ajaxSetup({async : false}); 
+                var find = true
+                $.post("{:url('findFlower')}",{series_id:id},function(obj){                         
+                      if(obj.code == 0){
+                          find = true;
+                      }else{
+                          find =false;
+                      }    
+                       
+                },'json'); 
+                return find;
+            }
+            
+            
+            //弹出选择花件
+            function show_flower(){
+                layer.open({type: 2, content: '/admin/order/flower/id/'+$('#series_id').val()+'.html',area:['1000px','500px'],btn:['确定'],
+                    shadeClose:true,
+                    yes: function (index, layero) {
+                        //引用弹出层的回调函数
+                        var res = window["layui-layer-iframe" + index].callbackdata();
+                        
+                        $('#flower').val(res.name);
+                        $('#flower_pic').val(res.pic);
+                        $('#flower_id').val(res.id);
+                        $('#flower_max_height').val(res.max_height);
+                        $('#flower_min_height').val(res.min_height);
+                        layer.close(index);
+                    }});
+            }
+
+        //弹出选择花件
+        function show_flowers(){
+                layer.open({type: 2, content: '/admin/order/flower/id/'+$('#series_id').val()+'.html',area:['1000px','500px'],btn:['确定'],
+                        shadeClose:true,
+                        yes: function (index, layero) {
+                                //引用弹出层的回调函数
+                                var res = window["layui-layer-iframe" + index].callbackdata();
+                                $('#flowers').val(res.name);
+                                $('#flower_pics').val(res.pic);
+                                $('#flower_ids').val(res.id);
+                                $('#flower_max_heights').val(res.max_height);
+                                $('#flower_min_heights').val(res.min_height);
+                                layer.close(index);
+                        }});
+        }
+
+               //弹出选择结构
+            function show_structure(){
+                layer.open({type: 2, 
+                    content: '/admin/order/structure.html?id='+$('#series_id').val()+'&width='+$('#all_width').val()+'&height='+$('#all_height').val()+'&flywindow=\n\
+        '+$('#flywindow').val()+'&arc='+$('#arc').val() +'&flower_max='+Number($('#flower_max_height').val())+'&flower_min='+Number($('#flower_min_height').val())+'&\n\
+        spacing='+Number($('#spacing').val())+'&flower_id='+Number($('#flower_id').val())+'&flower_max_width='+$('#flower_max_width').val()+'&flower_min_width=\n\
+        '+$('#flower_min_width').val()+'&hold_hands_width='+$('#hands option:selected').attr('width'),                                                          
+                    area:['1000px','500px'],btn:['确定'],
+                    shadeClose:true,
+                    yes: function (index, layero) {
+                        //引用弹出层的回调函数
+                        var res = window["layui-layer-iframe" + index].callbackdata();
+//                        console.log(res);
+                        $('#structure_pic').attr('src',res.pic);
+                        $('#structure').val(res.pic2);
+                        $('#structure_id').val(res.structure_id);
+                        $('#structure_id_box').text(res.structure_id);$('#structure_id_box').show();
+                        //窗型
+                        $('#window_type').val(res.window_type);
+                        
+                        //结构有固定则显示提示
+                        if(res.fixed != '不带固定'){
+                            $('.tips').css('display','block');
+                            $('.fixed-name').text(res.fixed); //固定的类型
+                            //固定高的最大值和最小值
+                            var spacing_count = Number(res.spacing_count); //间距数
+                            var frame_count = Number(res.frame_count); //边框数
+                            var frame_thick = Number(res.frame_thick); //边框厚
+                            var flower_max = Number($('#flower_max_height').val()); //花件最大高
+                            var flower_min = Number($('#flower_min_height').val()); //花件最小高
+                            var cmax = Number($('#all_height').val())-spacing_count*Number($('#spacing').val())-flower_min-frame_count*frame_thick;
+                            var cmin = Number($('#all_height').val())-spacing_count*Number($('#spacing').val())-flower_max-frame_count*frame_thick;
+//                            console.log(cmin+'--'+cmax);
+                            if(res.fixed=='上固定' || res.fixed=='下固定'){
+                                if(cmin>=130 & cmax>=130){
+                                    
+                                    $('#c-min').text(cmin);$('#c-max').text(cmax);
+                                    $('#fixed-name').text(res.fixed);
+                                }
+                            }else if(res.fixed=='上下固定'){
+                                if(cmin+cmax>=260){
+                                    
+                                    $('#c-min').text(cmin);$('#c-max').text(cmax);
+                                    $('#fixed-name').text(res.fixed);
+                                }
+                            }                            
+                        }else{
+                            $('.tips').css('display','none');
+                            $('#c-min').text(0);$('#c-max').text(0);
+                        }
+                        
+                        //固定位动态显示
+                        var html = '';
+                        if(res.fixed == '上下固定'){
+                            html = "<div class='layui-form-item'><label class='layui-form-label'><span class='x-red'>*</span>上固定</label>\n\
+                        <div class='layui-input-inline'><input type='text' id='fixed' name='fixed[]' autocomplete='off' class='layui-input sfixed' lay-verify='fixed'></div>\n\
+                        <div class='layui-form-mid layui-word-aux'>单位mm</div><input name='fixed_name[]' type='hidden' value='上固定' /></div>";
+                            html += "<div class='layui-form-item'><label class='layui-form-label'><span class='x-red'>*</span>下固定</label>\n\
+                        <div class='layui-input-inline'><input type='text' id='fixed' name='fixed[]' autocomplete='off' class='layui-input sfixed' lay-verify='fixed'></div>\n\
+                        <div class='layui-form-mid layui-word-aux'>单位mm</div><input name='fixed_name[]' type='hidden' value='下固定'/></div>";
+                        }else if(res.fixed != '不带固定'){
+                            html = "<div class='layui-form-item'><label class='layui-form-label'><span class='x-red'>*</span>"+res.fixed+"</label>\n\
+                        <div class='layui-input-inline'><input type='text' id='fixed' name='fixed[]' autocomplete='off' class='layui-input sfixed'></div>\n\
+                        <div class='layui-form-mid layui-word-aux'>单位mm</div><input name='fixed_name[]' type='hidden' value='"+res.fixed+"'/></div>";
+                        }
+                        $('#fixed-box').html(html);
+                        //把手位和锁位高动态显示
+                        if(res.hands == '无把手'){
+//                            $('#hands-box').css('display','none');
+                            $('#lock_position_box').css('display','none');
+                        }else{
+//                             $('#hands-box').css('display','block');
+                             $('#lock_position_box').css('display','block');
+                        }
+                        layer.close(index);
+                    }});
+            }
+            //弹出查看图片
+            function show_pic(){
+                var series_id = $('#series_id').val();
+                var flower = $('#flower_pic').val();
+                var structure_id = $('#structure_id').val();
+                var alum_one = $("#aluminum_color option:selected").val();
+                var alum_two = $("#aluminum_two option:selected").val();
+                var alum_three = $("#aluminum_three option:selected").val();
+                var flower_one = $("#flower_color option:selected").val();
+                var flower_two = $('#flower_two option:selected').val();
+                var flower_three = $('#flower_three option:selected').val();
+                var url = "series_id="+series_id+"&flower="+flower+"&alum_color[]="+alum_one+"&alum_color[]="+alum_two+"&alum_color[]="+alum_three+"&flower_color[]=\n\
+                           "+flower_one+"&flower_color[]="+flower_two+"&flower_color[]="+flower_three+"&structure_id="+structure_id;
+                xadmin.open('查看图片', '/admin/order/pic/?'+url, 800, 550);
+            }
+        </script>

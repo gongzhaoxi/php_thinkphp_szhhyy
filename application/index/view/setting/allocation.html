@@ -1,0 +1,63 @@
+<?php $current='6'; ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>微元生产工序报工管理系统,建材行业生产管理系统,门窗生产管理系统,微元科技,佛山市微元科技有限公司</title>
+<script src="__STATIC__/theme/index/js/jquery-1.10.2.js"></script>
+<link href="__STATIC__/theme/index/css/index.css" rel="stylesheet" />
+<link href="__STATIC__/theme/index/css/bootstrap.css" rel="stylesheet">
+<link href="__STATIC__/theme/index/css/font-awesome.min.css" rel="stylesheet">
+</head>
+
+<body>
+{include file="public/header" /}
+<style type="text/css">
+img[Attributes Style] {width:auto;}
+</style>
+{include file="setting/menu" /}
+<div class="parameter">
+<table width="100%" border="0" cellspacing="1" cellpadding="1" class="mwpw_bg">
+<tr class="title">
+<td width="5%">用户ID</td>
+<td width="10%">用户名称</td>
+<td width="75%">管辖工序</td>
+<td width="10%">操作</td>
+</tr>
+{volist name="user" id="le"}
+<tr>
+<td >{$le.id}</td>
+<td >{$le.uname}</td>
+<td class="a22">
+{volist name="$le.gx_l" id="gl"}
+<span><?php echo htmlspecialchars_decode($gl['dname'])?></span>
+{/volist}
+</td>
+<td><a href="#" class="edit" data-id="{$le.id}">点击编辑</a></td>
+</tr>
+{/volist}
+</table>
+
+</div>
+
+<script src="__STATIC__index/js/jquery.min.js"></script>
+<script src="__STATIC__index/js/layer/layer.js"></script>
+<!-- 角色工序绑定 -->
+
+{include file="setting/timeset" /}
+<script type="text/javascript">
+$('.edit').click(function(){
+	var id = $(this).data('id');
+	layer.open({
+		type: 2,
+		  title: '工序绑定',
+		  shadeClose: true,
+		  shade: 0.8,
+		  area: ['580px', '90%'],
+		  content: "change_gx?uid="+id+"" //iframe的url
+	});
+});
+</script>
+{include file="public/footer" /}
+</body>
+</html>

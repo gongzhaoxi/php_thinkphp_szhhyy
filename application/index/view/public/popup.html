@@ -1,0 +1,277 @@
+<!-- 添加订单 -->
+<div class="modal-box" id="addOrderModal">
+	<div class="modal-content">
+		<div class="modal-header">
+			<div class="modal-header-left">
+				<div class="modal-header-title">
+					<img src="__STATIC__/theme/index/img/icon_add.png">
+					<span>添加订单</span>
+				</div>
+			</div>
+			<div class="modal-header-right">
+				<span class="close-modal-btn"></span>
+			</div>
+		</div>
+		<div class="modal-body">
+			<div class="modal-body-middle">
+				<div class="iframe-box">
+					<iframe class="myIframe" id="myIframe_addOrder" ></iframe>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- 批量刷新订单 -->
+<!-- <div class="modal-box" id="orderBatchEditModal">
+	<div class="modal-content" style="width:60%;height:80%">
+		<div class="modal-header">
+			<div class="modal-header-left">
+				<div class="modal-header-title">
+					<img src="__STATIC__/theme/index/img/icon_add.png">
+					<span>编辑订单工序</span>
+				</div>
+			</div>
+			<div class="modal-header-right">
+				<span class="close-modal-btn"></span>
+			</div>
+		</div>
+		<div class="modal-body">
+			<div class="modal-body-middle">
+				<div class="iframe-box">
+					<iframe class="myIframe" id="myIframe_editOrderBatch" ></iframe>
+				</div>
+			</div>
+		</div>
+	</div>
+</div> -->
+<!-- 批量添加订单 -->
+<div class="modal-box" id="addOrderBatchModal">
+	<div class="modal-content">
+		<div class="modal-header">
+			<div class="modal-header-left">
+				<div class="modal-header-title">
+					<img src="__STATIC__/theme/index/img/icon_batch.png">
+					<span>批量添加订单</span>
+				</div>
+			</div>
+			<div class="modal-header-right">
+				<span class="close-modal-btn"></span>
+			</div>
+		</div>
+		<div class="modal-body">
+			<div class="modal-body-middle">
+				<form class="add-batch-box excelimportform" id="excelimportform" action="{:Url('index/importExcel')}" enctype="multipart/form-data" method="post">
+					<div class="upload-box">
+						<div class="upload-box-left">
+							<input type="file" onchange="user_select(this)" name="excel" class="execl"  data-sign="excelimport"/>
+							<div class="before-upload">
+								<img  onclick="select_upfile(this)" src="__STATIC__/theme/index/img/icon_upload.png">
+								<div>请选择上传</div>
+								<div>指定文件</div>
+							</div>
+							<div class="after-upload">
+								<img  onclick="select_upfile(this)" src="__STATIC__/theme/index/img/icon-upload-finish.png">
+								<div>已选择：</div>
+								<div class="file-name"></div>
+							</div>
+						</div>
+						<div class="upload-box-right">
+							<div>如需要批量上传订单时，请先</div>
+							<div class="download-btn"><a href="{:Url('index/downloads')}">下载模板</a></div>
+						</div>
+					</div>
+					<div class="uploadSureBtn">确认提交</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- 批量删除订单 -->
+<!-- <div class="modal-box" id="delOrderBatchModal">
+	<div class="modal-content" style="width:60%;height:80%">
+		<div class="modal-header">
+			<div class="modal-header-left">
+				<div class="modal-header-title">
+					<img src="__STATIC__/theme/index/img/icon_add.png">
+					<span>删除订单</span>
+				</div>
+			</div>
+			<div class="modal-header-right">
+				<span class="close-modal-btn"></span>
+			</div>
+		</div>
+		<div class="modal-body">
+			<div class="modal-body-middle">
+				<div class="iframe-box">
+					<iframe class="myIframe" id="myIframe_delOrder" ></iframe>
+				</div>
+			</div>
+		</div>
+	</div>
+</div> -->
+
+
+<!-- 导出数据 -->
+<div class="modal-box" id="exportDataModal">
+	<div class="modal-content">
+		<div class="modal-header">
+			<div class="modal-header-left">
+				<div class="modal-header-title">
+					<img src="__STATIC__/theme/index/img/icon_export.png">
+					<span>导出数据</span>
+				</div>
+			</div>
+			<div class="modal-header-right">
+				<span class="close-modal-btn"></span>
+			</div>
+		</div>
+		<div class="modal-body">
+			<div class="iframe-box">
+				<iframe class="myIframe" id="myIframe_exportData" frameborder="0"></iframe>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- 批量审核工序 -->
+<div class="modal-box" id="toExamineModal">
+	<div class="modal-content">
+		<div class="modal-header">
+			<div class="modal-header-left">
+				<div class="modal-header-title">
+					<img src="__STATIC__/theme/index/img/icon_batch.png">
+					<span>批量审核工序</span>
+				</div>
+			</div>
+			<div class="modal-header-right">
+				<span class="close-modal-btn"></span>
+			</div>
+		</div>
+		<div class="modal-body">
+			<div class="modal-body-middle">
+				<form class="add-batch-box excelimportform" id="toExamineform" action="{:Url('index/importgxExcel')}" enctype="multipart/form-data" method="post">
+					<input type="hidden" name="gx_id" id="gx_id" class="gx_id" value=""/>
+					<div class="upload-box">
+						<div class="upload-box-left">
+							<input type="file" onchange="user_select(this)" name="excel" class="execl" data-sign="toExamine" />
+							<div class="before-upload">
+								<img onclick="select_upfile(this)" src="__STATIC__/theme/index/img/icon_upload.png">
+								<div>请选择上传</div>
+								<div>指定文件</div>
+							</div>
+							<div class="after-upload">
+								<img onclick="select_upfile(this)" src="__STATIC__/theme/index/img/icon-upload-finish.png">
+								<div>已选择：</div>
+								<div class="file-name"></div>
+							</div>
+						</div>
+						<div class="upload-box-right">
+							<div>如需要批量上传订单时，请先</div>
+							<div class="download-btn"><a href="{:Url('index/downloads')}">下载模板</a></div>
+						</div>
+					</div>
+					<div class="gx-box">
+						<div class="gx-dt">请选择工序：</div>
+						<div class="imitate-select">
+							<span class="select-txt">请选择</span>
+							<span class="triangle-down"></span>
+							<input type="hidden" name="gxid" id="gxid">
+							<ul data-sign="gxid">
+								<li data-value="">请选择</li>
+								{volist name="endg" id="eg"}
+								<li data-value="{$eg.id}">{$eg.dname}</li>
+								{/volist}
+							</ul>
+						</div>
+					</div>
+					<div class="uploadSureBtn">确认提交</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- 搜索框 -->
+<div class="modal-box" id="searchDataModal">
+	<div class="modal-content">
+		<div class="modal-header">
+			<div class="modal-header-left">
+				<div class="modal-header-title">
+					<span>&nbsp;</span>
+				</div>
+			</div>
+			<div class="modal-header-right">
+				<span class="layui-icon layui-icon-close close-modal-btn"></span>
+			</div>
+		</div>
+		<div class="modal-body">
+			<div class="modal-body-middle">
+				<form class="search-box" id="tdFindForm" action="" method="get">
+					<div class="search-group">
+						<div class="search-group-left">
+							<span>类型：</span>
+						</div>
+						<div class="search-group-right">
+							<div class="imitate-select">
+								<span class="select-txt" data-value="1">模糊</span>
+								<span class="triangle-down"></span>
+								<input type="hidden" name="search_type" id="search_type" value="1">
+								<ul data-sign="search_type">
+									<li data-value="1">模糊</li>
+									<li data-value="2">精准</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+					<div class="search-group">
+						<div class="search-group-left">
+							<span>搜索：</span>
+						</div>
+						<div class="search-group-right">
+							<input type="text" name="td_keyword" id="td_keyword" autocomplete="off" placeholder="输入搜索内容">
+							<div id="search-box" style=" display: none;"></div>
+							<input type="hidden" name="td_field" id="td_field">
+							<input type="hidden" name="page" id="page" value="<?php echo $_GET['page'];?>">
+						</div>
+					</div>
+					<div class="search-group">
+						<button class="searchBtn">确定</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+	// 选择文件
+	function select_upfile(_this){
+		$(_this).parent().siblings('input[type=file]').click();
+	}
+	function user_select(_this){
+		var obj =  $(_this);
+		var sign = obj.attr('data-sign');
+		var _targetForm = sign == 'excelimport' ? $('#excelimportform') : $('#toExamineform');
+		// excelimport toExamine
+		var _label = '';
+		obj.each(function(){
+			_label = $(this)[0].files[0].name;
+		});
+		if(_label != '' || _label != undefined){
+			_targetForm.find('.before-upload').hide();
+			_targetForm.find('.after-upload').show().children('.file-name').html(_label);
+			_targetForm.find('.uploadSureBtn').addClass('uploadSureBtn-finish').attr('onclick','importsubmit("' + sign + '")');
+		}
+	}
+	function importsubmit(target){
+		// 区分批量添加订单 和 批量审核工序
+		switch (target) {
+			case 'excelimport':
+				$('#excelimportform').submit();
+				break;
+			case 'toExamine':
+				$('#toExamineform').submit();
+				break;
+			default:
+				break;
+		}
+	}
+</script>

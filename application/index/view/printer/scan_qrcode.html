@@ -1,0 +1,272 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD HTML 4.01 Strict//EN' 'http://www.w3.org/TR/html4/strict.dtd'>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    {include file="public/header" /}
+    <title>创建打包</title>
+    <style type="text/css">
+        .layui-form-item .layui-input-inline{ width: 50%; }
+        html, body { font-size: 18px; }
+        body .imitate-checkbox-all span:after{ color: #02ff83; background: #02ff83; }
+        body .imitate-radio-active:before{background-color:#02ff83;}
+        .layui-btn{background-color:#a15d23;}
+        .layui-form-select{
+            color: #333333;
+        }
+    </style>
+</head>
+<body class="ban_product_modal">
+    <div class="modal-body">
+        <div style="padding: 10px;">
+			<div class="layui-btn layui-btn-sm" onclick="window.location.href='/index/index/index.html'">返回首页</div>
+		</div>
+        <div class="order">
+            <form class="layui-form" action="" method="post">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">用户：</label>
+                    <div class="layui-input-inline">
+                        <select name="gxs" id="gxs" lay-verify="required" lay-search lay-filter="gxs">
+                            <option value="">请选择用户</option>
+                            {volist name='user' id='v'}
+                                <option value="{$v.id}" {if condition="$uid eq $v['id']"}selected="selected"{/if}>{$v.uname}</li>
+                            {/volist}
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">订单：</label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="unique_sn" autocomplete="off" value="{$ordernum}" />
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">种类：</label>
+                    <div class="layui-input-block">
+                        <div class="list">
+                            {volist name='into_group' id='v'}
+                            <div class="item">
+                                <div class="imitate-checkbox-all">
+                                    <span></span>
+                                    <input type="hidden" name="type" value="{$v.name}">
+                                </div>
+                                <span>{$v.name}</span>
+                            </div>
+                            {/volist}
+                        </div>
+                        <div class="layui-input-inline" style="width: 54.1%" >
+                            <input type="text" id="type_text" autocomplete="off"  placeholder="填写新的其它种类名称" />
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">数量：</label>
+                    <div class="layui-input-block">
+                        <div class="list">
+                            <div class="item">
+                                <div class="imitate-radio">
+                                    <span></span>
+                                    <input type="hidden" name="number" value="1">
+                                </div>
+                                <span>1包</span>
+                            </div>
+                            <div class="item">
+                                <div class="imitate-radio">
+                                    <span></span>
+                                    <input type="hidden" name="number" value="2">
+                                </div>
+                                <span>2包</span>
+                            </div>
+                            <div class="item">
+                                <div class="imitate-radio">
+                                    <span></span>
+                                    <input type="hidden" name="number" value="3">
+                                </div>
+                                <span>3包</span>
+                            </div>
+                            <div class="item">
+                                <div class="imitate-radio">
+                                    <span></span>
+                                    <input type="hidden" name="number" value="4">
+                                </div>
+                                <span>4包</span>
+                            </div>
+                            <div class="item">
+                                <div class="imitate-radio">
+                                    <span></span>
+                                    <input type="hidden" name="number" value="5">
+                                </div>
+                                <span>5包</span>
+                            </div>
+                            <div class="item">
+                                <div class="imitate-radio">
+                                    <span></span>
+                                    <input type="hidden" name="number" value="6">
+                                </div>
+                                <span>6包</span>
+                            </div>
+                        </div>
+                        <div class="layui-input-inline" style="width: 54.1%" >
+                            <input type="text" name="number"  id="number-text"  autocomplete="off"  placeholder="填写新的其它包数" />
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">仓位：</label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="store_space" autocomplete="off" />
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">备注：</label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="note" autocomplete="off" />
+                    </div>
+                </div>
+                <!-- <div class="layui-form-item">
+                    <label class="layui-form-label">是否全部入库：</label>
+                    <div class="layui-input-inline">
+                        <div class="imitate-select">
+                            <span class="select-txt">请选择是否入库</span>
+                            <span class="triangle-down"></span>
+                            <input type="hidden" name="all_into" id="all_into" value="0">
+                            <ul data-sign="all_into">
+                                <li data-value="0">否</li>
+                                <li data-value="1">是</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div> -->
+                <div class="layui-form-item">
+                    <label class="layui-form-label">&nbsp;</label>
+                    <div class="layui-input-block">
+                        <button id="saveform" type="button" class="layui-btn layui-btn-normal layui-btn-sm">点击此，打印当前各类及数量标签</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+<script type="text/javascript">
+    $(function(){
+        scanCode();        
+    })
+    layui.use('form',function(){
+		var form = layui.form;
+		form.render();
+	})
+    //处理扫码枪数据,值填写订单号
+    function scanCode() {
+        let code = ''
+        let lastTime, nextTime
+        let lastCode, nextCode
+        let that = this
+        window.document.onkeypress = function(e) {
+            if (window.event) { // IE
+            nextCode = e.keyCode
+            } else if (e.which) { // Netscape/Firefox/Opera
+            nextCode = e.which
+            }
+            if (e.which === 13) {
+            if (code.length < 3) return // 手动输入的时间不会让code的长度大于2，所以这里只会对扫码枪有
+            var all = code.split('|');
+    //          $('#unique_sn').val('');
+            $('#unique_sn').val(all[1]);
+    //          code = ''
+    //          lastCode = ''
+    //          lastTime = ''
+                return
+            }
+            nextTime = new Date().getTime()
+            if (!lastTime && !lastCode) {
+                code += e.key
+            }
+
+            if (lastCode && lastTime && nextTime - lastTime > 500) { // 当扫码前有keypress事件时,防止首字缺失
+                code = e.key
+            } else if (lastCode && lastTime) {
+                code += e.key
+            }
+            lastCode = nextCode
+            lastTime = nextTime
+        }
+    }
+                  
+	$('#saveform').click(function(){
+        var uid = $('#gxs').val();
+        var print_id = $('#print').val();
+        var unique_sn = $('#unique_sn').val();
+        var all_into = $('#all_into').val();
+        var _store = $("#store_space").val();
+        var _note = $("#note").val();
+        var type = [];
+        var type_text = $('#type_text').val();
+        type.push($('.imitate-checkbox-all-active').children('input[name=type]').val());
+        //如果填了数量则使用数量，否则使用单选框选中的值
+        if($('#number-text').val()!=''){
+            var number = $('#number-text').val();
+        }else{
+            var number = $('.imitate-radio-active').children('input[name=number]').val();
+        }
+        if(uid==0){
+            layer.msg('请选择用户');
+            return false;
+        }
+        // if(print_id==0){
+        //     layer.msg('请选择打印机');
+        //     return false;
+        // }
+        if(unique_sn==0){
+            layer.msg('请输入订单号');
+            return false;
+        }
+	     if(type.length==0){
+            layer.msg('请选择种类');
+            return false;
+        }
+        if(!number){
+            layer.msg('请输入数量');
+            return false;
+        }
+        var index = layer.load();
+        var index2 = layer.msg('正在打印中,请稍等');
+        $.ajax({
+            url: "{:Url('scan_qrcode')}",
+            type:'post',
+            data: {uid:uid,print_id:print_id,unique_sn:unique_sn,type:type,type_text:type_text,number:number,all_into:all_into,store_space:_store,
+                note:_note},
+            dataType: 'json',
+	    	 success:function(res){
+                layer.close(index);
+                layer.close(index2);
+                if(res.code==0){
+                    layer.msg(res.msg,{icon:1},function(){
+                        // parent.location.reload();
+                    });
+                    return;
+                }
+                layer.msg(res.msg,{icon:2});
+            },
+            error:function(){
+                layer.msg('打印失败',{icon:2});
+            }
+	     })
+	})
+
+    // 选择种类
+    $('.imitate-checkbox-all').on('click',function(e){
+        e.preventDefault();
+		e.stopPropagation();
+		var _this = $(this);
+        var clickSign = _this.attr('data-sign');
+        _this.addClass('imitate-checkbox-all-active').parent().siblings('.item').children('.imitate-checkbox-all').removeClass('imitate-checkbox-all-active').children('span').hide();
+        _this.children('span').show();
+    });
+    // 选择数量
+    $('.imitate-radio').on('click',function(e){
+        e.preventDefault();
+		e.stopPropagation();
+		var _this = $(this);
+        _this.addClass('imitate-radio-active').parent().siblings('.item').children('.imitate-radio').removeClass('imitate-radio-active');
+    });
+</script>
+</html>

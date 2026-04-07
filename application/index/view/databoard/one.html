@@ -1,0 +1,279 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<!-- <meta http-equiv="refresh" content="5"> -->
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>车间作业看板</title>
+<link href="__STATIC__/theme/index/databoard/gk.css?v=<?php echo time();?>" rel="stylesheet" />
+<link href="__STATIC__/theme/index/databoard/{$style}?v=<?php echo time();?>" rel="stylesheet" />
+<link href="__STATIC__/index/css/liMarquee.css" rel="stylesheet" />
+<script src="__STATIC__/theme/index/databoard/jquery.min.js"></script>
+<script src="__STATIC__/theme/index/databoard/gk.js?v=<?php echo time();?>"></script>
+<script src="__STATIC__/index/js/jquery.liMarquee.js"></script>
+</head>
+<body>
+<div style="position: fixed;top: 0px; left: 10px; color: #fff; font-size: 2vw" id='team_name'>{$data.team_name}</div>
+<div class="classWidth100 Work_Pro">
+<div class="adpx adaa">
+<div class="Pie_chart">
+<div id="yCancasDivId" style="width:300px ;height: 300px;">
+<script>
+    var options = {
+        num: {$data['today']['finish_rate']},        //数字，用于计算百分比
+        innerHtml: function(){
+            var temp = "<div class='inner_sub_div_pfdn' >准交率</div>";
+            temp += "<div class='inner_sub_div isd_co' >{$data['today']['finish_rate']}%</div>";
+            temp += "<div class='inner_sub_div_pfdn' >完成量：{$data['today']['finish']}</div>";
+            temp += "<div class='inner_sub_div_time'>今天</div>";
+            return temp;
+        },              //描述
+        lineWidth: 15,   //线宽度
+        lineColor: "#40d55e",   //线颜色
+        spaceColor: "#d8ddd9"   //透明线颜色
+    };
+
+    jQuery("#yCancasDivId").singlePie(options);
+</script>
+</div>
+</div>
+</div>
+
+<div class="adpx adaa">
+<div class="Pie_chart">
+<div id="yCancasDivId1" style="width:300px ;height: 300px;">
+<script>
+    var options2 = {
+        num: {$data['tommorrow']['finish_rate']},        //数字，用于计算百分比
+        innerHtml: function(){
+            var temp = "<div class='inner_sub_div_pfdn' >准交率</div>";
+            temp += "<div class='inner_sub_div isd_co' >{$data['tommorrow']['finish_rate']}%</div>";
+            temp += "<div class='inner_sub_div_pfdn' >排产量：{$data['tommorrow']['total']}</div>";
+            temp += "<div class='inner_sub_div_time'>明天</div>";
+            return temp;
+        },              //描述
+        lineWidth: 15,   //线宽度
+        lineColor: "#40d55e",   //线颜色
+        spaceColor: "#d8ddd9"   //透明线颜色
+    };
+
+    jQuery("#yCancasDivId1").singlePie(options2);
+</script>
+</div>
+</div>
+
+</div>
+
+<div class="adpx adaa">
+<div class="Pie_chart">
+<div id="yCancasDivId2" style="width:300px ;height: 300px;">
+<script>
+    var options3 = {
+        num: {$data['dftommorrow']['finish_rate']},        //数字，用于计算百分比
+        innerHtml: function(){
+            var temp = "<div class='inner_sub_div_pfdn' >准交率</div>";
+            temp += "<div class='inner_sub_div isd_co' >{$data['dftommorrow']['finish_rate']}%</div>";
+            temp += "<div class='inner_sub_div_pfdn' >排产量：{$data['dftommorrow']['total']}</div>";
+            temp += "<div class='inner_sub_div_time'>后天</div>";
+            return temp;
+        },              //描述
+        lineWidth: 15,   //线宽度
+        lineColor: "#40d55e",   //线颜色
+        spaceColor: "#d8ddd9"   //透明线颜色
+    };
+
+    jQuery("#yCancasDivId2").singlePie(options3);
+</script>
+</div>
+</div>
+
+</div>
+
+
+<div>
+<table width="100%" border="0" cellspacing="1" cellpadding="0" class="table">
+  <tr id="td_head">
+    <td id="titleee">当天排产数量</td>
+    <td id="titleee">已完成数量</td>
+    <td id="titleee">未完成数量</td>
+
+  </tr>
+  <tr id="td_content">
+    <td id="tp">{$data['today']['total']}</td>
+    <td id="tp_fin">{$data['today']['finish']}</td>
+    <td class="wtov" id="tp_unfin">{$data['today']['unfinish']}</td>
+  </tr>
+  <tr>
+    <style type="text/css">
+        
+        #ysuj div{ width:100%; }
+        #ysuj div.xgts{width:99.99%; height:2px;background-color:#000;margin: 0px;padding:0px; }
+        #ysuj div#lkqvn_a{ width: 16.5%; }
+        #ysuj div#lkqvn{ float: left; width: 25%;margin: 0px;padding:0px; }
+        #ysuj div#lkqvn_a{ float: left; width: 16.5%;margin: 0px;padding:0px; }
+        #ysuj div#lkqvn i.i{color: #00f06b}
+    </style>
+        <td colspan="3" height="100%" class="ysuj" id="ysuj">
+            <div id="td_other">
+                {volist name="data['today']['unlist']" id="vo"}
+                {if condition="$vo['urgent'] eq '1'"}
+                <div id="lkqvn"><i>[加急]</i> {$vo['value']}</div>
+                {/if}
+                {if condition="$vo['urgent'] eq '0' and $vo['isyes'] eq '1'"}
+                <div id="lkqvn"><i class="i">[往期]</i>{$vo['value']}</div>
+                {/if}
+                {/volist}
+            </div>
+            <div class="xgts"></div>
+            <div id="scroll-box" style=" height: 300px;">
+                {volist name="data['today']['unlist']" id="vo"}
+                {if condition="$vo['urgent'] eq '0'"}
+                {if condition="$vo['isyes'] neq '1'"}
+                <div id="lkqvna">{$vo['value']}</div>
+                {/if}
+                {/if}
+                {/volist}
+            
+               
+               
+            </div>
+        </td>
+  </tr>
+</table>
+</div>
+</div>
+<input name="child_number" id="child_number" value="0" type="hidden"/>
+
+<script>
+   $(function(){
+      
+	$('#scroll-box').liMarquee({
+		direction: 'down',
+                runshort: false,
+	});
+});
+</script>
+<script>
+var teamnum={$teamnum};
+var teamid={$teamid};
+ 
+function refresh(){
+	var no='{$no}';
+	 $.ajax({
+			url:"{:Url('Databoard/ajax_list')}",
+			data:{"id":teamid,"team":teamnum,'child_number':$('#child_number').val(),'no':no},
+			traditional: true,
+			type: 'POST',
+			dataType:'json',
+			success:function(res){
+				modify_content(res);
+                                $('#child_number').val(Number(res.child_number));
+                                $('#team_name').text(res.team_name);
+			}
+			
+		},'json')	
+}
+
+function modify_content(data){
+	var _tm_paichan='<i>■</i> '+data['tommorrow']['date']+'：<span>'+data['tommorrow']['total']+'</span> <i>■</i>'+data['dftommorrow']['date']+'：<span>'+data['dftommorrow']['total']+'</span>';
+	$("#tm_paichan").empty().html(_tm_paichan);
+	
+	$("#tp").html(data['today']['total']);
+	$("#tp_fin").html(data['today']['finish']);
+	$("#tp_unfin").html(data['today']['unfinish']);
+	
+	var unlist=data['today']['unlist'];
+	var _unlist_html='';
+    var _unlist_htmls='';
+	for(var i in unlist){
+		var one= unlist[i];
+		if(one['urgent']==1){
+			_unlist_html+='<div id="lkqvn"><i>[加急]</i> '+one['value']+'</div>';
+		}
+		
+		if(one['urgent']!=1&&one['isyes']==1){
+			_unlist_html+='<div id="lkqvn"><i class="i">[往期]</i> '+one['value']+'</div>';
+		}
+	}
+	var _seperate_html='<div class="xgts"></div>';
+	
+	for(var i in unlist){
+		var one= unlist[i];
+		if(one['urgent']!=1&&one['isyes']!=1){
+			_unlist_htmls+='<div id="lkqvn_a">'+one['value']+'</div>';
+		}
+	}
+	
+    _unlist_html = '<div>'+_unlist_html+'</div>';
+    _unlist_htmls = '<div>'+_unlist_htmls+'</div>';
+    var all_html = _unlist_html+_seperate_html+_unlist_htmls;
+	$("#ysuj").empty().html(all_html);
+	
+	var _rowup_html="";
+	var finlist=data['today']['finlist'];
+	for(var i in finlist){
+		var one= finlist[i];
+		_rowup_html+='<div><span>'+one['finished_time']+' - '+one['do_uname']+'</span> '+one['value']+' </div>';
+	}
+	$("#rowup").empty().html(_rowup_html);
+	
+	
+	var options = {
+	        num: data['today']['finish_rate'],
+	        innerHtml: function(){
+	            var temp = "<div class='inner_sub_div_pfdn' >准交率</div>";
+	            temp += "<div class='inner_sub_div isd_co' >"+data['today']['finish_rate']+"%</div>";
+	            temp += "<div class='inner_sub_div_pfdn' >完成量："+data['today']['finish']+"</div>";
+	            temp += "<div class='inner_sub_div_time'>"+data['today']['date']+"</div>";
+	            return temp;
+	        },              //描述
+	        lineWidth: 15,   //线宽度
+	        lineColor: "#40d55e",   //线颜色
+	        spaceColor: "#d8ddd9"   //透明线颜色
+	    };
+
+	    jQuery("#yCancasDivId").empty().singlePie(options);
+	    
+	    
+	    var options2 = {
+	            num: data['tommorrow']['finish_rate'],
+	            innerHtml: function(){
+	                var temp = "<div class='inner_sub_div_pfdn' >准交率</div>";
+	                temp += "<div class='inner_sub_div isd_co' >"+data['tommorrow']['finish_rate']+"%</div>";
+	                temp += "<div class='inner_sub_div_pfdn' >排产量："+data['tommorrow']['total']+"</div>";
+	                temp += "<div class='inner_sub_div_time'>明天</div>";
+	                return temp;
+	            },              //描述
+	            lineWidth: 15,   //线宽度
+	            lineColor: "#40d55e",   //线颜色
+	            spaceColor: "#d8ddd9"   //透明线颜色
+	        };
+
+        jQuery("#yCancasDivId1").empty().singlePie(options2);
+        
+        var options3 = {
+                num: data['dftommorrow']['finish_rate'],        //数字，用于计算百分比
+                innerHtml: function(){
+                    var temp = "<div class='inner_sub_div_pfdn' >准交率</div>";
+                    temp += "<div class='inner_sub_div isd_co' >"+data['dftommorrow']['finish_rate']+"%</div>";
+                    temp += "<div class='inner_sub_div_pfdn' >排产量："+data['dftommorrow']['total']+"</div>";
+                    temp += "<div class='inner_sub_div_time'>后天</div>";
+                    return temp;
+                },              //描述
+                lineWidth: 15,   //线宽度
+                lineColor: "#40d55e",   //线颜色
+                spaceColor: "#d8ddd9"   //透明线颜色
+            };
+
+        jQuery("#yCancasDivId2").empty().singlePie(options3);
+}
+
+$(document).ready(function(){
+        refresh();
+	setInterval("refresh()",30000);
+})
+
+</script>
+
+
+</body>
+</html>

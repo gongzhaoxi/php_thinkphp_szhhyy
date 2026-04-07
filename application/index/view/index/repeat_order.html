@@ -1,0 +1,28 @@
+<div class="setbacks">
+	<div class="process-box">
+		<div class="process-box-inner">
+			{volist name="group" id="vo"}
+				{php}
+			$cache_id=$key;
+			if(!isset($order_gxlist[$cache_id])||count($order_gxlist[$cache_id][0])<=0){ continue; } {/php} 
+			<ul>
+				{volist name="order_gxlist[$cache_id]" id="ol"}
+					{volist name="ol" id="cvo"}
+					<li data-value="{$cvo['id']}" class="no5 unstart li-repeat">{$cvo['dname']}</li>
+					{/volist}
+				{/volist}
+			</ul>
+			{/volist}
+			<div class="delcopyorder-operate">
+				<div class="delcopyorder" onclick="saveCopyOrder(this);">
+					<img src="__STATIC__/theme/index/images/savegrey.png" width="32" id="notsave">
+					<img src="__STATIC__/theme/index/images/save.png" width="32" id="issave" style="display:none;">
+				</div>
+				<div class="delcopyorder" id="delcopyorder" onclick="deleteCopyline(this);">
+					<img src="__STATIC__/theme/index/images/delete.png" width="32">
+				</div>
+			</div>
+		</div>
+		
+	</div>
+</div>

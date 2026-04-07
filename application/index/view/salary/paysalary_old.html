@@ -1,0 +1,334 @@
+<?php $current='6'; ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>微元生产工序报工管理系统,建材行业生产管理系统,门窗生产管理系统,微元科技,佛山市微元科技有限公司</title>
+<script src="__STATIC__/theme/index/js/jquery-1.10.2.js"></script>
+<link href="__STATIC__/theme/index/css/index.css" rel="stylesheet" />
+<link href="__STATIC__/theme/index/css/bootstrap.css" rel="stylesheet">
+	<link href="__STATIC__/theme/index/css/font-awesome.min.css"
+		rel="stylesheet">
+</head>
+<style type="text/css">
+.mwpw_bg {
+	margin-top: 0px;
+}
+
+.me_r_1, .me_r_2 {
+	float: left;
+	width: auto;
+}
+
+.me_r_1 select {
+	border: 1px solid #e2e2e2;
+}
+
+.me_r_2 {
+	width: 122px;
+}
+
+.me_r_2 select {
+	width: 122px;
+}
+
+.me_r_2 input {
+	border: 1px solid #e2e2e2;
+	border-radius: 4px;
+	width: 122px
+}
+
+.button {
+	width: 50px;
+	height: 25px;
+	color: #FFFFFF;
+	font: 12px/25px "微软雅黑";
+	background: #0aad20;
+	text-align: center;
+	border: none;
+	float: left;
+	display: inline-block;
+	border-radius: 4px;
+}
+
+.button:hover {
+	text-decoration: none;
+	color: white;
+}
+
+.pages {
+	width: 100%;
+	height: 50px;
+	line-height: 50px;
+	background: #EAEAEA;
+	display: flex;
+	align-items: center;
+	margin-bottom: 1px;
+}
+
+.me_r_2 select {
+	border: none;
+	border-radius: 4px;
+	font-size: 11px;
+	height: 26px;
+	line-height: 26px;
+	padding: 0 4px;
+}
+
+.me_r_2 select option {
+	font: 12px/25px "微软雅黑";
+	color: #333333
+}
+
+.second-menu {
+	background: #c0c8cb;
+	width: 100%;
+	line-height: 40px;
+	height: 40px;
+	display: flex;
+	align-items: center;
+}
+
+.second-menu div {
+	width: 80px;
+	height: 26px;
+	line-height: 26px;
+	background: #3A5FCD;
+	color: #FFFFFF;
+	text-align: center;
+	border-radius: 4px;
+	margin-left: 12px
+}
+
+.second-menu div a {
+	color: #fff;
+	font-size: 12px;
+	text-decoration: none;
+}
+
+.second-menu div a:active {
+	text-decoration: none;
+}
+.sc-l{padding:16px 10px;border:4px solid #EAEAEA}
+.s-l-func{display:flex;justify-content: flex-end;padding:8px 0}
+.s-l-func div{text-align: center;width: 104px;line-height: 29px;color: #fff;background: cadetblue;border-radius: 6px;font-size: 12px;letter-spacing: 1px;margin-right:8px}
+.s-l-title{display: flex;align-items: center;border-radius:4px;color:#fff;background: #008B8B;line-height: 34px;margin-top: 6px;padding: 0 12px;}
+.s-l-title p{margin-left:20px}
+.s-l-title input{width:18px;height:18px}
+.s-l-li{display: inline-block;width: 49%;padding:8px 0;font-size:13px}
+.selx{display: inline-block;width: 6%;text-align: center;}
+.selx input{width: 14px;height: 14px;}
+.s-l-li :nth-child(2){display: inline-block;width: 24%;text-align: center;}
+.s-l-li :nth-child(3){display: inline-block;width: 20%;text-align: center;}
+.s-l-li :nth-child(4){display: inline-block;width: 12%;text-align: center;}
+.s-l-li :nth-child(5){display: inline-block;width: 12%;text-align: center;}
+.s-l-li :nth-child(6){display: inline-block;width: 16%;text-align: center;}
+.line{width:1px;height:38px;display:inline-block;background:black;position: absolute;margin-top: 8px;}
+.hide{display:none}
+</style>
+<body>
+	{include file="public/header" /}
+	<style type="text/css">
+img[Attributes Style] {
+	width: auto;
+}
+</style>
+	<div class="second-menu">
+		<div class="gs">
+			<a href="{:url('Salary/salary')}">员工提成</a>
+		</div>
+		<div class="gs">
+			<a href="{:url('Salary/formula')}">计件公式</a>
+		</div>
+		<div class="gs" style="width: 106px">
+			<a href="{:url('Salary/handSalary')}">员工提成（手输）</a>
+		</div>
+		<div class="gs" style="background: #0aad20">
+			<a href="#">日对账</a>
+		</div>
+
+	</div>
+	<div class="parameter"
+		style="width: 98%; margin: 0px; border-radius: 0px;">
+
+		<!-- 搜索 -->
+		<div class="pages" style="margin-top: 0;">
+			<form class="form-horizontal" id="formd"
+				action="{:url('Salary/paysalary')}" method="get">
+				<div class="me_r_2">
+					<input type="text" id="year" name="date" value=""
+						autocomplete="off" placeholder="报工日期">
+				</div>
+				<div class="me_r_2">
+					<select onchange="selectman()" name="uid">
+						<option vlaue="">请选择员工</option> {volist name="man" id="ml"}
+
+						<option value="{$ml.id}" {if condition="$ml['id'] eq $uid"
+							}selected="selected"{/if}>{$ml.uname}</option> {/volist}
+					</select>
+				</div>
+				<div class="me_r_2">
+					<select onchange="selectgx()" name="gid">
+						<option>请选择工序</option> {volist name="gxlist" id="gl"}
+						<option {if condition="$gl['id'] eq $gid" }selected="selected"
+							{/if} value="{$gl.id}">{$gl.dname}</option> {/volist}
+					</select>
+				</div>
+				<div class="me_r_2" style="width: 56px">
+					<button id="sub" type="submit"
+						style="border-radius: 4px; margin-top: 2px;">搜索</button>
+				</div>
+			</form>
+		</div>
+
+		<div class="salary-content">
+		<div class="s-l-func {if count($list)==0}hide{/if}">
+					<div id="paymoney">勾选内容发提</div>
+					<div id="checktrue" style="background:	#FF4500">勾选内容已对账</div>
+					<div id="print" style="background:	#1E90FF">勾选内容打印</div>
+				</div>
+			{volist name="list" id="lt"}
+			<div class="sc-l">
+				<div class="s-l-title">
+					<label><input type="checkbox" name="allsel" id="idh{$lt['id']}" onchange="allsel(this.id)"></input></label>
+					<p>{$lt.name}</p>
+					<p>时间节点：{$lt.time}</p>
+					<p>数量：{$lt.num}</p>
+					<p>总提成：{$lt.salary}</p>
+				</div>
+				<div class="s-l-content">
+					{volist name="lt.list" id="ls"}
+					<div class="s-l-li">
+						<div class="selx">
+							<input type="checkbox" name="inpcheck" class="idh{$lt['id']}" value="{$ls.id}"></input>
+						</div>
+						<div>{$ls.uname}{if $ls.man!==''}（组员：{$ls.man}）{/if}</div>
+						<div>{$ls.unique_sn}</div>
+						<div>{$ls.num}</div>
+						<div>{$ls.salary}</div>
+						<div>{if $ls['ispay']==0}未对账{/if}{if $ls['ispay']==1}已对账{/if}{if
+							$ls['ispay']==2}已结算{/if}</div>
+					</div>
+					<div class="{if count($lt['list'])>1 && ($key+1)%2==1}line{/if}"></div>
+					{/volist}
+				</div>
+			</div>
+			{/volist}
+		</div>
+	</div>
+
+	<script src="__STATIC__index/js/jquery.min.js"></script>
+	<script src="__STATIC__index/js/layer/layer.js"></script>
+	<script src="__STATIC__index/js/laydate/laydate.js"></script>
+	<script type="text/javascript">
+		laydate.render({
+			elem : '#year' //指定元素
+			,
+			range : true
+		});
+		laydate.render({
+			elem : '#inyear' //指定元素
+			,
+			range : true
+		});
+		function selectman() {
+			$('#formd').submit();
+		}
+		function selectgx() {
+			$('#formd').submit();
+		}
+		//勾选内容发提
+		$('#paymoney').click(function(){
+			var data = [];
+			$("input[name='inpcheck']").each(function(){
+				if($(this).attr('checked')=='checked' || $(this).attr('checked')==true){
+					console.log($(this).val());
+					data.push($(this).val())
+				}
+			})
+		layer.confirm('是否修改',{icon:3,title:'提示'},function(index){
+			$.ajax({
+				url:"{:url('salary/changestatus')}",
+				data: {"id":data,"status":2},
+				dataType: 'json',
+				success:function(res){
+					console.log(res)
+					if(res.code==0){
+						layer.msg(res.msg);
+					}else{
+						layer.msg(res.msg);
+					}
+					setTimeout(function(){
+						window.location.reload();
+					},1500)
+				}
+			})
+			layer.close(index)
+			})
+		})
+		//勾选内容对账
+		$('#checktrue').click(function(){
+			var data = [];
+			$("input[name='inpcheck']").each(function(){
+				if($(this).attr('checked')=='checked' || $(this).attr('checked')==true){
+					console.log($(this).val());
+					data.push($(this).val())
+				}
+			})
+
+			layer.confirm('是否修改',{icon:3,title:'提示'},function(index){
+			$.ajax({
+				url:"{:url('salary/changestatus')}",
+				data: {"id":data,"status":1},
+				dataType: 'json',
+				success:function(res){
+					console.log(res)
+					if(res.code==0){
+						layer.msg(res.msg);
+					}else{
+						layer.msg(res.msg);
+					}
+					setTimeout(function(){
+						window.location.reload();
+					},1500)
+				}
+			})
+			layer.close(index)
+			})
+		})
+		//打印内容
+		$('#print').click(function(){
+			var ids = '';
+			$("input[name='inpcheck']").each(function(){
+				if($(this).attr('checked')=='checked' || $(this).attr('checked')==true){
+					ids += $(this).val()+',';
+				}
+			})
+			var idl=ids.slice(0,-1);
+			console.log(idl)
+			layer.open({
+				type: 2,
+				  title: '打印',
+				  shadeClose: true,
+				  shade: 0.8,
+				  area: ['95%', '95%'],
+				  content: "printsalary?id="+idl //iframe的url
+			})
+		})
+		
+		//全选
+		function allsel(e){
+			var condition = $('#'+e).attr('checked');
+						
+			if(condition=='checked'){
+				$('input.'+e).attr('checked','checked');
+			}else{
+				$('input.'+e).attr('checked',false);
+			}
+		}
+	</script>
+
+	{include file="public/footer" /}
+
+</body>
+</html>

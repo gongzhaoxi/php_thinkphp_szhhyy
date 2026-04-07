@@ -1,0 +1,330 @@
+
+{include file="public/header"/}
+<style>
+    .count{color:red;float: right;}
+</style>
+    <body class="index">
+        <!-- 顶部开始 -->
+        <div class="container">
+            <div class="logo">
+                <a href="javascript:void(0)">深圳恒辉</a></div>
+            <div class="left_open">
+                <a><i title="展开左侧栏" class="iconfont">&#xe699;</i></a>
+            </div>
+<!--            <ul class="layui-nav left fast-add" lay-filter="">
+                <li class="layui-nav-item">
+                    <a href="javascript:;">+新增</a>
+                    <dl class="layui-nav-child">
+                         二级菜单 
+                        <dd>
+                            <a onclick="xadmin.open('最大化','http://www.baidu.com','','',true)">
+                                <i class="iconfont">&#xe6a2;</i>弹出最大化</a></dd>
+                        <dd>
+                            <a onclick="xadmin.open('弹出自动宽高','http://www.baidu.com')">
+                                <i class="iconfont">&#xe6a8;</i>弹出自动宽高</a></dd>
+                        <dd>
+                            <a onclick="xadmin.open('弹出指定宽高','http://www.baidu.com',500,300)">
+                                <i class="iconfont">&#xe6a8;</i>弹出指定宽高</a></dd>
+                        <dd>
+                            <a onclick="xadmin.add_tab('在tab打开','member-list.html')">
+                                <i class="iconfont">&#xe6b8;</i>在tab打开</a></dd>
+                        <dd>
+                            <a onclick="xadmin.add_tab('在tab打开刷新','member-del.html',true)">
+                                <i class="iconfont">&#xe6b8;</i>在tab打开刷新</a></dd>
+                    </dl>
+                </li>
+            </ul>-->
+            <ul class="layui-nav right" lay-filter="">
+                <li class="layui-nav-item">
+                    <a href="javascript:;">admin</a>
+                    <dl class="layui-nav-child">
+                        <!-- 二级菜单 -->
+                        <dd>
+                            <a onclick="xadmin.open('个人信息','http://www.baidu.com')">个人信息</a></dd>
+                        <dd>
+                            <a onclick="xadmin.open('切换帐号','http://www.baidu.com')">切换帐号</a></dd>
+                        <dd>
+                            <a href="__STATIC__/login.html">退出</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item to-index">
+                    <a href="/">前台首页</a></li>
+                <li class="layui-nav-item">
+                    <a href="javascript:;">操作说明</a>
+                    <dl class="layui-nav-child">
+                        <!-- 二级菜单 -->
+                        <dd><a href='http://www.microd.cn/微窗花操作说明.zip'>下载文档</a></dd>
+                    </dl>
+                </li>
+            </ul>
+        </div>
+        <!-- 顶部结束 -->
+        <!-- 中部开始 -->
+        <!-- 左侧菜单开始 -->
+        <div class="left-nav">
+            <div id="side-nav">
+                <ul id="nav">
+                    <li>
+                        <a href="javascript:;">
+                            <i class="iconfont left-nav-li" lay-tips="订单管理">&#xe723;</i>
+                            <cite>订单管理</cite>
+                            <i class="iconfont nav_right">&#xe697;</i></a>
+                        <ul class="sub-menu">
+<!--                            <li>
+                                <a onclick="xadmin.add_tab('添加订单','{:url('order/add')}')">
+                                    <i class="iconfont">&#xe6a7;</i>
+                                    <cite>添加订单</cite></a>
+                            </li>-->
+                            <li>
+                                <a onclick="xadmin.add_tab('已报价订单','{:url('order/priced')}',true)">
+                                    <i class="iconfont">&#xe6a7;</i>
+                                    <cite>已报价订单</cite></a>
+                            </li>
+                            <li>
+                                <a onclick="xadmin.add_tab('已下车间订单','{:url('order/car')}',true)">
+                                    <i class="iconfont">&#xe6a7;</i>
+                                    <cite>车间进行中订单</cite></a>
+                            </li>
+                            <li>
+                                <a onclick="xadmin.add_tab('未处理订单','{:url('Carorder/noHandle')}',true)">
+                                    <i class="iconfont">&#xe6a7;</i>
+                                    <cite>未处理订单</cite>
+                                    <cite class='count' id='no-handle-count'>{$no_handle}</cite>
+                                </a>
+                                    
+                            </li>
+                            <li>
+                                <a onclick="xadmin.add_tab('已处理订单','{:url('Carorder/handle')}',true)">
+                                    <i class="iconfont">&#xe6a7;</i>
+                                    <cite>已处理订单</cite>
+                                    
+                                </a>
+                            </li>
+                            <li>
+                                <a onclick="xadmin.add_tab('待发货订单','{:url('Allorder/waitDelivery')}',true)">
+                                    <i class="iconfont">&#xe6a7;</i>
+                                    <cite>待发货订单</cite>
+                                    <cite class='count' id="wait-delivery-count">{$delivery}</cite>
+                                </a>
+                            </li>
+                            <li>
+                                <a onclick="xadmin.add_tab('配送批次订单','{:url('Allorder/delivery')}',true)">
+                                    <i class="iconfont">&#xe6a7;</i>
+                                    <cite>配送批次订单</cite></a>
+                            </li>
+                            
+                        </ul>
+                    </li>
+                   <li>
+                        <a href="javascript:;">
+                            <i class="iconfont left-nav-li" lay-tips="财务管理">&#xe6c7;</i>
+                            <cite>财务管理</cite>
+                           <i class="iconfont nav_right">&#xe6c7;</i></a>
+                        </a>
+                        <ul class="sub-menu">
+                            <li>
+                                <a onclick="xadmin.add_tab('待处理订单','{:url('Finance/noHandle')}',true)">
+                                    <i class="iconfont">&#xe6a7;</i>
+                                    <cite>待处理订单</cite>
+                                    <cite class='count' id="finance-no-handle">{$finance}</cite>
+                                </a>
+                            </li>
+                            <li>
+                                <a onclick="xadmin.add_tab('配送批次订单','{:url('Finance/delivery')}',true)">
+                                    <i class="iconfont">&#xe6a7;</i>
+                                    <cite>配送批次订单</cite>
+                                    <cite class='count' id="finance-delivery">{$finance_delivery}</cite>
+                                </a>
+                            </li>
+                            <li>
+                                <a onclick="xadmin.add_tab('已配送未收款订单','{:url('Finance/noPay')}',true)">
+                                    <i class="iconfont">&#xe6a7;</i>
+                                    <cite>已配送未收款订单</cite></a>
+                            </li>
+                            <li>
+                                <a onclick="xadmin.add_tab('已签收订单','{:url('Allorder/signOrder')}',true)">
+                                    <i class="iconfont">&#xe6a7;</i>
+                                    <cite>已签收订单</cite></a>
+                            </li>
+                            <li>
+                                <a onclick="xadmin.add_tab('竣工订单','{:url('Finance/financeHandle')}',true)">
+                                    <i class="iconfont">&#xe6a7;</i>
+                                    <cite>竣工订单</cite></a>
+                            </li>
+                        </ul>
+                    </li>
+                    
+                    <li>
+                        <a href="javascript:;">
+                            <i class="iconfont left-nav-li" lay-tips="数据统计">&#xe6a2;</i>
+                            <cite>数据统计</cite>
+                           <i class="iconfont nav_right">&#xe6a2;</i></a>
+                        </a>
+                        <ul class="sub-menu">
+                            <li>
+                                <a onclick="xadmin.add_tab('数据统计','{:url('Index/welcome')}',true)">
+                                    <i class="iconfont">&#xe6a7;</i>
+                                    <cite>数据统计</cite></a>
+                            </li>
+                        </ul>
+                    </li>
+                    
+                    <li>
+                        <a href="javascript:;">
+                            <i class="iconfont left-nav-li" lay-tips="物料管理">&#xe6fc;</i>
+                            <cite>物料管理</cite>
+                            <i class="iconfont nav_right">&#xe697;</i></a>
+                        <ul class="sub-menu">
+                            <li>
+                                <a onclick="xadmin.add_tab('铝型材','{:url('Bom/aluminum')}',true)">
+                                    <i class="iconfont">&#xe6a7;</i>
+                                    <cite>铝型材</cite></a>
+                            </li>
+                            <li>
+                                <a onclick="xadmin.add_tab('花件','{:url('Bom/flower')}',true)">
+                                    <i class="iconfont">&#xe6a7;</i>
+                                    <cite>花件</cite></a>
+                            </li>
+                            <li>
+                                <a onclick="xadmin.add_tab('五件','{:url('Bom/five')}',true)">
+                                    <i class="iconfont">&#xe6a7;</i>
+                                    <cite>五件</cite></a>
+                            </li>
+                            <li>
+                                <a onclick="xadmin.add_tab('把手位','{:url('Bom/hands')}',true)">
+                                    <i class="iconfont">&#xe6a7;</i>
+                                    <cite>把手位</cite></a>
+                            </li>
+                            <li>
+                                <a onclick="xadmin.add_tab('纱网','{:url('Bom/yarn')}',true)">
+                                    <i class="iconfont">&#xe6a7;</i>
+                                    <cite>纱网</cite></a>
+                            </li>
+                            <li>
+                                <a onclick="xadmin.add_tab('颜色','{:url('Bom/color')}',true)">
+                                    <i class="iconfont">&#xe6a7;</i>
+                                    <cite>颜色</cite></a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="javascript:;">
+                            <i class="iconfont left-nav-li" lay-tips="结构管理">&#xe839;</i>
+                            <cite>结构管理</cite>
+                            <i class="iconfont nav_right">&#xe697;</i>
+                        </a>
+                        <ul class="sub-menu">
+                            <li>
+                                <a onclick="xadmin.add_tab('结构列表','{:url('Structure/index')}',true)">
+                                    <i class="iconfont">&#xe6a7;</i>
+                                    <cite>结构列表</cite></a>
+                            </li>
+
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="javascript:;">
+                            <i class="iconfont left-nav-li" lay-tips="系列管理">&#xe6fa;</i>
+                            <cite>系列管理</cite>
+                            <i class="iconfont nav_right">&#xe697;</i>
+                        </a>
+                        <ul class="sub-menu">
+                            <li>
+                                <a onclick="xadmin.add_tab('系列列表','{:url('Series/index')}',true)">
+                                    <i class="iconfont">&#xe6a7;</i>
+                                    <cite>系列列表</cite></a>
+                            </li>
+
+                        </ul>
+                    </li>
+                     <li>
+                        <a href="javascript:;">
+                            <i class="iconfont left-nav-li" lay-tips="用户管理">&#xe6b8;</i>
+                            <cite>用户管理</cite>
+                            <i class="iconfont nav_right">&#xe697;</i></a>
+                        <ul class="sub-menu">
+                            <li>
+                                <a onclick="xadmin.add_tab('用户列表','{:url('user/user')}',true)">
+                                    <i class="iconfont">&#xe6a7;</i>
+                                    <cite>用户列表</cite></a>
+                            </li>
+                            <li>
+                                <a onclick="xadmin.add_tab('角色组','{:url('user/depart')}',true)">
+                                    <i class="iconfont">&#xe6a7;</i>
+                                    <cite>角色组</cite></a>
+                            </li>
+
+                        </ul>
+                    </li>
+<!--                     <li>
+                        <a href="javascript:;">
+                            <i class="iconfont left-nav-li" lay-tips="活动管理">&#xe6b5;</i>
+                            <cite>活动管理</cite>
+                            <i class="iconfont nav_right">&#xe6b5;</i></a>
+                        <ul class="sub-menu">
+                            <li>
+                                <a onclick="xadmin.add_tab('统计页面','{:url('welcome')}')">
+                                    <i class="iconfont">&#xe6a7;</i>
+                                    <cite>活动列表</cite></a>
+                            </li>
+
+                        </ul>
+                    </li>-->
+                    <li>
+                        <a href="javascript:;">
+                            <i class="iconfont left-nav-li" lay-tips="经销商管理">&#xe6da;</i>
+                            <cite>经销商管理</cite>
+                            <i class="iconfont nav_right">&#xe6da;</i></a>
+                        <ul class="sub-menu">
+                            <li>
+                                <a onclick="xadmin.add_tab('经销商列表','{:url('dealer/index')}',true)">
+                                    <i class="iconfont">&#xe6a7;</i>
+                                    <cite>经销商列表</cite></a>
+                            </li>
+
+                        </ul>
+                    </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <!-- <div class="x-slide_left"></div> -->
+        <!-- 左侧菜单结束 -->
+        <!-- 右侧主体开始 -->
+        <div class="page-content">
+            <div class="layui-tab tab" lay-filter="xbs_tab" lay-allowclose="false">
+                <ul class="layui-tab-title">
+                    <li class="home">
+                        <i class="layui-icon">&#xe68e;</i>我的桌面</li></ul>
+                <div class="layui-unselect layui-form-select layui-form-selected" id="tab_right">
+                    <dl>
+                        <dd data-type="this">关闭当前</dd>
+                        <dd data-type="other">关闭其它</dd>
+                        <dd data-type="all">关闭全部</dd></dl>
+                </div>
+                <div class="layui-tab-content">
+                    <div class="layui-tab-item layui-show">
+                        <iframe src="{:url('welcome')}" frameborder="0" scrolling="yes" class="x-iframe"></iframe>
+                    </div>
+                </div>
+                <div id="tab_show"></div>
+            </div>
+        </div>
+        <div class="page-content-bg"></div>
+        <style id="theme_style"></style>
+        <!-- 右侧主体结束 -->
+        <!-- 中部结束 -->
+      
+    </body>
+	<script>
+	//调用C# CefAsyncJS 对象的PrintPage方法
+	function PrintPage() {
+		cefAsyncJS.PrintPage();
+	};
+	//被C#调用
+	function csharpcall(){
+		
+	}
+	</script>
+</html>

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0">
+		<title>深圳恒辉</title>
+		<link rel="stylesheet" href="__STATIC__/lib/layui/css/layui.css">
+	</head>
+	<style type="text/css">
+		html{
+			background-color: #195CA4;
+		}
+		.main{
+			width: 100%;
+			background-color: #195CA4;
+			padding: 2px;
+			box-sizing: border-box;
+		}
+		.main_inner{
+			padding: 10px;
+			border: 1px solid #088EDB;
+		}
+		*{
+			padding: 0;
+			margin: 0;
+		}
+		.layui-table{
+			width: 100%;
+			background-color: transparent;
+			color: #ffffff;
+		}
+		.layui-table thead tr{
+			background-color: transparent;
+		}
+		.layui-table tbody tr:hover{
+			background-color: #19A4A4;
+		}
+
+		.layui-table td,.layui-table th{
+			line-height: unset;
+			word-break: break-all;
+			text-align: center;
+			padding: 2px 5px;
+			border-color: #088EDB;
+		}
+		.layui-table td{
+			font-size: 1.5vw;
+		}
+		.set_max_width{
+			max-width: 15vw;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+		.layui-table th{
+			font-size: 1.0vw;
+		}
+		.main_warp{
+			float: left;
+			width: 33%;
+			text-align: center;
+		}
+		.warp_num{
+			font-size: 1.8vw;
+			color: #ffffff;
+		}
+		.num_txt{
+			color: #01F7E1;
+		}
+		
+		.warp_area{
+			color: #97C9FF;
+			font-size: 1.4vw;
+			margin-top: 5px;
+		}
+		.area_txt{
+			color: #08F905;
+		}
+		ul{
+			padding: 2px;
+		}
+		ul::after,.main_inner::after{
+			content: '';
+			display: block;
+			clear: both;
+		}
+		ul li{
+			float: left;
+			font-size: 1.3vw !important;
+			vertical-align: middle;
+			margin: 0;
+			margin-right: 20px;
+		}
+		ul li.warp_area{
+			margin: 0;
+		}
+		.finished{
+			background: #009E94;
+		}
+	</style>
+	<body>
+		<div class="main" id="total">
+			<div class="main_inner">
+				<div class="main_warp">
+					<div class="warp_num">上月配送数量/完成量：<span id="last_month_count" class="num_txt">4584</span> / <span id="last_finished" class="num_txt">1234</span></div>
+					<div class="warp_area">对比面积(m<sup>2</sup>)：<span class="area_txt" id="last_month_area">4584</span> / <span class="area_txt" id="last_finished_area">1234</span></div>
+				</div>
+				<div class="main_warp">
+					<div class="warp_num">本月配送量/完成量：<span class="num_txt" id="month_count">4584</span> / <span class="num_txt" id="month_finished">1234</span></div>
+					<div class="warp_area">对比面积(m<sup>2</sup>)：<span class="area_txt" id="month_area">4584</span> / <span class="area_txt" id="month_finished_area">1234</span></div>
+				</div>
+				<div class="main_warp">
+					<div class="warp_num">本年配送量/完成量：<span class="num_txt" id="year_count">4584</span> / <span class="num_txt" id="year_finished">1234</span></div>
+					<div class="warp_area">对比面积(m<sup>2</sup>)：<span class="area_txt" id="year_area">4584</span> / <span class="area_txt" id="year_finished_area">1234</span></div>
+				</div>
+			</div>
+		</div>
+		<ul id="total-ul">
+			<li class="num_txt">以下内容配送日期：{php}echo date('Y-m-d',time());{/php}</li>
+			<li class="warp_num">本日配送数量 / 完成量：<span class="num_txt" id="today_count">108</span> / <span class="num_txt" id="today_finished">0</span></li>
+			<li class="warp_area">对比面积(m²)：<span class="area_txt" id="today_area">242.56</span> / <span class="area_txt" id="finished_area">152.64</span></li>
+		</ul>
+		<div style="padding: 0 2px;">
+			<table class="layui-table">
+				<thead id="table-th">
+					<tr>
+						<th>顺序</th>
+						<th>订单号</th>
+						<th>经销商</th>
+						<th>送货地址</th>
+						<th>预计送达时间</th>
+						<th>配送方式</th>
+						<th>司机/公司</th>
+						<th>状态</th>
+					</tr>
+				</thead>
+				<tbody id="table1">
+					<tr>
+						<td>1</td>
+						<td>123456778</td>
+						<td>居上风 李伟东</td>
+						<td class="set_max_width">广东梅州（公园5B-1902)日广东梅州（公园5B-1902)日广东梅州（公园5B-1902)日广东梅州（公园5B-1902)日</td>
+						<td>09:00-10:00</td>
+						<td>物流</td>
+						<td>普通物流</td>
+						<td>未送达</td>
+					</tr>
+
+				</tbody>
+			</table>
+		</div>
+	</body>
+	<script src="__STATIC__/lib/layui/layui.js" type="text/javascript" charset="utf-8"></script>
+	<script src="__STATIC__/js/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript">
+		layui.use(['table'],function(){
+			
+		})
+	</script>
+	<input name="page" id="page" value="1" type="hidden"/>
+	<script>
+		$(function(){
+			var window_height = $(window).height();
+			var tr_height = $('#table1').height();//tr高度
+			var pagesize = Math.round((window_height-$('#total').height()-$('#total-ul').height()-$('#table-th').height())/tr_height)-1;
+			refresh(pagesize);
+			setInterval("refresh("+pagesize+")",20000);
+		})
+
+		function refresh(pagesize){
+			$.ajax({
+				url:"{:url('getList')}",
+				data: {pagesize:pagesize,page:$('#page').val()},
+				type: 'POST',
+				success:function(res){
+					$('#today_count').text(res.today_count);
+					$('#today_area').text(res.today_area);
+					$('#today_finished').text(res.today_finished);
+					$('#finished_area').text(res.finished_area);
+					$('#last_month_count').text(res.last_month_count);
+					$('#last_month_area').text(res.last_month_area);
+					$('#last_finished').text(res.last_finished);
+					$('#last_finished_area').text(res.last_finished_area);
+					$('#month_count').text(res.month_count);
+					$('#month_area').text(res.month_area);
+					$('#month_finished').text(res.month_finished);
+					$('#month_finished_area').text(res.month_finished_area);
+					$('#year_count').text(res.year_count);
+					$('#year_area').text(res.year_area);
+					$('#year_finished').text(res.year_finished);
+					$('#year_finished_area').text(res.year_finished_area);
+					var html = '';
+					$.each(res.list,function(k,v){
+						html += "<tr class='"+v['back']+"'>";
+						html += "<td>"+v['sort']+"</td>";
+						html += "<td>"+v['number']+"</td>";
+						html += "<td>"+v['dealer']+"</td>";
+						html += "<td class='set_max_width'>"+v['send_address']+"</td>";
+						html += "<td>"+v['arrive_time']+"</td>";
+						html += "<td>"+v['send_type']+"</td>";
+						html += "<td>"+v['send_name']+"</td>";
+						html += "<td>"+v['is_finished']+"</td>";
+						html += "</tr>";
+					})
+					$('#page').val(res.page+1);
+					$('#table1').html(html);
+				}
+			})
+		}
+
+	</script>
+</html>

@@ -1,0 +1,30 @@
+{include file="public/header2"/}
+<style type="text/css">
+    .gx-list{color: #FFFFFF;background-color: #28ab3b;padding: 2px 5px;text-align: center}
+</style>
+<body>
+<div class="layui-fluid">
+    <form action="" method="post">
+        {volist name='list' id='v'}
+        <div class="gx-list"><span>工序名称：</span>
+            {$v['pack_type']}[{$v.pack_count}]
+            {$v.status}
+        </div>
+        {/volist}
+    </form>
+
+
+</div>
+
+<script type="text/javascript">
+    layui.use(['form', 'laydate','layer','upload'],
+        function() {
+            $ = layui.jquery;
+            var form = layui.form;
+            var layer = layui.layer;
+
+        });
+
+</script>
+</body>
+</html>

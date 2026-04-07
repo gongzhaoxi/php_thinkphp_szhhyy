@@ -1,0 +1,106 @@
+{include file="public/header"/}
+        <div class="layui-fluid">
+            <div class="layui-row">
+                <form class="layui-form">
+                    <div class="layui-form-item">
+                        <label for="username" class="layui-form-label">
+                            归属系列
+                        </label>
+                        <div class="layui-input-inline">
+                            <select name="parent_id">
+                               <option value="0">顶级系列</option>
+                               {$allseries}
+                            </select>
+                        </div>
+   
+                    </div>
+                    <div class="layui-form-item">
+                        <label for="username" class="layui-form-label">
+                            系列名称
+                        </label>
+                        <div class="layui-input-inline">
+                            <input type="text" id="name" name="name" required="" lay-verify="required" class="layui-input" value="{$res.name}">
+                        </div>
+                        <div class="layui-form-mid layui-word-aux">
+                            
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label for="phone" class="layui-form-label">
+                            最小面积
+                        </label>
+                        <div class="layui-input-inline">
+                            <input type="text" id="min_area" name="min_area" class="layui-input" value="{$res.min_area}">
+                        </div>
+                        <div class="layui-form-mid layui-word-aux">
+                            
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label for="phone" class="layui-form-label">
+                            单价
+                        </label>
+                        <div class="layui-input-inline">
+                            <input type="text" id="price" name="price" class="layui-input" value="{$res.price}">
+                        </div>
+                        <div class="layui-form-mid layui-word-aux">
+                            
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label for="phone" class="layui-form-label">
+                            类型
+                        </label>
+                        <div class="layui-input-inline">
+                            <input type="radio" name="type" value="1" title="窗花" {if condition="$res['type'] eq 1"}checked{/if}>
+                            <input type="radio" name="type" value="2" title="室内护栏" {if condition="$res['type'] eq 2"}checked{/if}>
+                            <input type="radio" name="type" value="3" title="室外护栏" {if condition="$res['type'] eq 3"}checked{/if}>
+                            <input type="radio" name="type" value="4" title="纱门" {if condition="$res['type'] eq 4"}checked{/if}>
+                            <input type="radio" name="type" value="5" title="纱窗" {if condition="$res['type'] eq 5"}checked{/if}>
+                            <input type="radio" name="type" value="6" title="围栏" {if condition="$res['type'] eq 6"}checked{/if}>
+                        </div>
+                    </div>
+                     <div class="layui-form-item">
+                        <label for="phone" class="layui-form-label">
+                            打印报价显示
+                        </label>
+                        <div class="layui-input-inline">
+                            <input type="radio" name="price_show" value="0" title="显示" {if condition="$res['price_show'] eq 0"}checked{/if}>
+                            <input type="radio" name="price_show" value="1" title="不显示" {if condition="$res['price_show'] eq 1"}checked{/if}>
+                        </div>
+                    </div>
+                     <div class="layui-form-item">
+                        <label for="phone" class="layui-form-label">
+                            是否统计
+                        </label>
+                        <div class="layui-input-inline">
+                            <input type="radio" name="static_show" value="0" title="否" {if condition="$res['static_show'] eq 0"}checked{/if}>
+                            <input type="radio" name="static_show" value="1" title="是" {if condition="$res['static_show'] eq 1"}checked{/if}>
+                        </div>
+                    </div>						
+                    <div class="layui-form-item">
+                        <label for="L_repass" class="layui-form-label"></label>
+                         <input name='id' type='hidden' value='{$id}'/>
+                        <button class="layui-btn" lay-filter="add" lay-submit="">保存</button>
+                    </div>
+        </form>
+        </div>
+        </div>
+        <script>layui.use(['form', 'layer'],
+            function() {
+                $ = layui.jquery;
+                var form = layui.form,
+                layer = layui.layer;
+
+                //监听提交
+                form.on('submit(add)',
+                function(data) {
+                    ajaxform("{:url('series/seriesAdd')}",data.field);
+                    return false;
+                });
+
+            });</script>
+
+    </body>
+
+</html>

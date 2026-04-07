@@ -1,0 +1,157 @@
+<?php $current='6'; ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>微元生产工序报工管理系统,建材行业生产管理系统,门窗生产管理系统,微元科技,佛山市微元科技有限公司</title>
+	{include file="public/header" /}
+</head>
+
+<body class="add_classGroup_modal">
+	<div class="modal-body">
+		<div class="modal-body-middle">
+			<ul class="add-user-box">
+				<li>
+					<div class="li-left">班组名称：</div>
+					<div class="li-right">
+						<input type="text" class="team_name" id="team_name" value="{$one['team_name']}" autocomplete="off" placeholder="输入用户名">
+					</div>
+				</li>
+				<li>
+					<div class="li-left">所属班组：</div>
+					<div class="li-right">
+						<div class="imitate-select setDefaultSelect">
+							<span class="select-txt">请选择班组</span>
+							<span class="triangle-down"></span>
+							<input type="hidden" name="pid" id="pid">
+							<ul data-sign="pid">
+								<li data-value="0">请选择班组</li>
+								{volist name="list[0]" id="vo"}
+								<li data-value="{$vo['id']}" {if condition="$one['pid'] gt 0 and $one['pid'] eq $vo['id']"} data-selected="true" {/if}>{$vo['team_name']}</li>
+								{/volist}
+							</ul>
+						</div>
+					</div>
+				</li>
+				<li style="display: none;">
+					<div class="li-left">小组日产能：</div>
+					<div class="li-right">
+						<input style="width: 240px;" type="text" value="{$one['day_ab']}" autocomplete="off" id="day_ab" placeholder="输入日产能">
+						<div style="width: 140px;height: 30px;">
+							<div class="imitate-select setDefaultSelect">
+								<span class="select-txt">选择单位</span>
+								<span class="triangle-down"></span>
+								<input type="hidden" name="ab_unit" id="ab_unit">
+								<ul data-sign="ab_unit">
+									<li data-value="0">选择单位</li>
+									{volist name="ab_unit" id="vo"}
+									<li data-value="{$vo['id']}" {if condition="$one['unit'] eq $vo['id']"} data-selected="true" {/if}>{$vo['label']}</li>
+									{/volist}
+								</ul>
+							</div>
+						</div>
+					</div>
+				</li>
+			</ul>
+		</div>
+		<div class="modal-body-bottom">
+			<div id="btnTxt" onclick="javascript:addTeam();">确认添加</div>
+		</div>
+	</div>
+
+	<script type="text/javascript">
+		$(document).ready(function(){
+			$('.add_classGroup_modal').find('.setDefaultSelect').each(function(){
+				var _this = $(this);
+				var _val = _this.children('ul').children('li[data-selected=true]').attr('data-value')
+				var _html = _this.children('ul').children('li[data-selected=true]').html();
+				if(_val != undefined && _html != undefined){
+					_this.children('input[type=hidden]').val(_val).attr('data-value',_val);
+					_this.children('.select-txt').attr('data-value',_val).html(_html);
+				}
+			})
+		})
+		//记录当前编辑的班组
+		var teamid="{$one['id']}";
+		$('#btnTxt').html(teamid == '' ? '确认添加' : '确认修改');
+		//添加班组
+		function addTeam(){
+			var team_name = $("#team_name").val();
+			var pid = $("#pid").val();
+			var auth_group = $("#auth_group").val();
+			// var day_ab = $("#day_ab").val();
+			// var ab_unit = $("#ab_unit").val();
+			// html内隐藏 , 设置为默认值
+			var day_ab = 1;		// 日产能数量
+			var ab_unit = 1;	// 单位: 平米/日
+			if(team_name==''){
+				layer.msg("请输入班组名称");
+				return false;
+			}
+			if(auth_group<=0){
+				layer.msg("请选择权限组");
+				return false;
+			}
+			if(day_ab==''){
+				layer.msg("请输入日产能值");
+				return false;
+			}
+			if(ab_unit<=0){
+				layer.msg("请选择日产能单位");
+				return false;
+			}
+			$.ajax({
+				url: "{:Url('Setting/save_team')}",
+				data: {"team_name":team_name,"pid":pid,"auth_group":auth_group,"day_ab":day_ab,"ab_unit":ab_unit,"id":teamid},
+				dataType: 'json',
+				success:function(obj){
+					if(obj.status==1){
+						layer.msg(obj.msg);
+						setTimeout(function(){
+							window.parent.location.reload();
+						},1500);				
+					}else{
+						layer.msg(obj.msg);
+					}
+				}
+			},'json');
+		}
+		$('.imitate-select').click(function(e) {
+			e.preventDefault();
+			e.stopPropagation();
+			var _this = $(this);
+			var clickSign = _this.attr('data-sign');
+			$('.imitate-select').removeAttr('data-sign').children('ul').hide();
+			if (clickSign == 'true') {
+				_this.children('ul').hide();
+				_this.removeAttr('data-sign');
+			} else {
+				_this.children('ul').show();
+				_this.attr('data-sign', 'true');
+			}
+		});
+		$(window).click(function(){
+			var elem = event.srcElement ? event.srcElement : event.target;
+			while (elem) {
+				if (elem.id && elem.id == 'orderScreenBox') {
+					return;
+				}
+				elem = elem.parentNode;
+			}
+			$('.imitate-select').removeAttr('data-sign').children('ul').hide();
+		})
+		$('.imitate-select ul').delegate('li','click',function(e){
+			e.preventDefault();
+			e.stopPropagation();
+			var _this = $(this);
+			var tempTxt = _this.html();
+			var _thisValue = _this.attr('data-value');
+			_this.parent().parent().children('.select-txt').attr('data-value',_thisValue).html(tempTxt);
+			_this.parent().hide();
+			_this.parent().parent().removeAttr('data-sign');
+			var _clickTarget = _this.parent().attr('data-sign');
+			_this.parent().siblings('input[type=hidden]').val(_thisValue);
+		});
+	</script>
+</body>
+</html>

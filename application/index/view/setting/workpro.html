@@ -1,0 +1,179 @@
+<?php $current='6'; ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>微元生产工序报工管理系统,建材行业生产管理系统,门窗生产管理系统,微元科技,佛山市微元科技有限公司</title>
+<script src="__STATIC__/theme/index/js/jquery-1.10.2.js"></script>
+<link href="__STATIC__/theme/index/css/index.css" rel="stylesheet" />
+<link href="__STATIC__/theme/index/css/bootstrap.css" rel="stylesheet">
+<link href="__STATIC__/theme/index/css/font-awesome.min.css" rel="stylesheet">
+</head>
+<style type="text/css">
+.mb{display:none;width:100%;height:100%;background:black;opacity:0.6;position:fixed;z-index:1000;}
+.true{width:200px;height:40px;line-height:40px;background:#FF4040;color:#fff;border:0;outline:none;border-radius:8px;margin-left:26%;margin-top:8px;margin-bottom:10px; cursor:pointer;}	
+.lis{height:auto;margin-top:10px;margin:20px 30px;display:inline-block;}
+.lis input{width:130px;height:30px;line-height:30px;border-radius:4px;border:0;padding-left:6px;margin-top:10px; margin-right:10px;}
+.lis img{width:15px;height:15px;}
+.in_inp{display:flex; font-size:12px; line-height:30px; height:30px; margin:10px 0px;; margin-bottom:0px; color:#555;}
+.add{display:none;margin-bottom:50px;background:#E3E3E3;position:absolute;z-index:9999;left:28%;top:10%;border-radius:8px;}
+.add div{width:100%;line-height:30px;margin-top:4px;font-size:14px;}
+.add div input{padding-left:4px;width:70%;height:30px;line-height:30px;border-radius:4px;border:0;margin-top:4px;}
+.add div select{line-height:30px;height:30px;width:120px;position: relative;top: 3px;}
+.add div .spa{letter-spacing:4px;}
+.btne{width:80px;height:40px;line-height:40px;background:#FF4040;color:#fff;border:0;outline:none;border-radius:8px;margin-left:42%;margin-top:8px;margin-bottom:10px;}
+#title{ line-height:35px; font-size:12px; text-align:left;padding:0px; padding:0px 10px 5px 10px; float:left; width:98%;}
+#title input{ height:35px; width:300px;}
+.cur{ cursor:pointer;}
+.ddmwpw{ width:630px;height:auto;}
+.aaycxeg{ line-height:35px; height:auto; font-size:12px; text-align:left; margin:0px; padding:0px; padding:0px 10px 10px 10px; float:left; width:266px; background:#999; border:2px solid #fff; margin:5px;}
+.aaycxeg > div{ text-align:left; float:left; display:inline; margin:0px; padding:0px; padding-top:5px;}
+.aaycxeg > div input{ width:150px;text-align:center;padding:0px;}
+.aaycxeg > div input.aajf{ width:50px;}
+.aaycxeg > div img{width:20px;height:20px;padding-top:4px;}
+#iglk{text-align:left; height:30px;}
+.span{ float:left;background:#CC0000; border:2px solid #fff; padding:0px 5px; color:#fff;}
+.other{display:flex;width:100%;}
+.other div input{width:36px;}
+.other div{margin-left:4px;background:#999;border:2px solid #fff;line-height:40px;padding:2px;font-size:13px}
+#title input.gxnameinput{height: 30px;line-height: 30px;border-radius: 4px;border: 0;margin-top: 4px;width:140px;margin-left:20px}
+.aaycxeg > div input.needum{width:20px;}
+.btne{display:inline-block;text-align:center;width:80px;height:40px;line-height:40px;background:#FF4040;color:#fff;border:0;outline:none;border-radius:8px;margin-left:42%;margin-top:8px;margin-bottom:10px;}
+.row{margin:0;}
+</style>
+<body>
+{include file="public/header" /}
+<style type="text/css">
+img[Attributes Style] {width:auto;}
+</style>
+{include file="setting/menu" /}
+<div class="parameter">
+<table width="100%" border="0" cellspacing="1" cellpadding="1">
+<tr class="title">
+<td width="5%">ID</td>
+<td width="15%">工艺路线</td>
+<td>工序排序</td>
+<td width="8%">操作</td>
+</tr>
+
+{volist name="data" id="li"}
+<tr id="doclass_{$li.id}" {if $li['isdel']==1} class="a23" {/if}>
+<td>{$li.id}</td>
+<td>{$li.title}</td>
+<td class="a22">
+{foreach $li['list'] as $k=>$al}
+<?php echo htmlspecialchars_decode($al['dname']) ?>/{$al.work_value} {php} echo isset($ab_unit[$al['work_unit']])?"-".$ab_unit[$al['work_unit']]['label']:''; {/php}
+{if count($li['list'])-($k+1) !== 0}->{/if}
+{/foreach}
+</td>
+<td>
+<a href="#" class="change" data-id="{$li.id}">修改</a> / 
+{if $li['isdel']==0}
+<a href="#" class="doi" data-id="{$li.id}" data-type="{$li.isdel}">禁用</a>
+{/if}
+{if $li['isdel']==1}
+<a href="#" class="doi" data-id="{$li.id}" data-type="{$li.isdel}">启用</a>
+{/if}
+{if condition="$li['isedit'] eq true"}
+ / <a href="#" class="delete" data-id="{$li.id}">删除</a>
+ {/if}
+</td>
+</tr>
+{/volist}
+
+</table>
+</div>
+
+
+{include file="setting/timeset" /}
+<script src="__STATIC__index/js/jquery.min.js"></script>
+<script src="__STATIC__index/js/layer/layer.js"></script>
+<script type="text/javascript">
+	
+	//工序的禁用、启用
+	$('.doi').click(function(){
+		var type=$(this).data("type");
+		var id=$(this).data("id");
+		var text="";
+		if(type==0){
+			text="是否禁用";
+		}else{
+			text="是否启用";
+		}
+		var data={};
+		data['type']=type;
+		data['id']=id;
+		layer.confirm(text,{icon:3,title:'提示'},function(index){
+			$.ajax({
+				url:"{:Url('Setting/warm')}",
+				data:data,
+				dataType: "JSON",
+				success:function(obj){
+					if(obj.code==0){
+						var lo=layer.load(0);
+						window.location.reload();
+						layer.close(lo);
+					}
+				}
+				
+			});
+			layer.close(index);
+		});
+		
+	});
+	
+	
+	$('.addx').click(function(){
+		layer.open({
+			  type: 2,
+			  title: '添加工艺路线',
+			  shadeClose: true,
+			  shade: 0.8,
+			  area: ['800px', '100%'],
+			  content: "work_add" //iframe的url
+			});
+	});
+	
+	//工序修改
+	$('.change').click(function(){
+		var id = $(this).data("id");
+		layer.open({
+			  type: 2,
+			  title: '修改工艺路线',
+			  shadeClose: true,
+			  shade: 0.8,
+			  area: ['800px', '100%'],
+			  content: "work_edit?id="+id+"" //iframe的url
+			});
+	});
+	
+	//工序的删除
+	$('.delete').click(function(){
+		var id=$(this).data("id");
+		var text="";
+		var data={};
+		data['id']=id;
+		layer.confirm("确认要删除工序吗？",{icon:3,title:'提示'},function(index){
+			$.ajax({
+				url:"{:Url('Setting/work_del')}",
+				data:data,
+				dataType: "JSON",
+				success:function(obj){
+					if(obj.status==1){
+						$("#doclass_"+id).remove();
+						layer.msg('删除成功');
+					}else{
+						layer.msg(obj.msg);
+					}
+				}
+				
+			});
+			layer.close(index);
+		});
+		
+	});
+	
+</script>
+{include file="public/footer" /}
+</body>
+</html>

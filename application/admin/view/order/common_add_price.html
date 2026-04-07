@@ -1,0 +1,329 @@
+<div class="layui-form-item technology">
+                        <label class="layui-form-label"><span class="x-red">*</span>工艺</label>
+                        <div class="layui-inline">
+                            <select name="tech[]" lay-filter="one">
+                              <option value="">请选择</option>
+                              {volist name='one' id='v'}
+                              <option value="{$v.id}">{$v.name}</option>
+                              {/volist}
+                            </select>
+                        </div>
+                        <div class="layui-inline">
+                            <select name="tech[]" lay-filter="two" id="two">
+                              <option value="">请选择</option>
+                            </select>
+                        </div>
+                        <div class="layui-inline" id="tthree" style="display: none;">
+                            <select name="tech[]" lay-filter="three" id="three" >
+                              <option value="">请选择</option>
+                            </select>
+                        </div>
+                        <div class="layui-inline" id="tfour" style="display: none;">
+                             <select name="tech[]" lay-filter="four" id="four">
+                              <option value="">请选择</option>
+                            </select>
+                        </div>
+                        <div class="layui-inline" id="tfive" style="display: none;">
+                             <select name="tech[]" lay-filter="five" id="five">
+                              <option value="">请选择</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-form-item" id="flower-boxd">
+                        <label for="username" class="layui-form-label">
+                            <span class="x-red"></span>花型
+                        </label>
+                        <div class="layui-input-inline">
+                           <input type="text" id="flower" name="flower" class="layui-input">                          
+                        </div>
+                        <input name="flower_pic" id="flower_pic" type="hidden" />
+                        <input name="flower_id" id="flower_id" type="hidden" />
+                        <input name="flower_max_height" id="flower_max_height" type="hidden" value="0" />
+                        <input name="flower_min_height" id="flower_min_height" type="hidden" value="0" />
+                        <input name="flower_max_width" id="flower_max_width" type="hidden" value="0" />
+                        <input name="flower_min_width" id="flower_min_width" type="hidden" value="0" />
+                        <button class="layui-btn" type="button" onclick="show_flower()">点击选择</button>
+                    </div>
+					<div class="layui-form-item ">
+                        <label class="layui-form-label"><span class="x-red">*</span>防护栏</label>
+                        <div class="layui-input-inline">
+                            <select name="guardrail" lay-filter="guardrail">
+                              <option value="0">无</option>
+                              <option value="1">加防护栏</option>
+                            </select>
+                        </div>
+						<label class="layui-form-label guardrail" style="display: none;">单价</label>
+						<div class="layui-input-inline guardrail" style="display: none;">
+							<input name="guardrail_price" value="5.00" type="number" class="layui-input">
+						</div>
+						<label class="layui-form-label guardrail" style="display: none;">数量</label>
+						<div class="layui-input-inline guardrail" style="display: none;">
+							<input name="guardrail_num" value="1" type="number" class="layui-input">
+						</div>
+                    </div>						
+                    <input name="series_id" id="series_id" type="hidden"/>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label"><span class="x-red">*</span>铝型颜色</label>
+                        <div class="layui-inline">
+                            <select name="alum_color[]" lay-filter="color" required="" lay-verify="required" id="aluminum_color" type="1">
+                              <option value="">请选择</option>
+                            </select>
+                        </div>
+                        <div class="layui-inline" style="display: none">
+                            <select name="alum_color[]" lay-filter="color_two" id="aluminum_two" type="1">
+                              <option value="">请选择</option>
+                            </select>
+                        </div>
+                         <div class="layui-inline" style="display: none">
+                            <select name="alum_color[]" id="aluminum_three" type="1">
+                              <option value="">请选择</option>
+                            </select>
+                        </div>
+                        <div class="layui-inline diy-name" style="display:none;">
+                            <input type="text" id="username" name="alum_name" class="layui-input" placeholder="填写颜色名称">
+                        </div>
+                        <div class="layui-inline diy-price" style="display:none;">
+                            <input type="text" id="username" name="alum_name_price" class="layui-input" placeholder="填写颜色价格">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">花件颜色</label>
+                        <div class="layui-inline">
+                            <select name="flower_color[]" lay-filter="color" id="flower_color" type="2" class='flower-select'>
+                              <option value="">请选择</option>
+                            </select>
+                        </div>
+                        <div class="layui-inline" style="display: none">
+                            <select name="flower_color[]" lay-filter="color_two" type="2" id="flower_two" class="flower-select">
+                              <option value="">请选择</option>
+                            </select>
+                        </div>
+                         <div class="layui-inline" style="display: none">
+                            <select name="flower_color[]" id="flower_three" type="2" id="flower_three" class="flower-select">
+                              <option value="">请选择</option>
+                            </select>
+                        </div>
+                        <div class="layui-inline diy-name" style="display:none;">
+                            <input type="text" id="username" name="flower_name" class="layui-input" placeholder="填写颜色名称">
+                        </div>
+                        <div class="layui-inline diy-price" style="display:none;">
+                            <input type="text" id="username" name="flower_name_price" class="layui-input" placeholder="填写颜色价格">
+                        </div>
+                    </div>
+                    <div class="layui-form-item yarn-box">
+                        
+                        <label class="layui-form-label">纱网</label>
+                        <div class="layui-inline">
+                            <select name="yarn_color" lay-filter='yarn' id='yarn'>
+                              <option value="">请选择</option>
+                            </select>
+                        </div>
+                        <div class="layui-inline" style='width: 3%;margin-right: 0;display: none;'>
+                            <label class="layui-form-label" style='width:100%;float: left;padding: 0;'>厚度</label>
+                        </div>
+                        <div class="layui-inline" style='margin-left: 9px;display: none;'>                            
+                            <select name="yarn_thickness" id='yarn_two'>
+                            
+                            </select>
+                        </div>
+                        <input name="yarn_price" id="yarn_price" type="hidden"/>
+                    </div>
+                    <div class="layui-form-item five-box" style="display: none;">
+                        
+                        <label class="layui-form-label">五金</label>
+                        <div class="layui-inline">
+                            <select name="five_id" lay-filter='fived' id='fived'>
+                              <option value="">请选择</option>
+                            </select>
+                        </div>
+                        <div class="layui-inline" style='width: 8%;margin-right: 0;'>
+                            <label class="layui-form-label" style='width:100%;float: left;padding: 0;'>五金数量</label>
+                        </div>
+                        <div class="layui-inline" style='margin-left: 9px;'>                            
+                           <input name="five_count" id="five_count" type="text" class="layui-input"/>
+                        </div>
+                        <input name="five_price" id="five_price" type="hidden"/>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">窗型结构</label>
+                        <div class="layui-inline">
+                            <select name="window_type_a" lay-filter='window_type_a' id='window_type_a'>
+                              <option value="常规">常规</option>
+                              <option value="飘窗">飘窗</option>
+                              <option value="圆弧">圆弧</option>
+                              <option value="内弧(拱)形窗">内弧(拱)形窗</option>
+                              <option value="外弧(拱)形窗">外弧(拱)形窗</option>
+                              <option value="内弧(拱)形护栏">内弧(拱)形护栏</option>
+                              <option value="外弧(拱)形窗护栏">外弧(拱)形窗护栏</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-form-item" id="window-box" style="display:none">
+                        <div class="layui-input-inline" style="width: 40%">
+                            <label for="username" class="layui-form-label">
+                                <span class="x-red"></span>飘窗面数
+                            </label>
+                            <div class="layui-input-inline">
+                                <input type="text" id="flywindow" name="window" class="layui-input">
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">
+                                 单位面
+                            </div>
+                        </div>
+                        <div class="layui-input-inline" style="width: 40%">
+                            <label for="username" class="layui-form-label">
+                            <span class="x-red"></span>上飘
+                            </label>
+                            <div class="layui-input-inline">
+                                <input type="text"  name="top_fly" class="layui-input">
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">
+                                 单位mm
+                            </div>
+                        </div>
+                        <div class="layui-input-inline" style="width: 40%">
+                            <label for="username" class="layui-form-label">
+                            <span class="x-red"></span>下飘
+                            </label>
+                            <div class="layui-input-inline">
+                                <input type="text"  name="bottom_fly" class="layui-input">
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">
+                                 单位mm
+                            </div>
+                        </div>
+                        <div class="layui-input-inline" style="width: 40%">
+                            <label for="username" class="layui-form-label">
+                            <span class="x-red"></span>左飘
+                            </label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="left_fly" class="layui-input">
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">
+                                 单位mm
+                            </div>
+                        </div>
+                        <div class="layui-input-inline" style="width: 40%">
+                            <label for="username" class="layui-form-label">
+                            <span class="x-red"></span>右飘
+                            </label>
+                            <div class="layui-input-inline">
+                                <input type="text"  name="right_fly" class="layui-input">
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">
+                                 单位mm
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item" id="arc-box">
+                        <div id="arc-length-box" style="display:none">
+                            <label for="username" class="layui-form-label ">
+                                <span class="x-red"></span>弧长
+                            </label>
+                            <div class="layui-input-inline arc-length-box">
+                                <input type="text" id="arc" name="arc_height" class="layui-input">
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">
+                                 单位mm
+                            </div>
+                        </div>
+                        <div id="arc-length-count-box" style="display:none">
+                            <label for="username" class="layui-form-label ">
+                                <span class="x-red"></span>计算弧长数量
+                            </label>
+                            <div class="layui-input-inline">
+                                <input type="text" id="username" name="arc_length_count" class="layui-input">
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">
+                                 单位:条
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">逃生窗</label>
+                        <div class="layui-inline">
+                            <select name="escape_type_a">
+                              <option value="没有逃生窗">没有逃生窗</option>
+                              <option value="有逃生窗">有逃生窗</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label for="username" class="layui-form-label">
+                            <span class="x-red">*</span>产品尺寸:总宽
+                        </label>
+                        <div class="layui-input-inline">
+                            <input type="text" id="all_width" name="all_width" required="" lay-verify="required" autocomplete="off" class="layui-input">
+                        </div>
+                        <label for="username" class="layui-form-label">
+                            <span class="x-red">*</span>总高
+                        </label>
+                        <div class="layui-input-inline">
+                            <input type="text" id="all_height" name="all_height" required="" lay-verify="required" autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-form-mid layui-word-aux">
+                             单位:mm
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label for="username" class="layui-form-label">
+                            <span class="x-red">*</span>数量
+                        </label>
+                        <div class="layui-input-inline">
+                            <input type="text" id="username" name="count" required="" lay-verify="required" autocomplete="off" class="layui-input" value='1'>
+                        </div>
+                        <label for="username" class="layui-form-label">
+                            <span class="x-red">*</span>折扣率
+                        </label>
+                        <div class="layui-input-inline">
+                            <input type="text" id="rebate" name="rebate" required="" lay-verify="rebate" autocomplete="off" class="layui-input" value='{$res.dealer_rebate}'>
+                        </div>
+                        <div class="layui-form-mid layui-word-aux">
+                             区间：0-1之间
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label for="username" class="layui-form-label">
+                            <span class="x-red"></span>备注
+                        </label>
+                        <div class="layui-input-inline" style="width: 40%">
+                            <input type="text" id="username" name="note" class="layui-input">
+                        </div>
+                    </div>
+										<div class="layui-form-item">
+										    <label for="username" class="layui-form-label">
+										        <span class="x-red"></span>安装位置
+										    </label>
+										    <div class="layui-input-inline" style="width: 40%">
+										        <input type="text" id="position" name="position" class="layui-input">
+										    </div>
+										</div>
+
+                    <!--    经销商下的单才有原单图片            -->
+                    {if condition="$res['add_type'] eq 1"}
+                    <div class="layui-form-item">
+                        <label for="username" class="layui-form-label">
+                            <span class="x-red"></span>原单图片
+                        </label>
+                        <div class="layui-input-inline">
+                            <button type="button" class="layui-btn" id="btn-upload">
+                                <i class="layui-icon">&#xe67c;</i>上传图片
+                            </button>
+                        </div>
+                        <div class="layui-form-mid layui-word-aux">
+                            <span class="x-red">*</span>最大6m,格式jpg,png,gif,bmp,jpeg,pdf
+                        </div>
+
+                    </div>
+                    <div class="layui-form-item" id="diy_pic_box" style="display: none">
+                        <label for="username" class="layui-form-label">
+                        </label>
+                        <div class="layui-input-inline">
+                            <div class="layui-upload-list">
+                                <img class="layui-upload-img" src="/upload/" id="diy_prepic" style="max-height: 60px">
+                                <input name="diy_pic" id="diy_pic" type="hidden"/>
+                                <p id="demoText"></p>
+                            </div>
+                        </div>
+                    </div>
+                    {/if}
